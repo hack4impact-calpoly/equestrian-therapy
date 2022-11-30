@@ -1,8 +1,9 @@
 import React from "react";
 import "./App.css";
+import Example from "./Example";
 
 function App() {
-  return <p>Cleanedup React App</p>;
+  return <Example />;
 }
 
 export default App;
