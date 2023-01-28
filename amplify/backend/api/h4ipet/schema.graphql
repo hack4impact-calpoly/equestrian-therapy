@@ -1,0 +1,25 @@
+type Timeslot @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  startTime: AWSDate
+  endTime: AWSDate
+  eventId: ID
+  available: Boolean
+}
+
+type Event @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  title: String
+  date: AWSDate
+  volunteers: [ID]
+  rider: ID
+  description: String
+}
+
+type User @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  userName: String
+  firstName: String
+  lastName: String
+  userType: String
+}
+ 
