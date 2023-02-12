@@ -1,14 +1,14 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
-import { Amplify } from "aws-amplify";
-import awsconfig from "./aws-exports";
+// import { Amplify } from "aws-amplify";
+// import awsconfig from "./aws-exports";
 import Temp from "./components/Temp";
 import Success from "./success";
 import ResetPassword from "./resetPassword";
 import CreateAccount from "./createAccount";
 
-Amplify.configure(awsconfig);
+// Amplify.configure(awsconfig);
 // import Home from "./home";
 
 function App() {
