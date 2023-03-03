@@ -20,6 +20,7 @@ export default function MonthlyView() {
         defaultView="month"
         tileDisabled={tileDisabled}
         view="month"
+        calendarType="US"
       />
     </div>
   );
