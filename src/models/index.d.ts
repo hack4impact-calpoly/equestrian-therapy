@@ -14,8 +14,9 @@ type EagerTimeslot = {
   readonly id: string;
   readonly startTime?: string | null;
   readonly endTime?: string | null;
-  readonly eventId?: string | null;
-  readonly available?: boolean | null;
+  readonly unavailableDates?: (string | null)[] | null;
+  readonly volunteerBookings?: (string | null)[] | null;
+  readonly riderBookings?: (string | null)[] | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -28,8 +29,9 @@ type LazyTimeslot = {
   readonly id: string;
   readonly startTime?: string | null;
   readonly endTime?: string | null;
-  readonly eventId?: string | null;
-  readonly available?: boolean | null;
+  readonly unavailableDates?: (string | null)[] | null;
+  readonly volunteerBookings?: (string | null)[] | null;
+  readonly riderBookings?: (string | null)[] | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -48,9 +50,9 @@ type EagerEvent = {
   readonly id: string;
   readonly title?: string | null;
   readonly date?: string | null;
-  readonly volunteers?: (string | null)[] | null;
-  readonly rider?: string | null;
   readonly description?: string | null;
+  readonly timeslotId?: (string | null)[] | null;
+  readonly userId?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -63,9 +65,9 @@ type LazyEvent = {
   readonly id: string;
   readonly title?: string | null;
   readonly date?: string | null;
-  readonly volunteers?: (string | null)[] | null;
-  readonly rider?: string | null;
   readonly description?: string | null;
+  readonly timeslotId?: (string | null)[] | null;
+  readonly userId?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }

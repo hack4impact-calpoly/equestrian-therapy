@@ -24,6 +24,7 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
+<<<<<<< HEAD
                 "eventId": {
                     "name": "eventId",
                     "isArray": false,
@@ -37,6 +38,31 @@ export const schema = {
                     "type": "Boolean",
                     "isRequired": false,
                     "attributes": []
+=======
+                "unavailableDates": {
+                    "name": "unavailableDates",
+                    "isArray": true,
+                    "type": "AWSDate",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isArrayNullable": true
+                },
+                "volunteerBookings": {
+                    "name": "volunteerBookings",
+                    "isArray": true,
+                    "type": "ID",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isArrayNullable": true
+                },
+                "riderBookings": {
+                    "name": "riderBookings",
+                    "isArray": true,
+                    "type": "ID",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isArrayNullable": true
+>>>>>>> f9717ac (Feat: Updated data models according to Notion)
                 },
                 "createdAt": {
                     "name": "createdAt",
@@ -104,21 +130,10 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
+<<<<<<< HEAD
                 "volunteers": {
                     "name": "volunteers",
-                    "isArray": true,
-                    "type": "ID",
-                    "isRequired": false,
-                    "attributes": [],
-                    "isArrayNullable": true
-                },
-                "rider": {
-                    "name": "rider",
-                    "isArray": false,
-                    "type": "ID",
-                    "isRequired": false,
-                    "attributes": []
-                },
+=======
                 "description": {
                     "name": "description",
                     "isArray": false,
@@ -126,6 +141,37 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
+                "timeslotId": {
+                    "name": "timeslotId",
+>>>>>>> f9717ac (Feat: Updated data models according to Notion)
+                    "isArray": true,
+                    "type": "ID",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isArrayNullable": true
+                },
+<<<<<<< HEAD
+                "rider": {
+                    "name": "rider",
+=======
+                "userId": {
+                    "name": "userId",
+>>>>>>> f9717ac (Feat: Updated data models according to Notion)
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": false,
+                    "attributes": []
+                },
+<<<<<<< HEAD
+                "description": {
+                    "name": "description",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+=======
+>>>>>>> f9717ac (Feat: Updated data models according to Notion)
                 "createdAt": {
                     "name": "createdAt",
                     "isArray": false,
@@ -251,6 +297,11 @@ export const schema = {
     },
     "enums": {},
     "nonModels": {},
+<<<<<<< HEAD
     "codegenVersion": "3.3.2",
     "version": "19037663dead1b378b6b26bf6ea383d0"
+=======
+    "codegenVersion": "3.3.6",
+    "version": "afd6ff7a8e9ae66d2b26bb904fa93be0"
+>>>>>>> f9717ac (Feat: Updated data models according to Notion)
 };

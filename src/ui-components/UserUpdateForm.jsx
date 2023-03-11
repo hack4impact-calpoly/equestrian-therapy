@@ -6,29 +6,28 @@
 
 /* eslint-disable */
 import * as React from "react";
-import { fetchByPath, validateField } from "./utils";
-import { User } from "../models";
-import { getOverrideProps } from "@aws-amplify/ui-react/internal";
 import { Button, Flex, Grid, TextField } from "@aws-amplify/ui-react";
+import { getOverrideProps } from "@aws-amplify/ui-react/internal";
+import { User } from "../models";
+import { fetchByPath, validateField } from "./utils";
 import { DataStore } from "aws-amplify";
 export default function UserUpdateForm(props) {
   const {
-    id,
+    id: idProp,
     user,
     onSuccess,
     onError,
     onSubmit,
-    onCancel,
     onValidate,
     onChange,
     overrides,
     ...rest
   } = props;
   const initialValues = {
-    userName: undefined,
-    firstName: undefined,
-    lastName: undefined,
-    userType: undefined,
+    userName: "",
+    firstName: "",
+    lastName: "",
+    userType: "",
   };
   const [userName, setUserName] = React.useState(initialValues.userName);
   const [firstName, setFirstName] = React.useState(initialValues.firstName);
@@ -36,7 +35,9 @@ export default function UserUpdateForm(props) {
   const [userType, setUserType] = React.useState(initialValues.userType);
   const [errors, setErrors] = React.useState({});
   const resetStateValues = () => {
-    const cleanValues = { ...initialValues, ...userRecord };
+    const cleanValues = userRecord
+      ? { ...initialValues, ...userRecord }
+      : initialValues;
     setUserName(cleanValues.userName);
     setFirstName(cleanValues.firstName);
     setLastName(cleanValues.lastName);
@@ -46,11 +47,11 @@ export default function UserUpdateForm(props) {
   const [userRecord, setUserRecord] = React.useState(user);
   React.useEffect(() => {
     const queryData = async () => {
-      const record = id ? await DataStore.query(User, id) : user;
+      const record = idProp ? await DataStore.query(User, idProp) : user;
       setUserRecord(record);
     };
     queryData();
-  }, [id, user]);
+  }, [idProp, user]);
   React.useEffect(resetStateValues, [userRecord]);
   const validations = {
     userName: [],
@@ -58,7 +59,15 @@ export default function UserUpdateForm(props) {
     lastName: [],
     userType: [],
   };
-  const runValidationTasks = async (fieldName, value) => {
+  const runValidationTasks = async (
+    fieldName,
+    currentValue,
+    getDisplayValue
+  ) => {
+    const value =
+      currentValue && getDisplayValue
+        ? getDisplayValue(currentValue)
+        : currentValue;
     let validationResponse = validateField(value, validations[fieldName]);
     const customValidator = fetchByPath(onValidate, fieldName);
     if (customValidator) {
@@ -104,6 +113,11 @@ export default function UserUpdateForm(props) {
           modelFields = onSubmit(modelFields);
         }
         try {
+          Object.entries(modelFields).forEach(([key, value]) => {
+            if (typeof value === "string" && value.trim() === "") {
+              modelFields[key] = undefined;
+            }
+          });
           await DataStore.save(
             User.copyOf(userRecord, (updated) => {
               Object.assign(updated, modelFields);
@@ -118,14 +132,14 @@ export default function UserUpdateForm(props) {
           }
         }
       }}
-      {...rest}
       {...getOverrideProps(overrides, "UserUpdateForm")}
+      {...rest}
     >
       <TextField
         label="User name"
         isRequired={false}
         isReadOnly={false}
-        defaultValue={userName}
+        value={userName}
         onChange={(e) => {
           let { value } = e.target;
           if (onChange) {
@@ -152,7 +166,7 @@ export default function UserUpdateForm(props) {
         label="First name"
         isRequired={false}
         isReadOnly={false}
-        defaultValue={firstName}
+        value={firstName}
         onChange={(e) => {
           let { value } = e.target;
           if (onChange) {
@@ -179,7 +193,7 @@ export default function UserUpdateForm(props) {
         label="Last name"
         isRequired={false}
         isReadOnly={false}
-        defaultValue={lastName}
+        value={lastName}
         onChange={(e) => {
           let { value } = e.target;
           if (onChange) {
@@ -206,7 +220,7 @@ export default function UserUpdateForm(props) {
         label="User type"
         isRequired={false}
         isReadOnly={false}
-        defaultValue={userType}
+        value={userType}
         onChange={(e) => {
           let { value } = e.target;
           if (onChange) {
@@ -236,7 +250,11 @@ export default function UserUpdateForm(props) {
         <Button
           children="Reset"
           type="reset"
-          onClick={resetStateValues}
+          onClick={(event) => {
+            event.preventDefault();
+            resetStateValues();
+          }}
+          isDisabled={!(idProp || user)}
           {...getOverrideProps(overrides, "ResetButton")}
         ></Button>
         <Flex
@@ -244,18 +262,13 @@ export default function UserUpdateForm(props) {
           {...getOverrideProps(overrides, "RightAlignCTASubFlex")}
         >
           <Button
-            children="Cancel"
-            type="button"
-            onClick={() => {
-              onCancel && onCancel();
-            }}
-            {...getOverrideProps(overrides, "CancelButton")}
-          ></Button>
-          <Button
             children="Submit"
             type="submit"
             variation="primary"
-            isDisabled={Object.values(errors).some((e) => e?.hasError)}
+            isDisabled={
+              !(idProp || user) ||
+              Object.values(errors).some((e) => e?.hasError)
+            }
             {...getOverrideProps(overrides, "SubmitButton")}
           ></Button>
         </Flex>
