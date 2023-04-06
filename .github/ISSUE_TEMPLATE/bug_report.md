@@ -2,8 +2,9 @@
 name: Bug report
 about: Create a report to help us improve
 title: unique bug id - bug title
-labels: ""
-assignees: ""
+labels: ''
+assignees: ''
+
 ---
 
 **Describe the bug**

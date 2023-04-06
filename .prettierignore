@@ -1,1 +1,6 @@
 docs
+*.svg
+.prettierignore
+.eslintignore
+.gitignore
+*.jpg

@@ -2,19 +2,17 @@
 name: Feature request
 about: Add a feature request for development
 title: unique issue id - issue title
-labels: ""
-assignees: ""
+labels: ''
+assignees: ''
+
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+[Instructions] in the file: `components/[component].tsx`. 
 
-**Describe the steps you'd like a developer to take or the acceptance criteria**
-A clear and concise description of what you want to happen.
+This _may_ include:
+* Step 1
 
-- [ ] Step 1
-- [ ] Step 2
-- [ ] Step 3
-
-**Additional context**
-Add any other context or screenshots about the feature request here.
+Checklist:
+- [ ] Make it look like the [Figma design](url)
+- [ ] Steps
+- [ ] Use [styled-components](https://styled-components.com/docs/api) for styling

@@ -1,0 +1,20 @@
+{
+  "main": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-h4ipet-main-193144-authRole",
+      "UnauthRoleArn": "arn:aws:iam::008277987672:role/amplify-h4ipet-main-193144-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::008277987672:role/amplify-h4ipet-main-193144-authRole",
+      "Region": "us-west-2",
+      "DeploymentBucketName": "amplify-h4ipet-main-193144-deployment",
+      "UnauthRoleName": "amplify-h4ipet-main-193144-unauthRole",
+      "StackName": "amplify-h4ipet-main-193144",
+      "StackId": "arn:aws:cloudformation:us-west-2:008277987672:stack/amplify-h4ipet-main-193144/697e6590-95d4-11ed-9ee3-0a72dc4fa6ff",
+      "AmplifyAppId": "d3vl9ikljd85iw"
+    },
+    "categories": {
+      "auth": {
+        "equestriantherapy": {}
+      }
+    }
+  }
+}
