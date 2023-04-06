@@ -1,5 +1,0 @@
-{
-  "AppSyncApiName": "h4ipet",
-  "DynamoDBBillingMode": "PAY_PER_REQUEST",
-  "DynamoDBEnableServerSideEncryption": false
-}
