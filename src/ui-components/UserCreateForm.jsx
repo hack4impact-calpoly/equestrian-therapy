@@ -6,10 +6,10 @@
 
 /* eslint-disable */
 import * as React from "react";
-import { Button, Flex, Grid, TextField } from "@aws-amplify/ui-react";
-import { getOverrideProps } from "@aws-amplify/ui-react/internal";
-import { User } from "../models";
 import { fetchByPath, validateField } from "./utils";
+import { User } from "../models";
+import { getOverrideProps } from "@aws-amplify/ui-react/internal";
+import { Button, Flex, Grid, TextField } from "@aws-amplify/ui-react";
 import { DataStore } from "aws-amplify";
 export default function UserCreateForm(props) {
   const {
@@ -17,16 +17,17 @@ export default function UserCreateForm(props) {
     onSuccess,
     onError,
     onSubmit,
+    onCancel,
     onValidate,
     onChange,
     overrides,
     ...rest
   } = props;
   const initialValues = {
-    userName: "",
-    firstName: "",
-    lastName: "",
-    userType: "",
+    userName: undefined,
+    firstName: undefined,
+    lastName: undefined,
+    userType: undefined,
   };
   const [userName, setUserName] = React.useState(initialValues.userName);
   const [firstName, setFirstName] = React.useState(initialValues.firstName);
@@ -46,15 +47,7 @@ export default function UserCreateForm(props) {
     lastName: [],
     userType: [],
   };
-  const runValidationTasks = async (
-    fieldName,
-    currentValue,
-    getDisplayValue
-  ) => {
-    const value =
-      currentValue && getDisplayValue
-        ? getDisplayValue(currentValue)
-        : currentValue;
+  const runValidationTasks = async (fieldName, value) => {
     let validationResponse = validateField(value, validations[fieldName]);
     const customValidator = fetchByPath(onValidate, fieldName);
     if (customValidator) {
@@ -100,11 +93,6 @@ export default function UserCreateForm(props) {
           modelFields = onSubmit(modelFields);
         }
         try {
-          Object.entries(modelFields).forEach(([key, value]) => {
-            if (typeof value === "string" && value.trim() === "") {
-              modelFields[key] = undefined;
-            }
-          });
           await DataStore.save(new User(modelFields));
           if (onSuccess) {
             onSuccess(modelFields);
@@ -118,14 +106,13 @@ export default function UserCreateForm(props) {
           }
         }
       }}
-      {...getOverrideProps(overrides, "UserCreateForm")}
       {...rest}
+      {...getOverrideProps(overrides, "UserCreateForm")}
     >
       <TextField
         label="User name"
         isRequired={false}
         isReadOnly={false}
-        value={userName}
         onChange={(e) => {
           let { value } = e.target;
           if (onChange) {
@@ -152,7 +139,6 @@ export default function UserCreateForm(props) {
         label="First name"
         isRequired={false}
         isReadOnly={false}
-        value={firstName}
         onChange={(e) => {
           let { value } = e.target;
           if (onChange) {
@@ -179,7 +165,6 @@ export default function UserCreateForm(props) {
         label="Last name"
         isRequired={false}
         isReadOnly={false}
-        value={lastName}
         onChange={(e) => {
           let { value } = e.target;
           if (onChange) {
@@ -206,7 +191,6 @@ export default function UserCreateForm(props) {
         label="User type"
         isRequired={false}
         isReadOnly={false}
-        value={userType}
         onChange={(e) => {
           let { value } = e.target;
           if (onChange) {
@@ -236,16 +220,21 @@ export default function UserCreateForm(props) {
         <Button
           children="Clear"
           type="reset"
-          onClick={(event) => {
-            event.preventDefault();
-            resetStateValues();
-          }}
+          onClick={resetStateValues}
           {...getOverrideProps(overrides, "ClearButton")}
         ></Button>
         <Flex
           gap="15px"
           {...getOverrideProps(overrides, "RightAlignCTASubFlex")}
         >
+          <Button
+            children="Cancel"
+            type="button"
+            onClick={() => {
+              onCancel && onCancel();
+            }}
+            {...getOverrideProps(overrides, "CancelButton")}
+          ></Button>
           <Button
             children="Submit"
             type="submit"

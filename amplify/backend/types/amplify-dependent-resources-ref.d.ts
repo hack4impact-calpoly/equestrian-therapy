@@ -1,21 +1,21 @@
 export type AmplifyDependentResourcesAttributes = {
-  "api": {
-    "h4ipet": {
-      "GraphQLAPIEndpointOutput": "string",
-      "GraphQLAPIIdOutput": "string",
-      "GraphQLAPIKeyOutput": "string"
+    "api": {
+        "h4ipet": {
+            "GraphQLAPIKeyOutput": "string",
+            "GraphQLAPIIdOutput": "string",
+            "GraphQLAPIEndpointOutput": "string"
+        }
+    },
+    "auth": {
+        "equestriantherapy": {
+            "IdentityPoolId": "string",
+            "IdentityPoolName": "string",
+            "UserPoolId": "string",
+            "UserPoolArn": "string",
+            "UserPoolName": "string",
+            "AppClientIDWeb": "string",
+            "AppClientID": "string",
+            "CreatedSNSRole": "string"
+        }
     }
-  },
-  "auth": {
-    "equestriantherapy": {
-      "AppClientID": "string",
-      "AppClientIDWeb": "string",
-      "CreatedSNSRole": "string",
-      "IdentityPoolId": "string",
-      "IdentityPoolName": "string",
-      "UserPoolArn": "string",
-      "UserPoolId": "string",
-      "UserPoolName": "string"
-    }
-  }
 }

@@ -5,8 +5,8 @@
  **************************************************************************/
 
 import * as React from "react";
-import { GridProps, TextFieldProps } from "@aws-amplify/ui-react";
 import { EscapeHatchProps } from "@aws-amplify/ui-react/internal";
+import { GridProps, TextFieldProps } from "@aws-amplify/ui-react";
 export declare type ValidationResponse = {
     hasError: boolean;
     errorMessage?: string;
@@ -26,14 +26,14 @@ export declare type EventCreateFormValidationValues = {
     timeslotId?: ValidationFunction<string>;
     userId?: ValidationFunction<string>;
 };
-export declare type PrimitiveOverrideProps<T> = Partial<T> & React.DOMAttributes<HTMLDivElement>;
+export declare type FormProps<T> = Partial<T> & React.DOMAttributes<HTMLDivElement>;
 export declare type EventCreateFormOverridesProps = {
-    EventCreateFormGrid?: PrimitiveOverrideProps<GridProps>;
-    title?: PrimitiveOverrideProps<TextFieldProps>;
-    date?: PrimitiveOverrideProps<TextFieldProps>;
-    description?: PrimitiveOverrideProps<TextFieldProps>;
-    timeslotId?: PrimitiveOverrideProps<TextFieldProps>;
-    userId?: PrimitiveOverrideProps<TextFieldProps>;
+    EventCreateFormGrid?: FormProps<GridProps>;
+    title?: FormProps<TextFieldProps>;
+    date?: FormProps<TextFieldProps>;
+    description?: FormProps<TextFieldProps>;
+    timeslotId?: FormProps<TextFieldProps>;
+    userId?: FormProps<TextFieldProps>;
 } & EscapeHatchProps;
 export declare type EventCreateFormProps = React.PropsWithChildren<{
     overrides?: EventCreateFormOverridesProps | undefined | null;
@@ -42,6 +42,7 @@ export declare type EventCreateFormProps = React.PropsWithChildren<{
     onSubmit?: (fields: EventCreateFormInputValues) => EventCreateFormInputValues;
     onSuccess?: (fields: EventCreateFormInputValues) => void;
     onError?: (fields: EventCreateFormInputValues, errorMessage: string) => void;
+    onCancel?: () => void;
     onChange?: (fields: EventCreateFormInputValues) => EventCreateFormInputValues;
     onValidate?: EventCreateFormValidationValues;
 } & React.CSSProperties>;

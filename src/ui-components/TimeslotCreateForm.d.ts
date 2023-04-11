@@ -5,8 +5,8 @@
  **************************************************************************/
 
 import * as React from "react";
-import { GridProps, TextFieldProps } from "@aws-amplify/ui-react";
 import { EscapeHatchProps } from "@aws-amplify/ui-react/internal";
+import { GridProps, TextFieldProps } from "@aws-amplify/ui-react";
 export declare type ValidationResponse = {
     hasError: boolean;
     errorMessage?: string;
@@ -26,14 +26,14 @@ export declare type TimeslotCreateFormValidationValues = {
     volunteerBookings?: ValidationFunction<string>;
     riderBookings?: ValidationFunction<string>;
 };
-export declare type PrimitiveOverrideProps<T> = Partial<T> & React.DOMAttributes<HTMLDivElement>;
+export declare type FormProps<T> = Partial<T> & React.DOMAttributes<HTMLDivElement>;
 export declare type TimeslotCreateFormOverridesProps = {
-    TimeslotCreateFormGrid?: PrimitiveOverrideProps<GridProps>;
-    startTime?: PrimitiveOverrideProps<TextFieldProps>;
-    endTime?: PrimitiveOverrideProps<TextFieldProps>;
-    unavailableDates?: PrimitiveOverrideProps<TextFieldProps>;
-    volunteerBookings?: PrimitiveOverrideProps<TextFieldProps>;
-    riderBookings?: PrimitiveOverrideProps<TextFieldProps>;
+    TimeslotCreateFormGrid?: FormProps<GridProps>;
+    startTime?: FormProps<TextFieldProps>;
+    endTime?: FormProps<TextFieldProps>;
+    unavailableDates?: FormProps<TextFieldProps>;
+    volunteerBookings?: FormProps<TextFieldProps>;
+    riderBookings?: FormProps<TextFieldProps>;
 } & EscapeHatchProps;
 export declare type TimeslotCreateFormProps = React.PropsWithChildren<{
     overrides?: TimeslotCreateFormOverridesProps | undefined | null;
@@ -42,6 +42,7 @@ export declare type TimeslotCreateFormProps = React.PropsWithChildren<{
     onSubmit?: (fields: TimeslotCreateFormInputValues) => TimeslotCreateFormInputValues;
     onSuccess?: (fields: TimeslotCreateFormInputValues) => void;
     onError?: (fields: TimeslotCreateFormInputValues, errorMessage: string) => void;
+    onCancel?: () => void;
     onChange?: (fields: TimeslotCreateFormInputValues) => TimeslotCreateFormInputValues;
     onValidate?: TimeslotCreateFormValidationValues;
 } & React.CSSProperties>;

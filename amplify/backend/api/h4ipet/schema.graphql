@@ -1,4 +1,26 @@
-type Example @model @auth(rules: [{allow: public}]) {
+type Timeslot @model @auth(rules: [{allow: public}]) {
   id: ID!
-  name: String
+  startTime: AWSTime
+  endTime: AWSTime
+  unavailableDates: [AWSDate]
+  volunteerBookings: [ID]
+  riderBookings: [ID]
 }
+
+type Event @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  title: String
+  date: AWSDate
+  description: String
+  timeslotId: [ID]
+  userId: ID
+}
+
+type User @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  userName: String
+  firstName: String
+  lastName: String
+  userType: String
+}
+ 

@@ -6,6 +6,9 @@
 
 /* eslint-disable */
 import * as React from "react";
+import { fetchByPath, validateField } from "./utils";
+import { Event } from "../models";
+import { getOverrideProps } from "@aws-amplify/ui-react/internal";
 import {
   Badge,
   Button,
@@ -18,9 +21,6 @@ import {
   TextField,
   useTheme,
 } from "@aws-amplify/ui-react";
-import { getOverrideProps } from "@aws-amplify/ui-react/internal";
-import { Event } from "../models";
-import { fetchByPath, validateField } from "./utils";
 import { DataStore } from "aws-amplify";
 function ArrayField({
   items = [],
@@ -32,18 +32,8 @@ function ArrayField({
   setFieldValue,
   currentFieldValue,
   defaultFieldValue,
-  lengthLimit,
-  getBadgeText,
-  errorMessage,
 }) {
-  const labelElement = <Text>{label}</Text>;
-  const {
-    tokens: {
-      components: {
-        fieldmessages: { error: errorStyles },
-      },
-    },
-  } = useTheme();
+  const { tokens } = useTheme();
   const [selectedBadgeIndex, setSelectedBadgeIndex] = React.useState();
   const [isEditing, setIsEditing] = React.useState();
   React.useEffect(() => {
@@ -58,9 +48,9 @@ function ArrayField({
   };
   const addItem = async () => {
     if (
-      currentFieldValue !== undefined &&
-      currentFieldValue !== null &&
-      currentFieldValue !== "" &&
+      (currentFieldValue !== undefined ||
+        currentFieldValue !== null ||
+        currentFieldValue !== "") &&
       !hasError
     ) {
       const newItems = [...items];
@@ -74,8 +64,45 @@ function ArrayField({
       setIsEditing(false);
     }
   };
-  const arraySection = (
+  return (
     <React.Fragment>
+      {isEditing && children}
+      {!isEditing ? (
+        <>
+          <Text>{label}</Text>
+          <Button
+            onClick={() => {
+              setIsEditing(true);
+            }}
+          >
+            Add item
+          </Button>
+        </>
+      ) : (
+        <Flex justifyContent="flex-end">
+          {(currentFieldValue || isEditing) && (
+            <Button
+              children="Cancel"
+              type="button"
+              size="small"
+              onClick={() => {
+                setFieldValue(defaultFieldValue);
+                setIsEditing(false);
+                setSelectedBadgeIndex(undefined);
+              }}
+            ></Button>
+          )}
+          <Button
+            size="small"
+            variation="link"
+            color={tokens.colors.brand.primary[80]}
+            isDisabled={hasError}
+            onClick={addItem}
+          >
+            {selectedBadgeIndex !== undefined ? "Save" : "Add"}
+          </Button>
+        </Flex>
+      )}
       {!!items?.length && (
         <ScrollView height="inherit" width="inherit" maxHeight={"7rem"}>
           {items.map((value, index) => {
@@ -96,7 +123,7 @@ function ArrayField({
                   setIsEditing(true);
                 }}
               >
-                {getBadgeText ? getBadgeText(value) : value.toString()}
+                {value.toString()}
                 <Icon
                   style={{
                     cursor: "pointer",
@@ -125,60 +152,6 @@ function ArrayField({
       <Divider orientation="horizontal" marginTop={5} />
     </React.Fragment>
   );
-  if (lengthLimit !== undefined && items.length >= lengthLimit && !isEditing) {
-    return (
-      <React.Fragment>
-        {labelElement}
-        {arraySection}
-      </React.Fragment>
-    );
-  }
-  return (
-    <React.Fragment>
-      {labelElement}
-      {isEditing && children}
-      {!isEditing ? (
-        <>
-          <Button
-            onClick={() => {
-              setIsEditing(true);
-            }}
-          >
-            Add item
-          </Button>
-          {errorMessage && hasError && (
-            <Text color={errorStyles.color} fontSize={errorStyles.fontSize}>
-              {errorMessage}
-            </Text>
-          )}
-        </>
-      ) : (
-        <Flex justifyContent="flex-end">
-          {(currentFieldValue || isEditing) && (
-            <Button
-              children="Cancel"
-              type="button"
-              size="small"
-              onClick={() => {
-                setFieldValue(defaultFieldValue);
-                setIsEditing(false);
-                setSelectedBadgeIndex(undefined);
-              }}
-            ></Button>
-          )}
-          <Button
-            size="small"
-            variation="link"
-            isDisabled={hasError}
-            onClick={addItem}
-          >
-            {selectedBadgeIndex !== undefined ? "Save" : "Add"}
-          </Button>
-        </Flex>
-      )}
-      {arraySection}
-    </React.Fragment>
-  );
 }
 export default function EventCreateForm(props) {
   const {
@@ -186,17 +159,18 @@ export default function EventCreateForm(props) {
     onSuccess,
     onError,
     onSubmit,
+    onCancel,
     onValidate,
     onChange,
     overrides,
     ...rest
   } = props;
   const initialValues = {
-    title: "",
-    date: "",
-    description: "",
+    title: undefined,
+    date: undefined,
+    description: undefined,
     timeslotId: [],
-    userId: "",
+    userId: undefined,
   };
   const [title, setTitle] = React.useState(initialValues.title);
   const [date, setDate] = React.useState(initialValues.date);
@@ -211,12 +185,12 @@ export default function EventCreateForm(props) {
     setDate(initialValues.date);
     setDescription(initialValues.description);
     setTimeslotId(initialValues.timeslotId);
-    setCurrentTimeslotIdValue("");
+    setCurrentTimeslotIdValue(undefined);
     setUserId(initialValues.userId);
     setErrors({});
   };
   const [currentTimeslotIdValue, setCurrentTimeslotIdValue] =
-    React.useState("");
+    React.useState(undefined);
   const timeslotIdRef = React.createRef();
   const validations = {
     title: [],
@@ -225,15 +199,7 @@ export default function EventCreateForm(props) {
     timeslotId: [],
     userId: [],
   };
-  const runValidationTasks = async (
-    fieldName,
-    currentValue,
-    getDisplayValue
-  ) => {
-    const value =
-      currentValue && getDisplayValue
-        ? getDisplayValue(currentValue)
-        : currentValue;
+  const runValidationTasks = async (fieldName, value) => {
     let validationResponse = validateField(value, validations[fieldName]);
     const customValidator = fetchByPath(onValidate, fieldName);
     if (customValidator) {
@@ -280,11 +246,6 @@ export default function EventCreateForm(props) {
           modelFields = onSubmit(modelFields);
         }
         try {
-          Object.entries(modelFields).forEach(([key, value]) => {
-            if (typeof value === "string" && value.trim() === "") {
-              modelFields[key] = undefined;
-            }
-          });
           await DataStore.save(new Event(modelFields));
           if (onSuccess) {
             onSuccess(modelFields);
@@ -298,14 +259,13 @@ export default function EventCreateForm(props) {
           }
         }
       }}
-      {...getOverrideProps(overrides, "EventCreateForm")}
       {...rest}
+      {...getOverrideProps(overrides, "EventCreateForm")}
     >
       <TextField
         label="Title"
         isRequired={false}
         isReadOnly={false}
-        value={title}
         onChange={(e) => {
           let { value } = e.target;
           if (onChange) {
@@ -334,7 +294,6 @@ export default function EventCreateForm(props) {
         isRequired={false}
         isReadOnly={false}
         type="date"
-        value={date}
         onChange={(e) => {
           let { value } = e.target;
           if (onChange) {
@@ -362,7 +321,6 @@ export default function EventCreateForm(props) {
         label="Description"
         isRequired={false}
         isReadOnly={false}
-        value={description}
         onChange={(e) => {
           let { value } = e.target;
           if (onChange) {
@@ -401,16 +359,15 @@ export default function EventCreateForm(props) {
             values = result?.timeslotId ?? values;
           }
           setTimeslotId(values);
-          setCurrentTimeslotIdValue("");
+          setCurrentTimeslotIdValue(undefined);
         }}
         currentFieldValue={currentTimeslotIdValue}
         label={"Timeslot id"}
         items={timeslotId}
-        hasError={errors?.timeslotId?.hasError}
-        errorMessage={errors?.timeslotId?.errorMessage}
+        hasError={errors.timeslotId?.hasError}
         setFieldValue={setCurrentTimeslotIdValue}
         inputFieldRef={timeslotIdRef}
-        defaultFieldValue={""}
+        defaultFieldValue={undefined}
       >
         <TextField
           label="Timeslot id"
@@ -430,7 +387,6 @@ export default function EventCreateForm(props) {
           errorMessage={errors.timeslotId?.errorMessage}
           hasError={errors.timeslotId?.hasError}
           ref={timeslotIdRef}
-          labelHidden={true}
           {...getOverrideProps(overrides, "timeslotId")}
         ></TextField>
       </ArrayField>
@@ -438,7 +394,6 @@ export default function EventCreateForm(props) {
         label="User id"
         isRequired={false}
         isReadOnly={false}
-        value={userId}
         onChange={(e) => {
           let { value } = e.target;
           if (onChange) {
@@ -469,16 +424,21 @@ export default function EventCreateForm(props) {
         <Button
           children="Clear"
           type="reset"
-          onClick={(event) => {
-            event.preventDefault();
-            resetStateValues();
-          }}
+          onClick={resetStateValues}
           {...getOverrideProps(overrides, "ClearButton")}
         ></Button>
         <Flex
           gap="15px"
           {...getOverrideProps(overrides, "RightAlignCTASubFlex")}
         >
+          <Button
+            children="Cancel"
+            type="button"
+            onClick={() => {
+              onCancel && onCancel();
+            }}
+            {...getOverrideProps(overrides, "CancelButton")}
+          ></Button>
           <Button
             children="Submit"
             type="submit"
