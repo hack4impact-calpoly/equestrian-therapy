@@ -5,6 +5,7 @@ import { Auth } from "aws-amplify";
 import logoPic from "../../images/PETlogo.jpg";
 import eyeSlash from "../../images/eyeSlash.svg";
 import eye from "../../images/eye.svg";
+// import UserContext from "../../userContext";
 import {
   Wrapper,
   Box,
@@ -33,6 +34,7 @@ export default function Login() {
   const [error, setError] = useState("");
   // Initialize a boolean state
   const [passwordShown, setPasswordShown] = useState(false);
+  // const [userName, setUserNameContext] = useContext(UserContext);
   // Password toggle handler
   const togglePassword = () => {
     // When the handler is invoked
@@ -47,6 +49,7 @@ export default function Login() {
         username: email,
         password,
       });
+      // setUserNameContext(email);
       console.log("Success!");
       console.log(user);
       // Navigates to Home page with weekly calendar
@@ -68,7 +71,6 @@ export default function Login() {
       setError("All Fields Required");
       return;
     }
-
     signIn();
   };
 
