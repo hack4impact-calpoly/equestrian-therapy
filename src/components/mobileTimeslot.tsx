@@ -57,7 +57,10 @@ export default function MobileTimeslot({ startTime, endTime }: TimeslotProps) {
       minute: "2-digit",
     });
 
+
+
   return (
+
     <div>
       <Slot>
         <Text>{`${formatTime(startTime)} to ${formatTime(endTime)}`}</Text>
