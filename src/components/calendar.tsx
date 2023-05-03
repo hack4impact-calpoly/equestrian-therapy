@@ -1,7 +1,7 @@
 import styled from "styled-components";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { DataStore } from "@aws-amplify/datastore";
-import { Timeslot } from "../models";
+import { Timeslot, LazyTimeslot } from "../models";
 import Monthly from "./monthlyView";
 import Weekly from "./weeklyView";
 import logo from "../images/PETlogo2.svg";
@@ -32,9 +32,13 @@ const RightColumn = styled.div`
 `;
 
 export default function Calendar() {
+  const [toggles, setToggle] = useState<string>("");
+  const [ts, setTs] = useState<LazyTimeslot[]>([]);
+
   useEffect(() => {
     const pullData = async () => {
       const models = await DataStore.query(Timeslot);
+      setTs(models);
       console.log(models);
       console.log(new Date("July 4 1776 14:30"));
     };
@@ -42,16 +46,25 @@ export default function Calendar() {
     pullData();
   }, []);
 
+  // testing stuff
+  console.log(ts);
+  console.log(
+    `updated ts start time for 1 is: ${
+      ts.length === 0 ? "none" : ts[0].startTime
+    }`
+  );
+  console.log(`toggle is ${toggles}`);
+  // console.log(`model 1 starttime: ${timeslots[0].startTime}`);
   return (
     <div>
       <Logo src={logo} />
       <Wrapper>
         <LeftColumn>
           <Monthly />
-          <Toggle />
+          <Toggle setToggleProp={setToggle} />
         </LeftColumn>
         <RightColumn>
-          <Weekly />
+          <Weekly models={ts} toggle={toggles} />
         </RightColumn>
       </Wrapper>
       <Popup />
