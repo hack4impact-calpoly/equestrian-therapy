@@ -45,7 +45,6 @@ async function addRVBooking(
         promises.push(DataStore.save(booking));
       }
       await Promise.all(promises);
-
     } else if (
       original !== null &&
       original !== undefined &&
@@ -70,7 +69,6 @@ async function addRVBooking(
     }
   }
 }
-
 
 export default function timeslotSuccess() {
   const navigate = useNavigate();
