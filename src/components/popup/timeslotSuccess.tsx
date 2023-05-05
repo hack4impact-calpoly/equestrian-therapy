@@ -43,12 +43,9 @@ async function addRVBooking(
           userID,
         });
         promises.push(DataStore.save(booking));
-        // const savedBooking = await DataStore.save(booking);
-        // const savedBookingId = savedBooking.id;
       }
       await Promise.all(promises);
 
-      // console.log("Add booking", await Promise.all(promises));
     } else if (
       original !== null &&
       original !== undefined &&
@@ -65,12 +62,6 @@ async function addRVBooking(
           userID,
         });
         await DataStore.save(booking);
-        // const savedBooking = await DataStore.save(booking);
-        // const savedBookingId = savedBooking.id;
-        // console.log(
-        //   "Add booking",
-        //   await DataStore.query(Booking, savedBookingId)
-        // );
       }
     }
   } catch (error: unknown) {
@@ -80,25 +71,10 @@ async function addRVBooking(
   }
 }
 
-// async function deleteUnavailability(id: string, availableDate: string[]) {
-//   try {
-//     const original = await DataStore.query(Booking, id);
-//     if (
-//       true
-//     ) {
-
-//     }
-//   } catch (error: unknown) {
-//     if (error instanceof Error) {
-//       console.log("An error occurred: ", error.message);
-//     }
-//   }
-
-//   console.log("Add available times", await DataStore.query(Booking, id)); // eslint-disable-line no-param-reassign
-// }
 
 export default function timeslotSuccess() {
   const navigate = useNavigate();
+  // test using RV booking function w/ volunteer and riders
   addRVBooking(
     "5dc2eecb-89bc-4bbf-937c-2ab0ddbd3671",
     "5bfff0a7-42aa-48f7-bccb-0fa60dd0b6d3",
