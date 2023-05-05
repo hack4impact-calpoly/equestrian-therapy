@@ -28,47 +28,82 @@ const Logo = styled.img`
   margin-right: auto;
 `;
 
-async function addRVBooking(id: string, user : User) {
+async function addRVBooking(
+  TimslotID: string,
+  userID: string,
+  bookedDates: string[]
+) {
   try {
-    await DataStore.save(
-      new Booking({
-        id: ,
-        title: ,
-        date: ,
-        description: , 
-        timeslotID: , 
-        userID: ,
-        createdAt: ,
-        updatedAt: ,
-      })
-    );
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.log("An error occurred: ", error.message);
-    }
-  }
-  console.log("Add unavailable times", await DataStore.query(Booking, id));
-}
-
-async function deleteUnavailability(id: string, availableDate: string[]) {
-  try {
-    const original = await DataStore.query(Booking, id);
+    const original = await DataStore.query(User, userID);
     if (
-      true
+      original !== null &&
+      original !== undefined &&
+      original.userType === "Volunteer"
     ) {
-      
+      const promises = [];
+      for (let i = 0; i < bookedDates.length; i++) {
+        const isoDate = new Date(bookedDates[i]).toISOString().split("T")[0];
+        const descriptionStr: string = `User: ${userID} Booked Time: ${isoDate}`;
+        const booking = new Booking({
+          title: "New Booking",
+          date: isoDate,
+          description: descriptionStr,
+          timeslotID: TimslotID,
+          userID,
+        });
+        promises.push(DataStore.save(booking));
+      }
+      await Promise.all(promises);
+    } else if (
+      original !== null &&
+      original !== undefined &&
+      original.userType === "Rider"
+    ) {
+      if (bookedDates.length === 1) {
+        const isoDate = new Date(bookedDates[0]).toISOString().split("T")[0];
+        const descriptionStr: string = `User: ${userID} Booked Time: ${isoDate}`;
+        const booking = new Booking({
+          title: "New Booking",
+          date: isoDate,
+          description: descriptionStr,
+          timeslotID: TimslotID,
+          userID,
+        });
+        await DataStore.save(booking);
+      }
     }
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.log("An error occurred: ", error.message);
     }
   }
-
-  console.log("Add available times", await DataStore.query(Booking, id)); // eslint-disable-line no-param-reassign
+  console.log("Add booking", await DataStore.query(Booking, TimslotID));
 }
+
+// async function deleteUnavailability(id: string, availableDate: string[]) {
+//   try {
+//     const original = await DataStore.query(Booking, id);
+//     if (
+//       true
+//     ) {
+
+//     }
+//   } catch (error: unknown) {
+//     if (error instanceof Error) {
+//       console.log("An error occurred: ", error.message);
+//     }
+//   }
+
+//   console.log("Add available times", await DataStore.query(Booking, id)); // eslint-disable-line no-param-reassign
+// }
 
 export default function timeslotSuccess() {
   const navigate = useNavigate();
+  addRVBooking(
+    "5dc2eecb-89bc-4bbf-937c-2ab0ddbd3671",
+    "d64640ae-b8ef-4485-96a3-013931d15a5d",
+    ["2023/05/05", "2023/05/06", "2023/05/07"]
+  );
 
   const handleClick = () => {
     navigate("/");
