@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { Modal } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import warning from "../../images/warning.svg";
 
 import {
   Wrapper,
-  PopupDiv,
   Box,
   Description,
   Header,
@@ -19,6 +20,11 @@ export type TimeSlotProps = {
 const Warning = styled.img`
   position: relative;
   width: 80px;
+`;
+const PopupDiv = styled(Modal)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const SurroundingBox = styled(Box)`
@@ -50,6 +56,11 @@ export default function TimeSlotConfirmation({
   status = "",
 }: TimeSlotProps) {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
+  const handleConfirmation = () => {
+    navigate("/timeslot-success");
+    setOpen(false);
+  };
   return (
     <Wrapper>
       <TempButton onClick={() => setOpen(true)}>Open popup</TempButton>
@@ -61,7 +72,7 @@ export default function TimeSlotConfirmation({
       >
         <SurroundingBox>
           {userType === "admin" && (
-            <SurroundingBox>
+            <div>
               <Warning src={warning} />
               <Header>Save changes?</Header>
               <Description>
@@ -70,12 +81,14 @@ export default function TimeSlotConfirmation({
               </Description>
               <Row>
                 <CancelButton>Cancel</CancelButton>
-                <ConfirmButton>Confirm</ConfirmButton>
+                <ConfirmButton onClick={handleConfirmation}>
+                  Confirm
+                </ConfirmButton>
               </Row>
-            </SurroundingBox>
+            </div>
           )}
           {userType !== "admin" && status === "cancel" && (
-            <SurroundingBox>
+            <div>
               <Warning src={warning} />
               <Header>Confirm cancellation?</Header>
               <Description>
@@ -84,12 +97,14 @@ export default function TimeSlotConfirmation({
               </Description>
               <Row>
                 <CancelButton>Cancel</CancelButton>
-                <ConfirmButton>Confirm</ConfirmButton>
+                <ConfirmButton onClick={handleConfirmation}>
+                  Confirm
+                </ConfirmButton>
               </Row>
-            </SurroundingBox>
+            </div>
           )}
           {userType !== "admin" && status === "book" && (
-            <SurroundingBox>
+            <div>
               <Warning src={warning} />
               <Header>Confirm booking?</Header>
               <Description>
@@ -98,9 +113,9 @@ export default function TimeSlotConfirmation({
               </Description>
               <Row>
                 <CancelButton>Cancel</CancelButton>
-                <ConfirmButton>Book</ConfirmButton>
+                <ConfirmButton onClick={handleConfirmation}>Book</ConfirmButton>
               </Row>
-            </SurroundingBox>
+            </div>
           )}
         </SurroundingBox>
       </PopupDiv>
