@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { Modal } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -40,28 +40,23 @@ const CancelButton = styled(Button)`
   color: #1b4c5a;
   margin-right: 1rem;
 `;
-const TempButton = styled.button`
-  position: absolute;
-  top: 10%;
-  left: 40%;
-`;
 
 export default function TimeSlotConfirmation({
   userType,
   status = "",
 }: TimeSlotProps) {
-  const [open, setOpen] = useState(false);
+  const open = true;
   const navigate = useNavigate();
   const handleConfirmation = () => {
     navigate("/timeslot-success");
-    setOpen(false);
+  };
+  const handleCancel = () => {
+    navigate("/");
   };
   return (
     <Wrapper>
-      <TempButton onClick={() => setOpen(true)}>Open popup</TempButton>
       <PopupDiv
         open={open}
-        onClose={() => setOpen(false)}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
@@ -75,7 +70,7 @@ export default function TimeSlotConfirmation({
                 slots. Are you sure you want to do this?
               </Description>
               <Row>
-                <CancelButton>Cancel</CancelButton>
+                <CancelButton onClick={handleCancel}>Cancel</CancelButton>
                 <ConfirmButton onClick={handleConfirmation}>
                   Confirm
                 </ConfirmButton>
@@ -91,7 +86,7 @@ export default function TimeSlotConfirmation({
                 you want to do this?
               </Description>
               <Row>
-                <CancelButton>Cancel</CancelButton>
+                <CancelButton onClick={handleCancel}>Cancel</CancelButton>
                 <ConfirmButton onClick={handleConfirmation}>
                   Confirm
                 </ConfirmButton>
@@ -107,7 +102,7 @@ export default function TimeSlotConfirmation({
                 you want to do this?
               </Description>
               <Row>
-                <CancelButton>Cancel</CancelButton>
+                <CancelButton onClick={handleCancel}>Cancel</CancelButton>
                 <ConfirmButton onClick={handleConfirmation}>Book</ConfirmButton>
               </Row>
             </div>

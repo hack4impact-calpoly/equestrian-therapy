@@ -103,6 +103,9 @@ export default function Popup() {
 
     pullData();
   }, []);
+  const handleConfirmation = () => {
+    navigate("/timeslot-confirmation");
+  };
 
   return (
     <div>
@@ -125,8 +128,8 @@ export default function Popup() {
               <DateHeader>{formattedDate}</DateHeader>
               <Timeslots userType="rider" models={timeslots} />
               <BtnContainer>
-                <CancelBtn>Cancel</CancelBtn>
-                <SaveBtn>Save</SaveBtn>
+                <CancelBtn onClick={() => setOpen(false)}>Cancel</CancelBtn>
+                <SaveBtn onClick={handleConfirmation}>Save</SaveBtn>
               </BtnContainer>
             </RightColumn>
           </Wrapper>
