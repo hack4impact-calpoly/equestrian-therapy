@@ -235,9 +235,14 @@ const SaveBtn = styled.button`
   height: 60px;
   cursor: pointer;
 `;
+const SurroundingBoxPopup = styled(Box)`
+  display: flex;
+  align-items: center;
+`;
 
 export {
   Wrapper,
+  SurroundingBoxPopup,
   Box,
   Header,
   CenteredHeader,

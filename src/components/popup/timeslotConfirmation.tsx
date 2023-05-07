@@ -6,7 +6,7 @@ import warning from "../../images/warning.svg";
 
 import {
   Wrapper,
-  Box,
+  SurroundingBoxPopup,
   Description,
   Header,
   Button,
@@ -24,11 +24,6 @@ const Warning = styled.img`
 const PopupDiv = styled(Modal)`
   display: flex;
   justify-content: center;
-  align-items: center;
-`;
-
-const SurroundingBox = styled(Box)`
-  display: flex;
   align-items: center;
 `;
 
@@ -70,7 +65,7 @@ export default function TimeSlotConfirmation({
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <SurroundingBox>
+        <SurroundingBoxPopup>
           {userType === "admin" && (
             <div>
               <Warning src={warning} />
@@ -117,7 +112,7 @@ export default function TimeSlotConfirmation({
               </Row>
             </div>
           )}
-        </SurroundingBox>
+        </SurroundingBoxPopup>
       </PopupDiv>
     </Wrapper>
   );
