@@ -110,7 +110,7 @@ async function deleteUnavailability(id: string, availableDate: string[]) {
 }
 
 async function addRVBooking(
-  TimslotID: string,
+  TimeslotID: string,
   userID: string,
   bookedDates: string[]
 ) {
@@ -129,7 +129,7 @@ async function addRVBooking(
           title: "New Booking -- Volunteer",
           date: isoDate,
           description: descriptionStr,
-          timeslotID: TimslotID,
+          timeslotID: TimeslotID,
           userID,
         });
         promises.push(DataStore.save(booking));
@@ -147,7 +147,7 @@ async function addRVBooking(
           title: "New Booking",
           date: isoDate,
           description: descriptionStr,
-          timeslotID: TimslotID,
+          timeslotID: TimeslotID,
           userID,
         });
         await DataStore.save(booking);
@@ -160,6 +160,40 @@ async function addRVBooking(
   }
 }
 
+async function deleteRVBooking(
+  TimeslotID: string, // which day they want to cancel
+  userID: string,
+  cancelDates: string[] // can cancel multiple dates
+) {
+  /*
+  go through entire booking table, find the booking id that matches
+  the timeslotid, and the date
+   */
+  try {
+    const promises = [];
+    const BookingTable = await DataStore.query(Booking);
+    for (let i = 0; i < cancelDates.length; i++) {
+      
+
+      const isoDate = new Date(cancelDates[i]).toISOString().split("T")[0];
+      const descriptionStr: string = `User: ${userID} Booked Time: ${isoDate}`;
+      const booking = new Booking({
+        title: "New Booking -- Volunteer",
+        date: isoDate,
+        description: descriptionStr,
+        timeslotID: TimeslotID,
+        userID,
+      });
+    }
+    promises.push(DataStore.save(booking));
+
+    await Promise.all(promises);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.log("An error occurred: ", error.message);
+    }
+  }
+}
 export default function TimeSlotConfirmation({
   userType,
   status = "",
