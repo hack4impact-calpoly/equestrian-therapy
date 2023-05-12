@@ -2,12 +2,12 @@ import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { DataStore } from "aws-amplify";
+import { Modal } from "@mui/material";
 import warning from "../../images/warning.svg";
 import { Timeslot, User, Booking } from "../../models";
-
 import {
   Wrapper,
-  Box,
+  SurroundingBoxPopup,
   Description,
   Header,
   Button,
@@ -17,15 +17,18 @@ import {
 export type TimeSlotProps = {
   userType: String;
   status: String;
+  timeslotID: string;
+  userID: string;
+  dates: string[];
 };
+const PopupDiv = styled(Modal)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 const Warning = styled.img`
   position: relative;
   width: 80px;
-`;
-
-const SurroundingBox = styled(Box)`
-  display: flex;
-  align-items: center;
 `;
 
 const ConfirmButton = styled(Button)`
@@ -69,10 +72,9 @@ async function addUnavailability(id: string, unavailableDate: string[]) {
     }
   } catch (error: unknown) {
     if (error instanceof Error) {
-      console.log("An error occurred: ", error.message);
+      console.log("An error occurred: ", error.message); // eslint-disable-line no-console
     }
   }
-  console.log("Add unavailable times", await DataStore.query(Timeslot, id));
 }
 
 async function deleteUnavailability(id: string, availableDate: string[]) {
@@ -102,11 +104,9 @@ async function deleteUnavailability(id: string, availableDate: string[]) {
     }
   } catch (error: unknown) {
     if (error instanceof Error) {
-      console.log("An error occurred: ", error.message);
+      console.log("An error occurred: ", error.message); // eslint-disable-line no-console
     }
   }
-
-  console.log("Add available times", await DataStore.query(Timeslot, id)); // eslint-disable-line no-param-reassign
 }
 
 async function addRVBooking(
@@ -155,7 +155,7 @@ async function addRVBooking(
     }
   } catch (error: unknown) {
     if (error instanceof Error) {
-      console.log("An error occurred: ", error.message);
+      console.log("An error occurred: ", error.message); // eslint-disable-line no-console
     }
   }
 }
@@ -170,105 +170,110 @@ async function deleteRVBooking(
   the timeslotid, and the date
    */
   try {
-    const promises = [];
     const BookingTable = await DataStore.query(Booking);
-    for (let i = 0; i < cancelDates.length; i++) {
-      
-
-      const isoDate = new Date(cancelDates[i]).toISOString().split("T")[0];
-      const descriptionStr: string = `User: ${userID} Booked Time: ${isoDate}`;
-      const booking = new Booking({
-        title: "New Booking -- Volunteer",
-        date: isoDate,
-        description: descriptionStr,
-        timeslotID: TimeslotID,
-        userID,
-      });
-    }
-    promises.push(DataStore.save(booking));
-
-    await Promise.all(promises);
+    BookingTable.forEach((booking) => {
+      if (booking.userID === userID && booking.timeslotID === TimeslotID) {
+        cancelDates.forEach((date) => {
+          const isoDate = new Date(date).toISOString().split("T")[0];
+          if (isoDate === booking.date) {
+            DataStore.delete(booking);
+          }
+        });
+      }
+    });
   } catch (error: unknown) {
     if (error instanceof Error) {
-      console.log("An error occurred: ", error.message);
+      console.log("An error occurred: ", error.message); // eslint-disable-line no-console
     }
   }
 }
 export default function TimeSlotConfirmation({
   userType,
   status = "",
+  timeslotID,
+  userID,
+  dates,
 }: TimeSlotProps) {
+  const open = true;
   const navigate = useNavigate();
 
   const handleConfirmationAdmin = () => {
+    addUnavailability(timeslotID, dates); // YYYY-MM-DD
+    deleteUnavailability(timeslotID, dates); // YYYY-MM-DD
     navigate("/timeslot-success");
-    addUnavailability("5dc2eecb-89bc-4bbf-937c-2ab0ddbd3671", [
-      "2023/05/02",
-      "2023/05/03",
-    ]); // YYYY-MM-DD
-    deleteUnavailability("5dc2eecb-89bc-4bbf-937c-2ab0ddbd3671", [
-      "2023/05/02",
-    ]); // YYYY-MM-DD
   };
 
   const handleConfirmationRV = () => {
+    addRVBooking(timeslotID, userID, dates);
     navigate("/timeslot-success");
-    addRVBooking(
-      "5dc2eecb-89bc-4bbf-937c-2ab0ddbd3671",
-      "5bfff0a7-42aa-48f7-bccb-0fa60dd0b6d3",
-      // ["2023/05/05"]
-      ["2023/05/05", "2023/05/06", "2023/05/07"]
-    );
   };
 
   const handleCancel = () => {
     navigate("/");
   };
 
+  const handleBookingCancel = () => {
+    deleteRVBooking(timeslotID, userID, dates);
+    navigate("/timeslot-success");
+  };
   return (
     <Wrapper>
-      {userType === "admin" && (
-        <SurroundingBox>
-          <Warning src={warning} />
-          <Header>Save changes?</Header>
-          <Description>
-            You are choosing to edit the availability of one or more time slots.
-            Are you sure you want to do this?
-          </Description>
-          <Row>
-            <CancelButton onClick={handleCancel}>Cancel</CancelButton>
-            <ConfirmButton>Confirm</ConfirmButton>
-          </Row>
-        </SurroundingBox>
-      )}
-      {userType !== "admin" && status === "cancel" && (
-        <SurroundingBox>
-          <Warning src={warning} />
-          <Header>Confirm cancellation?</Header>
-          <Description>
-            You are choosing to cancel one or more time slots. Are you sure you
-            want to do this?
-          </Description>
-          <Row>
-            <CancelButton onClick={handleCancel}>Cancel</CancelButton>
-            <ConfirmButton>Confirm</ConfirmButton>
-          </Row>
-        </SurroundingBox>
-      )}
-      {userType !== "admin" && status === "book" && (
-        <SurroundingBox>
-          <Warning src={warning} />
-          <Header>Confirm booking?</Header>
-          <Description>
-            You are choosing to book one or more time slots. Are you sure you
-            want to do this?
-          </Description>
-          <Row>
-            <CancelButton onClick={handleCancel}>Cancel</CancelButton>
-            <ConfirmButton onClick={handleConfirmationRV}>Book</ConfirmButton>
-          </Row>
-        </SurroundingBox>
-      )}
+      <PopupDiv
+        open={open}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <SurroundingBoxPopup>
+          {userType === "admin" && (
+            <div>
+              <Warning src={warning} />
+              <Header>Save changes?</Header>
+              <Description>
+                You are choosing to edit the availability of one or more time
+                slots. Are you sure you want to do this?
+              </Description>
+              <Row>
+                <CancelButton onClick={handleCancel}>Cancel</CancelButton>
+                <ConfirmButton onClick={handleConfirmationAdmin}>
+                  Confirm
+                </ConfirmButton>
+              </Row>
+            </div>
+          )}
+          {userType !== "admin" && status === "cancel" && (
+            <div>
+              <Warning src={warning} />
+              <Header>Confirm cancellation?</Header>
+              <Description>
+                You are choosing to cancel one or more time slots. Are you sure
+                you want to do this?
+              </Description>
+              <Row>
+                <CancelButton onClick={handleCancel}>Cancel</CancelButton>
+                <ConfirmButton onClick={handleBookingCancel}>
+                  Confirm
+                </ConfirmButton>
+              </Row>
+            </div>
+          )}
+          {userType !== "admin" && status === "book" && (
+            <div>
+              <Warning src={warning} />
+              <Header>Confirm booking?</Header>
+              <Description>
+                You are choosing to book one or more time slots. Are you sure
+                you want to do this?
+              </Description>
+              <Row>
+                <CancelButton onClick={handleCancel}>Cancel</CancelButton>
+                <ConfirmButton onClick={handleConfirmationRV}>
+                  Book
+                </ConfirmButton>
+              </Row>
+            </div>
+          )}
+        </SurroundingBoxPopup>
+      </PopupDiv>
     </Wrapper>
   );
 }

@@ -48,8 +48,6 @@ function App() {
     const pullData = async () => {
       const ts = await DataStore.query(Timeslot);
       setTs(ts);
-      console.log(ts);
-      console.log(new Date("July 4 1776 14:30"));
     };
 
     pullData();
@@ -61,7 +59,7 @@ function App() {
     [currentUser]
   );
   // console statement to test if userName was set in login component
-  console.log(`from the context stuff ${currentUser.userName}`);
+  console.log(`from the context stuff ${currentUser.userName}`); // eslint-disable-line no-console
   return (
     <UserContext.Provider value={userContextFields}>
       <BrowserRouter>

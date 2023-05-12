@@ -190,8 +190,6 @@ const ErrorMessage = styled.text`
   font-size: 16px;
   margin-top: 10px;
   margin-bottom: 10px;
-<<<<<<< HEAD
-=======
 `;
 
 const PopupDiv = styled(Modal)`
@@ -212,7 +210,6 @@ const X = styled.img`
   height: 2rem;
   padding: 2rem;
   cursor: pointer;
->>>>>>> 1d07f507fcfba0bcba35573e1a6d3627544d1610
 `;
 
 const CancelBtn = styled.button`
@@ -238,9 +235,14 @@ const SaveBtn = styled.button`
   height: 60px;
   cursor: pointer;
 `;
+const SurroundingBoxPopup = styled(Box)`
+  display: flex;
+  align-items: center;
+`;
 
 export {
   Wrapper,
+  SurroundingBoxPopup,
   Box,
   Header,
   CenteredHeader,

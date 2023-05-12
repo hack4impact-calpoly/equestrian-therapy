@@ -97,12 +97,13 @@ export default function Popup() {
     const pullData = async () => {
       const ts = await DataStore.query(Timeslot);
       setTs(ts);
-      console.log(ts);
-      console.log(new Date("July 4 1776 14:30"));
     };
 
     pullData();
   }, []);
+  const handleConfirmation = () => {
+    navigate("/timeslot-confirmation");
+  };
 
   return (
     <div>
@@ -125,8 +126,8 @@ export default function Popup() {
               <DateHeader>{formattedDate}</DateHeader>
               <Timeslots userType="rider" models={timeslots} />
               <BtnContainer>
-                <CancelBtn>Cancel</CancelBtn>
-                <SaveBtn>Save</SaveBtn>
+                <CancelBtn onClick={() => setOpen(false)}>Cancel</CancelBtn>
+                <SaveBtn onClick={handleConfirmation}>Save</SaveBtn>
               </BtnContainer>
             </RightColumn>
           </Wrapper>
