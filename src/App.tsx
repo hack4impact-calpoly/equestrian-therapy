@@ -107,7 +107,15 @@ function App() {
           <Route path="/timeslot-success" element={<TimeslotSuccess />} />
           <Route
             path="/timeslot-confirmation"
-            element={<TimeSlotConfirmation userType="rider" status="book" />}
+            element={
+              <TimeSlotConfirmation
+                userType="rider"
+                status="book"
+                timeslotID="5dc2eecb-89bc-4bbf-937c-2ab0ddbd3671"
+                userID="5bfff0a7-42aa-48f7-bccb-0fa60dd0b6d3"
+                dates={["2003-01-18", "2003-05-09"]}
+              />
+            }
           />
         </Routes>
       </BrowserRouter>
