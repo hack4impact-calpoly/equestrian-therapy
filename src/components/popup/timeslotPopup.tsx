@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Auth } from 'aws-amplify';
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { DataStore } from "aws-amplify";
@@ -7,7 +8,7 @@ import { PopupDiv, PopupBox, X, CancelBtn, SaveBtn } from "../styledComponents";
 import Monthly from "../monthlyView";
 import AptInfo from "../appointmentInfo";
 import Timeslots from "./timeslots";
-import { LazyTimeslot, Timeslot } from "../../models";
+import { LazyTimeslot, Timeslot, User } from "../../models";
 
 const TempButton = styled.button`
   position: absolute;
@@ -101,8 +102,19 @@ export default function Popup() {
 
     pullData();
   }, []);
-  const handleConfirmation = () => {
-    navigate("/timeslot-confirmation");
+  const handleConfirmation = async () => {
+    const userId = await Auth.currentUserInfo();
+    const userInfo = await DataStore.query(User, userId);
+    
+    navigate("/timeslot-confirmation", {
+      state: {
+        userInfo.userType,
+        status,
+        timeslotID,
+        userInfo.id,
+        dates
+      }
+    });
   };
 
   return (

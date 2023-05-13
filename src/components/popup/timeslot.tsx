@@ -63,9 +63,11 @@ export default function Timeslot({
   endTime,
 }: TimeslotProps) {
   const [isChecked, setIsChecked] = useState(false);
+  const dates = [];
 
-  const toggleChecked = () => {
+  const toggleChecked = (timeslotID: string) => {
     setIsChecked(!isChecked);
+    dates.push(timeslotID);
   };
   const formatTime = (time: Date) =>
     time.toLocaleTimeString([], {
@@ -81,7 +83,7 @@ export default function Timeslot({
       </TimeslotText>
       {/* </TimeBox> */}
       {userType === "volunteer" ? (
-        <ButtonToggle onClick={toggleChecked}>
+        <ButtonToggle onClick={() => toggleChecked(timeslotID)}>
           {isChecked ? (
             <CheckedImg src={Checked} alt="Checked Img" />
           ) : (
@@ -89,7 +91,7 @@ export default function Timeslot({
           )}
         </ButtonToggle>
       ) : (
-        <ButtonToggle onClick={toggleChecked}>
+        <ButtonToggle onClick={() => toggleChecked(timeslotID)}>
           {isChecked ? (
             <SliderImg src={On} alt="On Img" />
           ) : (
