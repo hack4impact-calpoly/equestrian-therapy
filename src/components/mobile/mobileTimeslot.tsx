@@ -18,7 +18,7 @@ const Text = styled.text`
 `;
 
 // width was 310px
-const Slot = styled.section`
+const Slot = styled.section<{ isBooked: boolean; isDisabled: boolean }>`
   display: flex;
   flex-direction: row;
   font-family: "Rubik", sans-serif;
@@ -31,6 +31,10 @@ const Slot = styled.section`
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   width: 80%;
   height: 53px;
+
+  // Conditional coloring for timeSlots ->
+  background-color: ${({ isBooked, isDisabled }) =>
+    isBooked ? "lightgrey" : isDisabled ? "lightblue" : "rgba(144, 191, 204, 0.7)"};
 `;
 
 const Dropdown = styled.section`
@@ -42,12 +46,16 @@ interface TimeslotProps {
   startTime: Date;
   endTime: Date;
   user: string;
+  isDisabled: boolean;
+  isBooked: boolean; 
 }
 
 export default function MobileTimeslot({
   startTime,
   endTime,
   user,
+  isDisabled,
+  isBooked,
 }: TimeslotProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   // const [user] = useState<string>();
@@ -65,7 +73,7 @@ export default function MobileTimeslot({
 
   return (
     <div>
-      <Slot>
+      <Slot isBooked={isBooked} isDisabled={isDisabled}>
         <Text>{`${formatTime(startTime)} to ${formatTime(endTime)}`}</Text>
         <Caret src={caretDown} onClick={toggleDropdown} />
       </Slot>
