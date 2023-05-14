@@ -59,25 +59,39 @@ interface TimeslotProps {
   endTime: Date;
 }
 
-const getTimeslots = async () => {
-  const timeslotInfo = await DataStore.query(TimeslotModel);
-  const tsList = (await Promise.all(timeslotInfo.map(async (ts) => {
-    const tsInfo = await DataStore.query(TimeslotModel, ts);
-    if (tsInfo?.id && tsInfo?.startTime && tsInfo?.endTime) {
-      return {
-        id: tsInfo.id,
-        startTime: tsInfo.startTime,
-        endTime: tsInfo.endTime,
-        unavailableDates: tsInfo.unavailableDates,
-      };
-    }
-    return null;
-  })))
-    .filter(Boolean)
-    .sort((a, b) => new Date(a?.startTime ?? 0).getTime() - new Date(b?.startTime ?? 0).getTime())
+// const getTimeslots = async () => {
+//   const timeslotInfo = await DataStore.query(TimeslotModel);
 
-
-};
+//   timeslotInfo
+//   .filter((ts) => {
+//     if (!ts) {
+//       return false; // filter out null or undefined timeslots
+//     }
+//     if (
+//       ts.id === null ||
+//       ts.id === undefined ||
+//       ts.id === "null" ||
+//       ts.id === "undefined" ||
+//       ts.startTime === null ||
+//       ts.startTime === undefined ||
+//       ts.startTime === "null" ||
+//       ts.startTime === "undefined" ||
+//       ts.endTime === null ||
+//       ts.endTime === undefined ||
+//       ts.endTime === "null" ||
+//       ts.endTime === "undefined"
+//     ) {
+//       return false; // filter out timeslots with null or undefined properties
+//     }
+//     return true;
+//   })
+//   .sort((a, b) => {
+//     const aStartTime = a.startTime ? new Date(a.startTime).getTime() : 0;
+//     const bStartTime = b.startTime ? new Date(b.startTime).getTime() : 0;
+//     return aStartTime - bStartTime;
+//   })
+//   return timeslotInfo;
+// };
 
 export default function Timeslot({
   userType,
@@ -91,36 +105,78 @@ export default function Timeslot({
     setIsChecked(!isChecked);
     dates.push(timeslotID);
   };
-  const formatTime = (time: Date) =>
-    time.toLocaleTimeString([], {
+  const formatTime = (time: string) => {
+    const dateTime = new Date(time);
+    dateTime.toLocaleTimeString([], {
       hour: "numeric",
       minute: "2-digit",
     });
+  };
 
-  return (
-    <Slot>
-      {/* <TimeBox> */}
-      <TimeslotText>
-        {`${formatTime(startTime)} to ${formatTime(endTime)}`}
-      </TimeslotText>
-      {/* </TimeBox> */}
-      {userType === "volunteer" ? (
-        <ButtonToggle onClick={() => toggleChecked(timeslotID)}>
-          {isChecked ? (
-            <CheckedImg src={Checked} alt="Checked Img" />
+  const getTimeslots = async () => {
+    const timeslotInfo = await DataStore.query(TimeslotModel);
+
+    const filteredTimeslots = timeslotInfo.filter((ts) => {
+      if (!ts) {
+        return false; // filter out null or undefined timeslots
+      }
+      if (
+        ts.id === null ||
+        ts.id === undefined ||
+        ts.id === "null" ||
+        ts.id === "undefined" ||
+        ts.startTime === null ||
+        ts.startTime === undefined ||
+        ts.startTime === "null" ||
+        ts.startTime === "undefined" ||
+        ts.endTime === null ||
+        ts.endTime === undefined ||
+        ts.endTime === "null" ||
+        ts.endTime === "undefined"
+      ) {
+        return false; // filter out timeslots with null or undefined properties
+      }
+      return true;
+    });
+
+    const sortedTimeslots = filteredTimeslots.sort((a, b) => {
+      const aStartTime = a.startTime ? new Date(a.startTime).getTime() : 0;
+      const bStartTime = b.startTime ? new Date(b.startTime).getTime() : 0;
+      return aStartTime - bStartTime;
+    });
+
+    const timeslotElements = sortedTimeslots.map((timeslot) => {
+      const { id, startTime, endTime } = timeslot;
+      return (
+        <Slot key={id}>
+          <TimeslotText>
+            {startTime && endTime
+              ? `${formatTime(startTime)} to ${formatTime(endTime)}`
+              : ""}
+          </TimeslotText>
+          {userType === "volunteer" ? (
+            <ButtonToggle onClick={() => toggleChecked(id)}>
+              {isChecked ? (
+                <CheckedImg src={Checked} alt="Checked Img" />
+              ) : (
+                <UnCheckedImg src={Unchecked} alt="Unchecked Img" />
+              )}
+            </ButtonToggle>
           ) : (
-            <UnCheckedImg src={Unchecked} alt="Unchecked Img" />
+            <ButtonToggle onClick={() => toggleChecked(id)}>
+              {isChecked ? (
+                <SliderImg src={On} alt="On Img" />
+              ) : (
+                <SliderImg src={Off} alt="Off Img" />
+              )}
+            </ButtonToggle>
           )}
-        </ButtonToggle>
-      ) : (
-        <ButtonToggle onClick={() => toggleChecked(timeslotID)}>
-          {isChecked ? (
-            <SliderImg src={On} alt="On Img" />
-          ) : (
-            <SliderImg src={Off} alt="Off Img" />
-          )}
-        </ButtonToggle>
-      )}
-    </Slot>
-  );
+        </Slot>
+      );
+    });
+
+    return timeslotElements;
+  };
+
+  return { getTimeslots };
 }
