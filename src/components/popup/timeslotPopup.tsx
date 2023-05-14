@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Auth } from 'aws-amplify';
+import { Auth, DataStore } from "aws-amplify";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { DataStore } from "aws-amplify";
 import x from "../../images/X.svg";
 import { PopupDiv, PopupBox, X, CancelBtn, SaveBtn } from "../styledComponents";
 import Monthly from "../monthlyView";
@@ -105,16 +104,16 @@ export default function Popup() {
   const handleConfirmation = async () => {
     const userId = await Auth.currentUserInfo();
     const userInfo = await DataStore.query(User, userId);
-    
-    navigate("/timeslot-confirmation", {
-      state: {
-        userInfo.userType,
-        status,
-        timeslotID,
-        userInfo.id,
-        dates
-      }
-    });
+
+    // navigate("/timeslot-confirmation", {
+    //   state: {
+    //     userInfo.userType,
+    //     status,
+    //     timeslotID,
+    //     userInfo.id,
+    //     dates
+    //   }
+    // });
   };
 
   return (

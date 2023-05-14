@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { DataStore } from "aws-amplify";
+import { Timeslot as TimeslotModel } from "../../models";
 import Checked from "../../images/Checked.png";
 import Unchecked from "../../images/Unchecked.png";
 import On from "../../images/OnSlider.png";
@@ -56,6 +58,26 @@ interface TimeslotProps {
   startTime: Date;
   endTime: Date;
 }
+
+const getTimeslots = async () => {
+  const timeslotInfo = await DataStore.query(TimeslotModel);
+  const tsList = (await Promise.all(timeslotInfo.map(async (ts) => {
+    const tsInfo = await DataStore.query(TimeslotModel, ts);
+    if (tsInfo?.id && tsInfo?.startTime && tsInfo?.endTime) {
+      return {
+        id: tsInfo.id,
+        startTime: tsInfo.startTime,
+        endTime: tsInfo.endTime,
+        unavailableDates: tsInfo.unavailableDates,
+      };
+    }
+    return null;
+  })))
+    .filter(Boolean)
+    .sort((a, b) => new Date(a?.startTime ?? 0).getTime() - new Date(b?.startTime ?? 0).getTime())
+
+
+};
 
 export default function Timeslot({
   userType,
