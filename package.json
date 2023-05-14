@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@aws-amplify/datastore": "^4.2.1",
+    "@aws-amplify/datastore": "^4.3.0",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@fontsource/roboto": "^4.5.8",
@@ -24,7 +24,7 @@
     "@types/node": "^16.11.47",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
-    "aws-amplify": "^5.2.0",
+    "aws-amplify": "^5.2.1",
     "fullcalendar": "^6.1.4",
     "mui": "^0.0.1",
     "react": "^18.2.0",

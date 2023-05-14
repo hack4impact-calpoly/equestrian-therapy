@@ -87,6 +87,7 @@ export default function AdminToggle({ setToggleProp }: ToggleProps) {
     // inverse the boolean state of passwordShown
     setShowAvailability(!showAvailability);
   };
+
   if (showBoth && isAdmin) {
     setToggleProp("both");
   } else if (showAvailability && !isAdmin) {

@@ -63,7 +63,7 @@ type PopupPropsTS = {
   toggleProp: string;
 };
 
-export default function Popup({ o, onData, date }: PopupProps) {
+export default function Popup({ o, onData, date, toggleProp }: any) {
   // eslint-disable-next-line
   const [open, setOpen] = useState<boolean>(o);
   const [isMobile, setIsMobile] = useState<boolean>(false);
@@ -120,8 +120,8 @@ export default function Popup({ o, onData, date }: PopupProps) {
             <LeftColumn>
               <Monthly />
               <AptHeader>Appointment Info</AptHeader>
-              <AptInfo />
-              {/* <AptInfo toggleProp={toggleProp} /> */}
+              {/* <AptInfo /> */}
+              <AptInfo toggleProp={toggleProp} />
             </LeftColumn>
             <RightColumn>
               <DateHeader>{formattedDate}</DateHeader>

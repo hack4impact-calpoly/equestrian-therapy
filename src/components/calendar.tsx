@@ -8,7 +8,6 @@ import FullCalendarRef from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 // import { Timeslot } from "../models";
 // import Monthly from "./monthlyView";
-// import Weekly from "./weeklyView";
 import logo from "../images/PETlogo2.svg";
 import Toggle from "./calendarToggle";
 import Popup from "./popup/timeslotPopup";
@@ -259,12 +258,18 @@ export default function Calendar({ userType }: WeeklyViewProps) {
         Number(String(timeslot.startTime).substring(0, 2)) >= 9 &&
         Number(String(timeslot.endTime).substring(0, 2)) <= 17
     );
+    {
+      /* add another if availability/slots toggled */
+    }
   } else if (toggles === "riders") {
     slots = slots.filter(
       (timeslot) =>
         Number(String(timeslot.startTime).substring(0, 2)) >= 10 &&
         Number(String(timeslot.endTime).substring(0, 2)) <= 14
     );
+    {
+      /* add another if availability/slots toggled */
+    }
   }
 
   console.log(`toggle is ${toggles}`);

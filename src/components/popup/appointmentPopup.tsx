@@ -39,11 +39,9 @@ const SurroundingBox = styled(Box)`
   display: flex;
   justify-content: center;
 `;
-
 type ToggleProp = {
   toggle: string;
 };
-
 export default function AppointmentPopup({ toggle }: ToggleProp) {
   const [popupShown, setPopupShown] = useState(false);
   const togglePopup = () => {
