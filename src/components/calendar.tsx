@@ -13,6 +13,7 @@ import Toggle from "./calendarToggle";
 import Popup from "./popup/timeslotPopup";
 // import { bookings } from "./booking";
 import { LazyTimeslot, Timeslot } from "../models";
+import { Booking, User } from "../models";
 // import FullCalendar from "@fullcalendar/react";
 
 const CalDiv = styled.div`
@@ -258,18 +259,43 @@ export default function Calendar({ userType }: WeeklyViewProps) {
         Number(String(timeslot.startTime).substring(0, 2)) >= 9 &&
         Number(String(timeslot.endTime).substring(0, 2)) <= 17
     );
-    {
-      /* add another if availability/slots toggled */
-    }
   } else if (toggles === "riders") {
+    const userId = "volunteer-1";
+    // add useState to get user id?
+    // const [bookings, setBookings] = useState<Booking[]>([]);
+    // const [users, setUsers] = useState<User[]>([]);
+
+    slots = slots.filter(async (timeslot) => {
+      const originalTimeslot = ts.find(
+        (tslot) => tslot.startTime === timeslot.startTime
+      );
+      if (originalTimeslot) {
+        const riderBookings = await DataStore.query(Booking, (b) =>
+          b.timeslotID("eq", originalTimeslot.id)
+        );
+        const bookedByUser = riderBookings.some(
+          (booking) => booking.userID === userId
+        );
+        return bookedByUser;
+      }
+      return (
+        Number(String(timeslot.startTime).substring(0, 2)) >= 10 &&
+        Number(String(timeslot.endTime).substring(0, 2)) <= 14
+      );
+    });
+
+    {
+      /* 
+    // just 10 - 2 filtering
     slots = slots.filter(
       (timeslot) =>
         Number(String(timeslot.startTime).substring(0, 2)) >= 10 &&
         Number(String(timeslot.endTime).substring(0, 2)) <= 14
     );
-    {
-      /* add another if availability/slots toggled */
+    */
     }
+  } else if (toggles === "availability" && userType === "volunteer") {
+    slots = slots.filter((timeslot) => {});
   }
 
   console.log(`toggle is ${toggles}`);

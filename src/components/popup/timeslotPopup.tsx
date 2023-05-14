@@ -59,9 +59,11 @@ const AptHeader = styled.h1`
   color: #1b4c5a;
 `;
 
+/*
 type PopupPropsTS = {
   toggleProp: string;
 };
+*/
 
 export default function Popup({ o, onData, date, toggleProp }: any) {
   // eslint-disable-next-line
