@@ -78,6 +78,8 @@ export default function MobileTimeslots({ userType }: TimeslotsProps) {
           startTime={timeslot.startTime}
           endTime={timeslot.endTime}
           user={userType}
+          isDisabled={false}
+          isBooked={false}
         />
       ))}
     </Slots>

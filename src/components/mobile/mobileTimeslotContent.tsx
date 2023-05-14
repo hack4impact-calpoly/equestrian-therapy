@@ -4,8 +4,8 @@ import { useState } from "react";
 import Horse from "../../images/horseRider.svg";
 import Dude from "../../images/person.svg";
 import Bookmark from "../../images/bookmark.svg";
-import OnSlide from "../../images/OnSlider.png";
-import OffSlide from "../../images/OffSlider.png";
+import OnSlide from "../../images/onslider.png";
+import OffSlide from "../../images/offslider.png";
 
 const RiderInfo = styled.div`
   display: flex;
