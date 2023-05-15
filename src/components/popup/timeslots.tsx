@@ -2,7 +2,8 @@ import React from "react";
 import styled from "styled-components";
 // import { Box } from "../styledComponents";
 import Timeslot from "./timeslot";
-import { LazyTimeslot } from "../../models";
+import { DataStore } from "aws-amplify";
+import { LazyTimeslot, Timeslot as TimeslotModel } from "../../models";
 
 const Wrapper = styled.section`
   display: flex;
@@ -23,100 +24,78 @@ const Slots = styled.div`
   font-family: "Rubik", sans-serif;
 `;
 
-let timeslots = [
-  {
-    startTime: new Date(2023, 2, 7, 9, 0),
-    endTime: new Date(2023, 2, 7, 10, 30),
-    checked: false,
-  },
-  {
-    startTime: new Date(2023, 2, 7, 9, 30),
-    endTime: new Date(2023, 2, 7, 10, 0),
-    checked: false,
-  },
-  {
-    startTime: new Date(2023, 2, 7, 10, 0),
-    endTime: new Date(2023, 2, 7, 10, 30),
-    checked: false,
-  },
-  {
-    startTime: new Date(2023, 2, 7, 10, 35),
-    endTime: new Date(2023, 2, 7, 11, 5),
-    checked: false,
-  },
-  {
-    startTime: new Date(2023, 2, 7, 13, 0),
-    endTime: new Date(2023, 2, 7, 14, 0),
-    checked: false,
-  },
-  {
-    startTime: new Date(2023, 2, 7, 14, 0),
-    endTime: new Date(2023, 2, 7, 15, 0),
-    checked: false,
-  },
-  {
-    startTime: new Date(2023, 2, 7, 15, 0),
-    endTime: new Date(2023, 2, 7, 16, 0),
-    checked: false,
-  },
-  {
-    startTime: new Date(2023, 2, 7, 16, 0),
-    endTime: new Date(2023, 2, 7, 17, 0),
-    checked: false,
-  },
-];
-
-interface TimeslotsProps {
-  userType: "volunteer" | "rider";
-  models: LazyTimeslot[] | "nothing";
-}
-
-export default function Timeslots({ userType, models }: TimeslotsProps) {
+export default function Timeslots(userType: "volunteer" | "rider") {
   // console.log(models);
-  if (models !== "nothing") {
-    timeslots = [];
-    models.forEach((model) => {
-      if (
-        typeof model.startTime === "string" &&
-        typeof model.endTime === "string"
-      ) {
-        timeslots.push({
-          startTime: new Date(`July 4 1776 ${model.startTime}`),
-          endTime: new Date(`July 4 1776 ${model.endTime}`),
-          checked: false,
-        });
-      }
-    });
-    // console.log(timeslots);
+  let timeslotInfo: LazyTimeslot[] = [];
+  async function getTsData() {
+    timeslotInfo = await DataStore.query(TimeslotModel);
+    timeslotInfo
+      .filter((ts) => {
+        if (!ts) {
+          return false; // filter out null or undefined timeslots
+        }
+        if (
+          ts.id === null ||
+          ts.id === undefined ||
+          ts.id === "null" ||
+          ts.id === "undefined" ||
+          ts.startTime === null ||
+          ts.startTime === undefined ||
+          ts.startTime === "null" ||
+          ts.startTime === "undefined" ||
+          ts.endTime === null ||
+          ts.endTime === undefined ||
+          ts.endTime === "null" ||
+          ts.endTime === "undefined"
+        ) {
+          return false; // filter out timeslots with null or undefined properties
+        }
+        return true;
+      })
+      .filter((ts) => filterTimeSlots(userType === "volunteer", ts))
+      .sort((a, b) => {
+        const aStartTime = a.startTime ? new Date(a.startTime).getTime() : -1;
+        const bStartTime = b.startTime ? new Date(b.startTime).getTime() : -1;
+        return aStartTime - bStartTime;
+      })
+      .map((timeslot) => {
+        if (
+          timeslot.startTime !== undefined &&
+          timeslot.startTime !== null &&
+          timeslot.endTime !== undefined &&
+          timeslot.endTime !== null
+        ) {
+          return (
+            <Timeslot
+              userType={userType}
+              startTime={timeslot.startTime.toString()}
+              endTime={timeslot.endTime}
+            />
+          );
+        } else {
+          throw new Error("StartTime is null or undefined");
+        }
+      });
+    return timeslotInfo;
   }
-  function filterTimeSlots(
-    isVolunteers: boolean,
-    ts: {
-      startTime: Date;
-      endTime: Date;
-      checked: boolean;
+
+  function filterTimeSlots(isVolunteers: boolean, ts: LazyTimeslot) {
+    if (!ts.startTime || !ts.endTime) {
+      return false; // filter out timeslots with null or undefined start or end times
     }
-  ) {
+
+    const startHours = new Date(ts.startTime).getHours();
+    const endHours = new Date(ts.endTime).getHours();
+
     if (isVolunteers) {
-      return ts.startTime.getHours() >= 9 && ts.endTime.getHours() <= 17;
+      return startHours >= 9 && endHours <= 17;
     }
-    return ts.startTime.getHours() >= 10 && ts.endTime.getHours() <= 14;
+    return startHours >= 10 && endHours <= 14;
   }
 
   return (
     <Wrapper>
-      <Slots>
-        {timeslots
-          .filter((ts) => filterTimeSlots(userType === "volunteer", ts))
-          .sort((a, b) => (a.startTime < b.startTime ? -1 : 1))
-          .map((timeslot) => (
-            <Timeslot
-              userType={userType}
-              startTime={timeslot.startTime}
-              endTime={timeslot.endTime}
-            />
-          ))}
-      </Slots>
+      <Slots>{getTsData()}</Slots>
     </Wrapper>
   );
 }
