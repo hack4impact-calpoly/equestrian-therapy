@@ -5,6 +5,7 @@ import { DataStore } from "aws-amplify";
 import { Modal } from "@mui/material";
 import warning from "../../images/warning.svg";
 import { Timeslot, User, Booking } from "../../models";
+import { checkedLst, uncheckedLst } from "./timeslot";
 import {
   Wrapper,
   SurroundingBoxPopup,
@@ -16,8 +17,6 @@ import {
 
 export type TimeSlotProps = {
   userType: String;
-  status: String;
-  timeslotIDs: string[];
   userID: string;
   date: string;
 };
@@ -47,7 +46,7 @@ const CancelButton = styled(Button)`
 
 async function addUnavailability(ids: string[], unavailableDate: string) {
   try {
-    for (const id of ids) {
+    ids.forEach(async (id) => {
       const original = await DataStore.query(Timeslot, id);
       if (
         original !== null &&
@@ -66,23 +65,19 @@ async function addUnavailability(ids: string[], unavailableDate: string) {
           );
         }
       }
-    }
+    });
   } catch (error: unknown) {
     if (error instanceof Error) {
-      console.log("An error occurred: ", error.message);
+      console.log("An error occurred: ", error.message); // eslint-disable-line no-console
     }
   }
 }
 
 async function deleteUnavailability(ids: string[], availableDate: string) {
   try {
-    for (const id of ids) {
+    ids.forEach(async (id) => {
       const original = await DataStore.query(Timeslot, id);
-      if (
-        original !== null &&
-        original !== undefined &&
-        Array.isArray(original.unavailableDates)
-      ) {
+      if (original && Array.isArray(original.unavailableDates)) {
         const date = new Date(availableDate).toISOString().split("T")[0];
 
         const updatedList = original.unavailableDates.filter((dateString) => {
@@ -92,13 +87,14 @@ async function deleteUnavailability(ids: string[], availableDate: string) {
           }
           return false;
         });
+
         await DataStore.save(
           Timeslot.copyOf(original, (updated) => {
             updated.unavailableDates = updatedList; // eslint-disable-line no-param-reassign
           })
         );
       }
-    }
+    });
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.log("An error occurred: ", error.message); // eslint-disable-line no-console
@@ -120,7 +116,7 @@ async function addRVBooking(
     ) {
       const isoDate = new Date(bookedDate).toISOString().split("T")[0];
       const descriptionStr: string = `User: ${userID} Booked Time: ${isoDate}`;
-      for (const TimeslotID of TimeslotIDs) {
+      TimeslotIDs.forEach(async (TimeslotID) => {
         const booking = new Booking({
           title: "New Booking -- Volunteer",
           date: isoDate,
@@ -129,7 +125,7 @@ async function addRVBooking(
           userID,
         });
         await DataStore.save(booking);
-      }
+      });
     } else if (
       original !== null &&
       original !== undefined &&
@@ -157,8 +153,7 @@ async function addRVBooking(
 
 async function deleteRVBooking(
   TimeslotIDs: string[], // which time they want to cancel
-  userID: string,
-  cancelDate: string // can cancel multiple times/date
+  userID: string
 ) {
   /*
   go through entire booking table, find the booking id that matches
@@ -166,13 +161,13 @@ async function deleteRVBooking(
    */
   try {
     const BookingTable = await DataStore.query(Booking);
-    for (const TimeslotID of TimeslotIDs) {
+    TimeslotIDs.forEach((TimeslotID) => {
       BookingTable.forEach((booking) => {
         if (booking.userID === userID && booking.timeslotID === TimeslotID) {
           DataStore.delete(booking);
         }
       });
-    }
+    });
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.log("An error occurred: ", error.message); // eslint-disable-line no-console
@@ -181,8 +176,6 @@ async function deleteRVBooking(
 }
 export default function TimeSlotConfirmation({
   userType,
-  status = "",
-  timeslotIDs,
   userID,
   date,
 }: TimeSlotProps) {
@@ -190,13 +183,13 @@ export default function TimeSlotConfirmation({
   const navigate = useNavigate();
 
   const handleConfirmationAdmin = () => {
-    addUnavailability(timeslotIDs, date); // YYYY-MM-DD
-    deleteUnavailability(timeslotIDs, date); // YYYY-MM-DD
+    addUnavailability(uncheckedLst, date); // YYYY-MM-DD
+    deleteUnavailability(checkedLst, date); // YYYY-MM-DD
     navigate("/timeslot-success");
   };
 
   const handleConfirmationRV = () => {
-    addRVBooking(timeslotIDs, userID, date);
+    addRVBooking(checkedLst, userID, date);
     navigate("/timeslot-success");
   };
 
@@ -205,7 +198,7 @@ export default function TimeSlotConfirmation({
   };
 
   const handleBookingCancel = () => {
-    deleteRVBooking(timeslotIDs, userID, date);
+    deleteRVBooking(uncheckedLst, userID);
     navigate("/timeslot-success");
   };
   return (
@@ -232,7 +225,7 @@ export default function TimeSlotConfirmation({
               </Row>
             </div>
           )}
-          {userType !== "admin" && status === "cancel" && (
+          {userType !== "admin" && uncheckedLst.length !== 0 && (
             <div>
               <Warning src={warning} />
               <Header>Confirm cancellation?</Header>
@@ -248,7 +241,7 @@ export default function TimeSlotConfirmation({
               </Row>
             </div>
           )}
-          {userType !== "admin" && status === "book" && (
+          {userType !== "admin" && checkedLst.length !== 0 && (
             <div>
               <Warning src={warning} />
               <Header>Confirm booking?</Header>

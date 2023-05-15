@@ -109,7 +109,6 @@ export default function Popup() {
     navigate("/timeslot-confirmation", {
       state: {
         userType: userInfo?.userType,
-        status: status,
         timeslotID: checkedLst,
         userID: userInfo?.id,
         dates: [],
@@ -136,7 +135,7 @@ export default function Popup() {
             </LeftColumn>
             <RightColumn>
               <DateHeader>{formattedDate}</DateHeader>
-              <Timeslots userType="rider"/>
+              <Timeslots userType="rider" />
               <BtnContainer>
                 <CancelBtn onClick={() => setOpen(false)}>Cancel</CancelBtn>
                 <SaveBtn onClick={handleConfirmation}>Save</SaveBtn>

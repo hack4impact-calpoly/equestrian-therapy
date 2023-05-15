@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
-import { Amplify, DataStore } from "aws-amplify";
-// import { DataStore } from "@aws-amplify/datastore";
-import { LazyTimeslot, Timeslot } from "./models";
+import { Amplify } from "aws-amplify";
 import awsconfig from "./aws-exports";
 import Success from "./components/authentication/success";
 import ResetPassword from "./components/authentication/resetPassword";
@@ -32,7 +30,7 @@ function App() {
   const [day, setDayProp] = useState<string>();
   const [month, setMonthProp] = useState<string>();
   const [weekday, setWeekdayProp] = useState<string>();
-  const [timeslots, setTs] = useState<LazyTimeslot[]>([]);
+  // const [timeslots, setTs] = useState<LazyTimeslot[]>([]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -44,14 +42,14 @@ function App() {
   }, []);
   // added additional attributes to the calendarmobile component for props
 
-  useEffect(() => {
-    const pullData = async () => {
-      const ts = await DataStore.query(Timeslot);
-      setTs(ts);
-    };
+  // useEffect(() => {
+  //   const pullData = async () => {
+  //     const ts = await DataStore.query(Timeslot);
+  //     setTs(ts);
+  //   };
 
-    pullData();
-  }, []);
+  //   pullData();
+  // }, []);
   // setting up context
   const [currentUser, setUser] = useState({} as User);
   const userContextFields = useMemo(
@@ -107,10 +105,8 @@ function App() {
             element={
               <TimeSlotConfirmation
                 userType="rider"
-                status="book"
-                timeslotID="5dc2eecb-89bc-4bbf-937c-2ab0ddbd3671"
                 userID="5bfff0a7-42aa-48f7-bccb-0fa60dd0b6d3"
-                dates={["2003-01-18", "2003-05-09"]}
+                date="2003-01-18"
               />
             }
           />

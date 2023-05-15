@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Checked from "../../images/Checked.png";
 import Unchecked from "../../images/Unchecked.png";
@@ -59,6 +59,7 @@ interface TimeslotProps {
 }
 
 export const checkedLst: string[] = [];
+export const uncheckedLst: string[] = [];
 
 export default function Timeslot({
   userType,
@@ -72,14 +73,20 @@ export default function Timeslot({
   };
   const formatTime = (time: string) => {
     const dateTime = new Date(time);
-    dateTime.toLocaleTimeString([], {
+    return dateTime.toLocaleTimeString([], {
       hour: "numeric",
       minute: "2-digit",
     });
   };
-  if (isChecked) {
-    checkedLst.push(tsID);
-  }
+  useEffect(() => {
+    if (isChecked) {
+      checkedLst.push(tsID);
+      uncheckedLst.splice(uncheckedLst.indexOf(tsID), 1);
+    } else {
+      uncheckedLst.push(tsID);
+      checkedLst.splice(checkedLst.indexOf(tsID), 1);
+    }
+  }, [isChecked, tsID]);
 
   return (
     <Slot>
