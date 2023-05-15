@@ -8,6 +8,7 @@ import FullCalendarRef from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 // import { Timeslot } from "../models";
 // import Monthly from "./monthlyView";
+// import Weekly from "./weeklyView";
 import logo from "../images/PETlogo2.svg";
 import Toggle from "./calendarToggle";
 import Popup from "./popup/timeslotPopup";
@@ -208,6 +209,8 @@ export default function Calendar({ userType }: WeeklyViewProps) {
   const calRef = useRef<FullCalendarRef>(null);
   const [toggles, setToggle] = useState<string>("");
   const [ts, setTs] = useState<LazyTimeslot[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [user, setUser] = useState<User[]>([]);
 
   console.log("setdate: ", date);
   // const tileDisabled = (thedate: any) => thedate < new Date();
@@ -253,6 +256,7 @@ export default function Calendar({ userType }: WeeklyViewProps) {
       textColor: "black",
     };
   });
+  // console.log(Number(String(slots[0].startTime).substring(0, 2)));
   if (toggles === "volunteers") {
     slots = slots.filter(
       (timeslot) =>
@@ -260,42 +264,11 @@ export default function Calendar({ userType }: WeeklyViewProps) {
         Number(String(timeslot.endTime).substring(0, 2)) <= 17
     );
   } else if (toggles === "riders") {
-    const userId = "volunteer-1";
-    // add useState to get user id?
-    // const [bookings, setBookings] = useState<Booking[]>([]);
-    // const [users, setUsers] = useState<User[]>([]);
-
-    slots = slots.filter(async (timeslot) => {
-      const originalTimeslot = ts.find(
-        (tslot) => tslot.startTime === timeslot.startTime
-      );
-      if (originalTimeslot) {
-        const riderBookings = await DataStore.query(Booking, (b) =>
-          b.timeslotID("eq", originalTimeslot.id)
-        );
-        const bookedByUser = riderBookings.some(
-          (booking) => booking.userID === userId
-        );
-        return bookedByUser;
-      }
-      return (
-        Number(String(timeslot.startTime).substring(0, 2)) >= 10 &&
-        Number(String(timeslot.endTime).substring(0, 2)) <= 14
-      );
-    });
-
-    {
-      /* 
-    // just 10 - 2 filtering
     slots = slots.filter(
       (timeslot) =>
         Number(String(timeslot.startTime).substring(0, 2)) >= 10 &&
         Number(String(timeslot.endTime).substring(0, 2)) <= 14
     );
-    */
-    }
-  } else if (toggles === "availability" && userType === "volunteer") {
-    slots = slots.filter((timeslot) => {});
   }
 
   console.log(`toggle is ${toggles}`);

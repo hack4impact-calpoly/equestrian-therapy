@@ -94,10 +94,14 @@ export default function AdminToggle({ setToggleProp }: ToggleProps) {
     setToggleProp("availability");
   } else if (!showAvailability && !isAdmin) {
     setToggleProp("slots");
-  } else if (showRiders) {
-    setToggleProp("riders");
-  } else if (showVolunteers) {
-    setToggleProp("volunteers");
+  } else if (showRiders && showAvailability) {
+    setToggleProp("riders-availability");
+  } else if (showVolunteers && showAvailability) {
+    setToggleProp("volunteers-availability");
+  } else if (showRiders && !showAvailability) {
+    setToggleProp("riders-my-slots");
+  } else if (showVolunteers && !showAvailability) {
+    setToggleProp("volunteers-my-slots");
   } else {
     setToggleProp("none");
   }
