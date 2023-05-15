@@ -6,9 +6,9 @@ import MonthCalendar from "react-calendar";
 import WeekCalendar from "@fullcalendar/react";
 import FullCalendarRef from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
-// import { Timeslot } from "../models";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import interactionPlugin from "@fullcalendar/interaction";
 // import Monthly from "./monthlyView";
-// import Weekly from "./weeklyView";
 import logo from "../images/PETlogo2.svg";
 import Toggle from "./calendarToggle";
 import Popup from "./popup/timeslotPopup";
@@ -209,8 +209,8 @@ export default function Calendar({ userType }: WeeklyViewProps) {
   const calRef = useRef<FullCalendarRef>(null);
   const [toggles, setToggle] = useState<string>("");
   const [ts, setTs] = useState<LazyTimeslot[]>([]);
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [user, setUser] = useState<User[]>([]);
+  const [popup, setPopup] = useState(false);
+  const [popupDate, setPopupDate] = useState<Date>(new Date());
 
   console.log("setdate: ", date);
   // const tileDisabled = (thedate: any) => thedate < new Date();
@@ -220,11 +220,19 @@ export default function Calendar({ userType }: WeeklyViewProps) {
       const models = await DataStore.query(Timeslot);
       console.log(models);
       setTs(models);
-      console.log(new Date("July 4 1776 14:30"));
     };
-
     pullData();
   }, []);
+
+  const handleEventClick = (eventClickInfo: any) => {
+    setPopupDate(eventClickInfo.event.start);
+    setPopup(true);
+  };
+
+  const handleChildData = () => {
+    setPopup(false);
+  };
+
   console.log(ts.length);
 
   let slots = ts.map((timeslot: any) => {
@@ -256,7 +264,6 @@ export default function Calendar({ userType }: WeeklyViewProps) {
       textColor: "black",
     };
   });
-  // console.log(Number(String(slots[0].startTime).substring(0, 2)));
   if (toggles === "volunteers") {
     slots = slots.filter(
       (timeslot) =>
@@ -321,10 +328,16 @@ export default function Calendar({ userType }: WeeklyViewProps) {
                 console.log("date in weekCal: ", date);
               }}
             />
+            <Popup
+              o={popup}
+              onData={handleChildData}
+              date={popupDate}
+              toggleProp={toggles!}
+            />
           </CalDiv>
         </RightColumn>
       </Wrapper>
-      <Popup toggleProp={toggles!} />
+      {/* <Popup  /> */}
     </div>
   );
 }

@@ -59,13 +59,14 @@ const AptHeader = styled.h1`
   color: #1b4c5a;
 `;
 
-/*
-type PopupPropsTS = {
+interface PopupProps {
+  o: boolean;
+  onData: () => void;
+  date: Date;
   toggleProp: string;
-};
-*/
+}
 
-export default function Popup({ o, onData, date, toggleProp }: any) {
+export default function Popup({ o, onData, date, toggleProp }: PopupProps) {
   // eslint-disable-next-line
   const [open, setOpen] = useState<boolean>(o);
   const [isMobile, setIsMobile] = useState<boolean>(false);
@@ -122,7 +123,6 @@ export default function Popup({ o, onData, date, toggleProp }: any) {
             <LeftColumn>
               <Monthly />
               <AptHeader>Appointment Info</AptHeader>
-              {/* <AptInfo /> */}
               <AptInfo toggleProp={toggleProp} />
             </LeftColumn>
             <RightColumn>
