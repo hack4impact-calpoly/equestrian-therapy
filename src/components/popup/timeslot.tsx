@@ -52,17 +52,19 @@ const TimeslotText = styled.p`
 `;
 
 interface TimeslotProps {
-  userType: "volunteer" | "rider" | "admin";
+  userType: string;
   startTime: string;
   endTime: string;
+  tsID: string;
 }
 
-export const checkedLst = [];
+export const checkedLst: string[] = [];
 
 export default function Timeslot({
   userType,
   startTime,
   endTime,
+  tsID,
 }: TimeslotProps) {
   const [isChecked, setIsChecked] = useState(false);
   const toggleChecked = () => {
@@ -75,6 +77,9 @@ export default function Timeslot({
       minute: "2-digit",
     });
   };
+  if (isChecked) {
+    checkedLst.push(tsID);
+  }
 
   return (
     <Slot>
@@ -103,4 +108,3 @@ export default function Timeslot({
     </Slot>
   );
 }
-

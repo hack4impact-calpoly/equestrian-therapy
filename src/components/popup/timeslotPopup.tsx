@@ -8,6 +8,7 @@ import Monthly from "../monthlyView";
 import AptInfo from "../appointmentInfo";
 import Timeslots from "./timeslots";
 import { LazyTimeslot, Timeslot, User } from "../../models";
+import { checkedLst } from "./timeslot";
 
 const TempButton = styled.button`
   position: absolute;
@@ -105,15 +106,15 @@ export default function Popup() {
     const userId = await Auth.currentUserInfo();
     const userInfo = await DataStore.query(User, userId);
 
-    // navigate("/timeslot-confirmation", {
-    //   state: {
-    //     userInfo.userType,
-    //     status,
-    //     timeslotID,
-    //     userInfo.id,
-    //     dates
-    //   }
-    // });
+    navigate("/timeslot-confirmation", {
+      state: {
+        userType: userInfo?.userType,
+        status: status,
+        timeslotID: checkedLst,
+        userID: userInfo?.id,
+        dates: [],
+      },
+    });
   };
 
   return (
@@ -135,7 +136,7 @@ export default function Popup() {
             </LeftColumn>
             <RightColumn>
               <DateHeader>{formattedDate}</DateHeader>
-              <Timeslots userType="rider" models={timeslots} />
+              <Timeslots userType="rider"/>
               <BtnContainer>
                 <CancelBtn onClick={() => setOpen(false)}>Cancel</CancelBtn>
                 <SaveBtn onClick={handleConfirmation}>Save</SaveBtn>

@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 // import { Box } from "../styledComponents";
-import Timeslot from "./timeslot";
 import { DataStore } from "aws-amplify";
+import Timeslot from "./timeslot";
 import { LazyTimeslot, Timeslot as TimeslotModel } from "../../models";
 
 const Wrapper = styled.section`
@@ -23,61 +23,19 @@ const Slots = styled.div`
   height: 100%;
   font-family: "Rubik", sans-serif;
 `;
+export type TimeSlotProps = {
+  userType: string;
+};
 
-export default function Timeslots(userType: "volunteer" | "rider") {
+export default function Timeslots({ userType }: TimeSlotProps) {
   // console.log(models);
-  let timeslotInfo: LazyTimeslot[] = [];
+  const [timeslotInfo, setTimeslotInfo] = useState<LazyTimeslot[]>([]);
   async function getTsData() {
-    timeslotInfo = await DataStore.query(TimeslotModel);
-    timeslotInfo
-      .filter((ts) => {
-        if (!ts) {
-          return false; // filter out null or undefined timeslots
-        }
-        if (
-          ts.id === null ||
-          ts.id === undefined ||
-          ts.id === "null" ||
-          ts.id === "undefined" ||
-          ts.startTime === null ||
-          ts.startTime === undefined ||
-          ts.startTime === "null" ||
-          ts.startTime === "undefined" ||
-          ts.endTime === null ||
-          ts.endTime === undefined ||
-          ts.endTime === "null" ||
-          ts.endTime === "undefined"
-        ) {
-          return false; // filter out timeslots with null or undefined properties
-        }
-        return true;
-      })
-      .filter((ts) => filterTimeSlots(userType === "volunteer", ts))
-      .sort((a, b) => {
-        const aStartTime = a.startTime ? new Date(a.startTime).getTime() : -1;
-        const bStartTime = b.startTime ? new Date(b.startTime).getTime() : -1;
-        return aStartTime - bStartTime;
-      })
-      .map((timeslot) => {
-        if (
-          timeslot.startTime !== undefined &&
-          timeslot.startTime !== null &&
-          timeslot.endTime !== undefined &&
-          timeslot.endTime !== null
-        ) {
-          return (
-            <Timeslot
-              userType={userType}
-              startTime={timeslot.startTime.toString()}
-              endTime={timeslot.endTime}
-            />
-          );
-        } else {
-          throw new Error("StartTime is null or undefined");
-        }
-      });
-    return timeslotInfo;
+    setTimeslotInfo(await DataStore.query(TimeslotModel));
   }
+  useEffect(() => {
+    getTsData();
+  }, [userType]);
 
   function filterTimeSlots(isVolunteers: boolean, ts: LazyTimeslot) {
     if (!ts.startTime || !ts.endTime) {
@@ -95,7 +53,59 @@ export default function Timeslots(userType: "volunteer" | "rider") {
 
   return (
     <Wrapper>
-      <Slots>{getTsData()}</Slots>
+      <Slots>
+        {timeslotInfo
+          .filter((ts) => {
+            if (!ts) {
+              return false; // filter out null or undefined timeslots
+            }
+            if (
+              ts.id === null ||
+              ts.id === undefined ||
+              ts.id === "null" ||
+              ts.id === "undefined" ||
+              ts.startTime === null ||
+              ts.startTime === undefined ||
+              ts.startTime === "null" ||
+              ts.startTime === "undefined" ||
+              ts.endTime === null ||
+              ts.endTime === undefined ||
+              ts.endTime === "null" ||
+              ts.endTime === "undefined"
+            ) {
+              return false; // filter out timeslots with null or undefined properties
+            }
+            return true;
+          })
+          .filter((ts) => filterTimeSlots(userType === "volunteer", ts))
+          .sort((a, b) => {
+            const aStartTime = a.startTime
+              ? new Date(a.startTime).getTime()
+              : -1;
+            const bStartTime = b.startTime
+              ? new Date(b.startTime).getTime()
+              : -1;
+            return aStartTime - bStartTime;
+          })
+          .map((timeslot) => {
+            if (
+              timeslot.startTime !== undefined &&
+              timeslot.startTime !== null &&
+              timeslot.endTime !== undefined &&
+              timeslot.endTime !== null
+            ) {
+              return (
+                <Timeslot
+                  userType={userType}
+                  startTime={timeslot.startTime.toString()}
+                  endTime={timeslot.endTime}
+                  tsID={timeslot.id}
+                />
+              );
+            }
+            throw new Error("StartTime is null or undefined");
+          })}
+      </Slots>
     </Wrapper>
   );
 }

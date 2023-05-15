@@ -96,10 +96,7 @@ function App() {
             element={<ResetPassword email={email!} />}
           />
           <Route path="/success/:id" element={<Success />} />
-          <Route
-            path="/timeslots"
-            element={<Timeslots userType="rider" models={timeslots} />}
-          />
+          <Route path="/timeslots" element={<Timeslots userType="rider" />} />
           <Route
             path="/mobile-timeslots"
             element={<MobileTimeslots userType="rider" />}

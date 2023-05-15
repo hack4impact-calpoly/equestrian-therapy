@@ -17,9 +17,9 @@ import {
 export type TimeSlotProps = {
   userType: String;
   status: String;
-  timeslotID: string;
+  timeslotIDs: string[];
   userID: string;
-  dates: string[];
+  date: string;
 };
 const PopupDiv = styled(Modal)`
   display: flex;
@@ -190,21 +190,21 @@ async function deleteRVBooking(
 export default function TimeSlotConfirmation({
   userType,
   status = "",
-  timeslotID,
+  timeslotIDs,
   userID,
-  dates,
+  date,
 }: TimeSlotProps) {
   const open = true;
   const navigate = useNavigate();
 
   const handleConfirmationAdmin = () => {
-    addUnavailability(timeslotID, dates); // YYYY-MM-DD
-    deleteUnavailability(timeslotID, dates); // YYYY-MM-DD
+    addUnavailability(timeslotIDs, date); // YYYY-MM-DD
+    deleteUnavailability(timeslotIDs, date); // YYYY-MM-DD
     navigate("/timeslot-success");
   };
 
   const handleConfirmationRV = () => {
-    addRVBooking(timeslotID, userID, dates);
+    addRVBooking(timeslotIDs, userID, date);
     navigate("/timeslot-success");
   };
 
@@ -213,7 +213,7 @@ export default function TimeSlotConfirmation({
   };
 
   const handleBookingCancel = () => {
-    deleteRVBooking(timeslotID, userID, dates);
+    deleteRVBooking(timeslotIDs, userID, date);
     navigate("/timeslot-success");
   };
   return (
