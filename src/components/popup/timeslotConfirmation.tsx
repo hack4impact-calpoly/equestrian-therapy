@@ -45,62 +45,59 @@ const CancelButton = styled(Button)`
   margin-right: 1rem;
 `;
 
-async function addUnavailability(id: string, unavailableDate: string[]) {
+async function addUnavailability(ids: string[], unavailableDate: string) {
   try {
-    const original = await DataStore.query(Timeslot, id);
-    if (
-      original !== null &&
-      original !== undefined &&
-      Array.isArray(original.unavailableDates) &&
-      Array.isArray(unavailableDate)
-    ) {
-      const updatedList = new Set(original.unavailableDates);
-      const isoDates = new Set(
-        unavailableDate.map((dateString) => {
-          const date = new Date(dateString);
-          return date.toISOString().split("T")[0];
-        })
-      );
-      isoDates.forEach((isoDate) => {
-        updatedList.add(isoDate);
-      });
-      await DataStore.save(
-        Timeslot.copyOf(original, (updated) => {
-          updated.unavailableDates = Array.from(updatedList); // eslint-disable-line no-param-reassign
-        })
-      );
+    for (const id of ids) {
+      const original = await DataStore.query(Timeslot, id);
+      if (
+        original !== null &&
+        original !== undefined &&
+        Array.isArray(original.unavailableDates)
+      ) {
+        const isoDate = new Date(unavailableDate).toISOString().split("T")[0];
+        const updatedList = new Set(original.unavailableDates);
+        if (!updatedList.has(isoDate)) {
+          updatedList.add(isoDate);
+          await DataStore.save(
+            Timeslot.copyOf(original, (updated) => {
+              // eslint-disable-next-line no-param-reassign
+              updated.unavailableDates = Array.from(updatedList);
+            })
+          );
+        }
+      }
     }
   } catch (error: unknown) {
     if (error instanceof Error) {
-      console.log("An error occurred: ", error.message); // eslint-disable-line no-console
+      console.log("An error occurred: ", error.message);
     }
   }
 }
 
-async function deleteUnavailability(id: string, availableDate: string[]) {
+async function deleteUnavailability(ids: string[], availableDate: string) {
   try {
-    const original = await DataStore.query(Timeslot, id);
-    if (
-      original !== null &&
-      original !== undefined &&
-      Array.isArray(original.unavailableDates)
-    ) {
-      const isoDates = availableDate.map((dateString) => {
-        const date = new Date(dateString);
-        return date.toISOString().split("T")[0];
-      });
-      const updatedList = original.unavailableDates.filter((dateString) => {
-        if (dateString !== null) {
-          const isoDate = new Date(dateString).toISOString().split("T")[0];
-          return !isoDates.includes(isoDate);
-        }
-        return false;
-      });
-      await DataStore.save(
-        Timeslot.copyOf(original, (updated) => {
-          updated.unavailableDates = updatedList; // eslint-disable-line no-param-reassign
-        })
-      );
+    for (const id of ids) {
+      const original = await DataStore.query(Timeslot, id);
+      if (
+        original !== null &&
+        original !== undefined &&
+        Array.isArray(original.unavailableDates)
+      ) {
+        const date = new Date(availableDate).toISOString().split("T")[0];
+
+        const updatedList = original.unavailableDates.filter((dateString) => {
+          if (dateString !== null) {
+            const isoDate = new Date(dateString).toISOString().split("T")[0];
+            return date !== isoDate;
+          }
+          return false;
+        });
+        await DataStore.save(
+          Timeslot.copyOf(original, (updated) => {
+            updated.unavailableDates = updatedList; // eslint-disable-line no-param-reassign
+          })
+        );
+      }
     }
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -110,9 +107,9 @@ async function deleteUnavailability(id: string, availableDate: string[]) {
 }
 
 async function addRVBooking(
-  TimeslotID: string,
+  TimeslotIDs: string[],
   userID: string,
-  bookedDates: string[]
+  bookedDate: string
 ) {
   try {
     const original = await DataStore.query(User, userID);
@@ -121,10 +118,9 @@ async function addRVBooking(
       original !== undefined &&
       original.userType === "Volunteer"
     ) {
-      const promises = [];
-      for (let i = 0; i < bookedDates.length; i++) {
-        const isoDate = new Date(bookedDates[i]).toISOString().split("T")[0];
-        const descriptionStr: string = `User: ${userID} Booked Time: ${isoDate}`;
+      const isoDate = new Date(bookedDate).toISOString().split("T")[0];
+      const descriptionStr: string = `User: ${userID} Booked Time: ${isoDate}`;
+      for (const TimeslotID of TimeslotIDs) {
         const booking = new Booking({
           title: "New Booking -- Volunteer",
           date: isoDate,
@@ -132,22 +128,21 @@ async function addRVBooking(
           timeslotID: TimeslotID,
           userID,
         });
-        promises.push(DataStore.save(booking));
+        await DataStore.save(booking);
       }
-      await Promise.all(promises);
     } else if (
       original !== null &&
       original !== undefined &&
       original.userType === "Rider"
     ) {
-      if (bookedDates.length === 1) {
-        const isoDate = new Date(bookedDates[0]).toISOString().split("T")[0];
+      if (TimeslotIDs.length === 1) {
+        const isoDate = new Date(bookedDate).toISOString().split("T")[0];
         const descriptionStr: string = `User: ${userID} Booked Time: ${isoDate}`;
         const booking = new Booking({
-          title: "New Booking",
+          title: "New Booking -- Rider",
           date: isoDate,
           description: descriptionStr,
-          timeslotID: TimeslotID,
+          timeslotID: TimeslotIDs[0],
           userID,
         });
         await DataStore.save(booking);
@@ -161,9 +156,9 @@ async function addRVBooking(
 }
 
 async function deleteRVBooking(
-  TimeslotID: string, // which day they want to cancel
+  TimeslotIDs: string[], // which time they want to cancel
   userID: string,
-  cancelDates: string[] // can cancel multiple dates
+  cancelDate: string // can cancel multiple times/date
 ) {
   /*
   go through entire booking table, find the booking id that matches
@@ -171,16 +166,13 @@ async function deleteRVBooking(
    */
   try {
     const BookingTable = await DataStore.query(Booking);
-    BookingTable.forEach((booking) => {
-      if (booking.userID === userID && booking.timeslotID === TimeslotID) {
-        cancelDates.forEach((date) => {
-          const isoDate = new Date(date).toISOString().split("T")[0];
-          if (isoDate === booking.date) {
-            DataStore.delete(booking);
-          }
-        });
-      }
-    });
+    for (const TimeslotID of TimeslotIDs) {
+      BookingTable.forEach((booking) => {
+        if (booking.userID === userID && booking.timeslotID === TimeslotID) {
+          DataStore.delete(booking);
+        }
+      });
+    }
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.log("An error occurred: ", error.message); // eslint-disable-line no-console
