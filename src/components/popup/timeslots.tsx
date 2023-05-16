@@ -23,11 +23,11 @@ const Slots = styled.div`
   height: 100%;
   font-family: "Rubik", sans-serif;
 `;
-export type TimeSlotProps = {
-  userType: string;
-};
+interface TimeslotsProps {
+  userType: "volunteer" | "rider";
+}
 
-export default function Timeslots({ userType }: TimeSlotProps) {
+export default function Timeslots({ userType }: TimeslotsProps) {
   // console.log(models);
   const [timeslotInfo, setTimeslotInfo] = useState<LazyTimeslot[]>([]);
   async function getTsData() {

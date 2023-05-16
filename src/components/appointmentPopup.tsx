@@ -20,8 +20,10 @@ const Header = styled.h1`
   background: white;
   color: #1b4c5a;
 `;
-
-export default function AppointmentPopup() {
+type PopupProps = {
+  toggle: string;
+};
+export default function AppointmentPopup({ toggle }: PopupProps) {
   const [popupShown, setPopupShown] = useState(false);
   const togglePopup = () => {
     setPopupShown(!popupShown);
@@ -33,7 +35,7 @@ export default function AppointmentPopup() {
       </Button>
       <Box style={{ display: popupShown ? "block" : "none" }}>
         <Header>Appointment Info</Header>
-        <AppointmentInfo />
+        <AppointmentInfo toggleProp={toggle} />
       </Box>
     </div>
   );

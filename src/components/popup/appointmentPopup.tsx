@@ -39,8 +39,10 @@ const SurroundingBox = styled(Box)`
   display: flex;
   justify-content: center;
 `;
-
-export default function AppointmentPopup() {
+type ToggleProp = {
+  toggle: string;
+};
+export default function AppointmentPopup({ toggle }: ToggleProp) {
   const [popupShown, setPopupShown] = useState(false);
   const togglePopup = () => {
     setPopupShown(!popupShown);
@@ -51,7 +53,7 @@ export default function AppointmentPopup() {
         Click Me
       </ButtonPop>
       <SurroundingBox style={{ display: popupShown ? "block" : "none" }}>
-        <AppointmentInfo />
+        <AppointmentInfo toggleProp={toggle} />
         <ConfirmButton type="button" to="/time-slot-confirmation">
           <ButtonText>Book</ButtonText>
         </ConfirmButton>

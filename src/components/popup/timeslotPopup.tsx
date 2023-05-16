@@ -7,14 +7,8 @@ import { PopupDiv, PopupBox, X, CancelBtn, SaveBtn } from "../styledComponents";
 import Monthly from "../monthlyView";
 import AptInfo from "../appointmentInfo";
 import Timeslots from "./timeslots";
-import { LazyTimeslot, Timeslot, User } from "../../models";
+import { User } from "../../models";
 import { checkedLst } from "./timeslot";
-
-const TempButton = styled.button`
-  position: absolute;
-  top: 10%;
-  left: 40%;
-`;
 
 const Wrapper = styled.div`
   display: flex;
@@ -66,18 +60,25 @@ const AptHeader = styled.h1`
   color: #1b4c5a;
 `;
 
-export default function Popup() {
-  const [open, setOpen] = useState(false);
+interface PopupProps {
+  o: boolean;
+  onData: () => void;
+  date: Date;
+  toggleProp: string;
+}
+
+export default function Popup({ o, onData, date, toggleProp }: PopupProps) {
   // eslint-disable-next-line
+  const [open, setOpen] = useState<boolean>(o);
   const [isMobile, setIsMobile] = useState<boolean>(false);
-  const [timeslots, setTs] = useState<LazyTimeslot[]>([]);
+  // const [timeslots, setTs] = useState<LazyTimeslot[]>([]);
   const navigate = useNavigate();
   const handleClick = () => {
     navigate("/");
     setOpen(false);
+    onData();
   };
 
-  const date = new Date();
   const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
     month: "long",
@@ -88,20 +89,22 @@ export default function Popup() {
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.outerWidth <= 500);
+      // eslint-disable-next-line
+      console.log(isMobile);
     };
     window.addEventListener("resize", handleResize);
     handleResize();
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  useEffect(() => {
-    const pullData = async () => {
-      const ts = await DataStore.query(Timeslot);
-      setTs(ts);
-    };
+  // useEffect(() => {
+  //   const pullData = async () => {
+  //     const ts = await DataStore.query(Timeslot);
+  //     setTs(ts);
+  //   };
 
-    pullData();
-  }, []);
+  //   pullData();
+  // }, []);
   const handleConfirmation = async () => {
     const userId = await Auth.currentUserInfo();
     const userInfo = await DataStore.query(User, userId);
@@ -111,14 +114,17 @@ export default function Popup() {
         userType: userInfo?.userType,
         timeslotID: checkedLst,
         userID: userInfo?.id,
-        dates: [],
+        date,
       },
     });
   };
 
+  useEffect(() => {
+    setOpen(o);
+  }, [o]);
+
   return (
     <div>
-      <TempButton onClick={() => setOpen(true)}>Open popup</TempButton>
       <PopupDiv
         open={open}
         onClose={() => setOpen(false)}
@@ -131,7 +137,7 @@ export default function Popup() {
             <LeftColumn>
               <Monthly />
               <AptHeader>Appointment Info</AptHeader>
-              <AptInfo />
+              <AptInfo toggleProp={toggleProp} />
             </LeftColumn>
             <RightColumn>
               <DateHeader>{formattedDate}</DateHeader>

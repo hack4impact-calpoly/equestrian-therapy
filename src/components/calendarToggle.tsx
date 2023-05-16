@@ -48,10 +48,13 @@ const ViewingDescription = styled.p`
   font-weight: 700;
   padding-left: 20px;
 `;
+type ToggleProps = {
+  setToggleProp: (val: string) => void;
+};
 
-export default function AdminToggle() {
+export default function AdminToggle({ setToggleProp }: ToggleProps) {
   // Initialize a boolean state
-  const isAdmin = false; // delete later
+  const isAdmin = true; // delete later
   const [showVolunteers, setShowVolunteers] = useState(false);
   const [showRiders, setShowRiders] = useState(false);
   const [showBoth, setShowBoth] = useState(true);
@@ -84,6 +87,19 @@ export default function AdminToggle() {
     // inverse the boolean state of passwordShown
     setShowAvailability(!showAvailability);
   };
+  if (showBoth && isAdmin) {
+    setToggleProp("both");
+  } else if (showAvailability && !isAdmin) {
+    setToggleProp("availability");
+  } else if (!showAvailability && !isAdmin) {
+    setToggleProp("slots");
+  } else if (showRiders) {
+    setToggleProp("riders");
+  } else if (showVolunteers) {
+    setToggleProp("volunteers");
+  } else {
+    setToggleProp("none");
+  }
 
   return (
     <div>
