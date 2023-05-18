@@ -144,11 +144,13 @@ async function addRVBooking(
         await DataStore.save(booking);
       }
     }
+    console.log("this line", await DataStore.query(Booking));
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.log("An error occurred: ", error.message); // eslint-disable-line no-console
     }
   }
+  console.log(await DataStore.query(Booking));
 }
 
 async function deleteRVBooking(

@@ -206,17 +206,20 @@ export interface WeeklyViewProps {
 export default function Calendar({ userType }: WeeklyViewProps) {
   const [date, setDateProp] = useState(new Date());
   const calRef = useRef<FullCalendarRef>(null);
+  // eslint-disable-next-line
   const [toggles, setToggle] = useState<string>("");
   const [ts, setTs] = useState<LazyTimeslot[]>([]);
   const [popup, setPopup] = useState(false);
   const [popupDate, setPopupDate] = useState<Date>(new Date());
-
+  // eslint-disable-next-line
   console.log("setdate: ", date);
   // const tileDisabled = (thedate: any) => thedate < new Date();
+  // eslint-disable-next-line
   console.log(`userType${userType}`);
   useEffect(() => {
     const pullData = async () => {
       const models = await DataStore.query(Timeslot);
+      // eslint-disable-next-line
       console.log(models);
       setTs(models);
     };
@@ -231,7 +234,7 @@ export default function Calendar({ userType }: WeeklyViewProps) {
   const handleChildData = () => {
     setPopup(false);
   };
-
+  // eslint-disable-next-line
   console.log(ts.length);
 
   let slots = ts.map((timeslot: any) => {
@@ -276,7 +279,7 @@ export default function Calendar({ userType }: WeeklyViewProps) {
         Number(String(timeslot.endTime).substring(0, 2)) <= 14
     );
   }
-
+  // eslint-disable-next-line
   console.log(`toggle is ${toggles}`);
   return (
     <div>
@@ -321,9 +324,11 @@ export default function Calendar({ userType }: WeeklyViewProps) {
               ref={calRef}
               dayHeaderFormat={{ weekday: "short", day: "numeric" }}
               datesSet={(dateInfo) => {
+                // eslint-disable-next-line
                 console.log("start of week: ", dateInfo.start);
                 // console.log(dateInfo.end);
                 setDateProp(dateInfo.start);
+                // eslint-disable-next-line
                 console.log("date in weekCal: ", date);
               }}
               eventClick={handleEventClick}
