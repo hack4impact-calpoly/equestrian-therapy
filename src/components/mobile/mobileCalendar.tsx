@@ -17,9 +17,8 @@ const CurrentDate = styled.text`
   margin-top: 20%;
 `;
 
-// props used in mobileweeklyview as well
 type UserType = {
-  user: string;
+  user: "volunteer" | "rider" | "admin";
   bookings: number;
   day: string;
   setDayProp: (val: string) => void;
@@ -31,7 +30,6 @@ type UserType = {
 
 export default function CalendarMobile({
   user,
-  bookings,
   day,
   setDayProp,
   month,
@@ -39,13 +37,6 @@ export default function CalendarMobile({
   weekday,
   setWeekdayProp,
 }: UserType) {
-  // these values are hardcoded for conditional rendering of showing different slots
-  // eslint-disable-next-line no-param-reassign
-  user = "volunteer"; // hardcoded for now
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  bookings = 1;
-
-  // this is to create the current selected date string
   const currentTimeString: string[] = [];
   currentTimeString.push(weekday);
   currentTimeString.push(", ");
@@ -53,28 +44,23 @@ export default function CalendarMobile({
   currentTimeString.push(" ");
   currentTimeString.push(day);
 
-  // this is for the toggle dropdown
   const [optionValue, setOptionValue] = useState("");
-  const handleSelect = (e: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
-    console.log(e.target.value);
-    console.log(optionValue);
+
+  const handleSelect = (e: { target: { value: string } }) => {
+    // console.log(e.target.value);
+    // console.log(optionValue);
     setOptionValue(e.target.value);
   };
 
   return (
     <div>
-      {/* renders the calendar  */}
       <MobileWeeklyView
         startDate={new Date()}
         setDayProp={setDayProp}
         setMonthProp={setMonthProp}
         setWeekdayProp={setWeekdayProp}
       />
-      {/* creates the current selected date */}
       <CurrentDate>{currentTimeString}</CurrentDate>
-      {/* this is for the toggle dropdown with different options on different user types */}
       <Dropdown onChange={handleSelect}>
         <Option selected value={user === "admin" ? "Both" : "Availability"} />
         <Option
@@ -88,7 +74,6 @@ export default function CalendarMobile({
           <div>0</div>
         )}
       </Dropdown>
-      {/* the timeslots will change depending on the usertype */}
       <MobileTimeslots userType={user} />
     </div>
   );

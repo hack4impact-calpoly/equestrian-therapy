@@ -14,9 +14,9 @@ const Slots = styled.section`
 `;
 
 interface TimeslotsProps {
-  userType: string;
+  // Update interface name to TimeslotsProps
+  userType: "volunteer" | "rider" | "admin";
 }
-
 const timeslots = [
   {
     startTime: new Date(2023, 2, 7, 9, 0),
@@ -67,7 +67,7 @@ export default function MobileTimeslots({ userType }: TimeslotsProps) {
         timeslot.startTime.getHours() >= 10 && timeslot.endTime.getHours() <= 14
     );
   } else if (userType === "admin") {
-    // show's all time slots for admin
+    // show all time slots for admin
     filteredTimeslots = timeslots;
   }
 
@@ -77,9 +77,10 @@ export default function MobileTimeslots({ userType }: TimeslotsProps) {
         <MobileTimeslot
           startTime={timeslot.startTime}
           endTime={timeslot.endTime}
-          user={userType}
+          userType={userType}
           isDisabled={false}
           isBooked={false}
+          user={userType}
         />
       ))}
     </Slots>

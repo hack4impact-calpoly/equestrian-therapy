@@ -67,4 +67,21 @@ export const bookings = [
     volunteerBookings: [],
     riderBookings: [],
   },
+  {
+    id: "timeslot-5",
+    startTime: new Date("May 24, 2023 11:00:00"),
+    endTime: new Date("May 24, 2023 12:00:00"),
+    unavailableDates: [],
+    volunteerBookings: [],
+    riderBookings: [
+      {
+        id: "rider-booking-1",
+        title: "Volunteer 1",
+        date: new Date("May 23, 2023 10:00:00"),
+        timeslotId: "timeslot-1",
+        userId: "volunteer-1",
+        description: "Volunteer booking for timeslot 1",
+      },
+    ],
+  },
 ];

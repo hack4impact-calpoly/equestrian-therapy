@@ -89,7 +89,7 @@ export default function Login() {
         <Label>Email</Label>
         <Input
           placeholder=""
-          type="email"
+          type="text"
           value={email} // add newEmail as the input's value
           onChange={(e: ChangeEvent<HTMLInputElement>) => {
             setEmail(e.target.value);

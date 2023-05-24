@@ -48,7 +48,7 @@ function App() {
     const pullData = async () => {
       const ts = await DataStore.query(Timeslot);
       setTs(ts);
-      console.log(ts);
+      // console.log(ts);
     };
 
     pullData();
@@ -60,7 +60,7 @@ function App() {
     [currentUser]
   );
   // console statement to test if userName was set in login component
-  console.log(`from the context stuff ${currentUser.userName}`);
+  // console.log(`from the context stuff ${currentUser.userName}`);
   return (
     <UserContext.Provider value={userContextFields}>
       <BrowserRouter>
@@ -71,7 +71,7 @@ function App() {
             element={
               isMobile ? (
                 <CalendarMobile
-                  user=""
+                  user="rider" // default
                   bookings={0}
                   day={day!}
                   setDayProp={setDayProp}
