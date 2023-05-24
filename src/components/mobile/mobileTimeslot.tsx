@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { bookings } from "../booking";
 import styled from "styled-components";
 import caretDown from "../../images/CaretDown.svg";
 import { LazyTimeslot } from "../../models";
@@ -56,7 +55,8 @@ interface TimeslotProps {
   endTime: Date;
   user: string;
   isDisabled: boolean;
-  isBooked: boolean;
+  isBookedVolunteer: boolean;
+  isBookedRider: boolean;
   userType: "volunteer" | "rider" | "admin";
 }
 
@@ -65,15 +65,15 @@ export default function MobileTimeslot({
   endTime,
   user,
   isDisabled,
-  isBooked,
+  isBookedVolunteer,
+  isBookedRider,
   userType,
 }: TimeslotProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   // const [user] = useState<string>();
   const [bookings] = useState<number>();
   const [timeslots, setTs] = useState<LazyTimeslot[]>([]);
-  //const [timeslots, setTimeslots] = useState<LazyTimeslot[]>(bookings);
-
+  // const [timeslots, setTimeslots] = useState<LazyTimeslot[]>(bookings);
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -85,40 +85,10 @@ export default function MobileTimeslot({
       minute: "2-digit",
     });
 
-  const updatedSlots = timeslots.map((timeslot: any) => {
-    let backgroundColor = "#90BFCC";
-
-    //checks if rider or volunteer has booking at time or if admin disabled
-    if (userType === "rider") {
-      const hasRiderBooking = timeslot.riderBookings.length > 0;
-      if (hasRiderBooking) {
-        backgroundColor = "#E0EFF1";
-      }
-    } else if (userType === "volunteer") {
-      const hasVolunteerBooking = timeslot.volunteerBookings.length > 0;
-      if (hasVolunteerBooking) {
-        backgroundColor = "#E0EFF1";
-        //console.log("hi");
-      }
-    } else if (userType === "admin") {
-      if (
-        timeslot.unavailableDates.includes(timeslot.startTime.toDateString())
-      ) {
-        backgroundColor = "#E0EFF1";
-      }
-    }
-    return {
-      startTime: timeslot.startTime,
-      daysOfWeek: ["1", "2", "3", "4", "5"],
-      endTime: timeslot.endTime,
-      backgroundColor,
-      textColor: "black",
-    };
-  });
-
   return (
     <div>
-      <Slot isBooked={isBooked} isDisabled={isDisabled}>
+      <Slot isBooked={userType === "rider" ? isBookedRider : isBookedVolunteer}
+        isDisabled={isDisabled}>
         <Text>{`${formatTime(startTime)} to ${formatTime(endTime)}`}</Text>
         <Caret src={caretDown} onClick={toggleDropdown} />
       </Slot>

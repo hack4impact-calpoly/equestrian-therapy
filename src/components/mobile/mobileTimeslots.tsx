@@ -1,5 +1,8 @@
+import { useState } from "react";
 import styled from "styled-components";
 import MobileTimeslot from "./mobileTimeslot";
+import { LazyTimeslot } from "../../models";
+import { timeslots } from "../booking";
 
 // added height and margin-top and changed overflowy to overflow-y
 const Slots = styled.section`
@@ -17,69 +20,59 @@ interface TimeslotsProps {
   // Update interface name to TimeslotsProps
   userType: "volunteer" | "rider" | "admin";
 }
-const timeslots = [
-  {
-    startTime: new Date(2023, 2, 7, 9, 0),
-    endTime: new Date(2023, 2, 7, 10, 0),
-  },
-  {
-    startTime: new Date(2023, 2, 7, 10, 0),
-    endTime: new Date(2023, 2, 7, 11, 0),
-  },
-  {
-    startTime: new Date(2023, 2, 7, 11, 0),
-    endTime: new Date(2023, 2, 7, 12, 0),
-  },
-  {
-    startTime: new Date(2023, 2, 7, 12, 0),
-    endTime: new Date(2023, 2, 7, 13, 0),
-  },
-  {
-    startTime: new Date(2023, 2, 7, 13, 0),
-    endTime: new Date(2023, 2, 7, 14, 0),
-  },
-  {
-    startTime: new Date(2023, 2, 7, 14, 0),
-    endTime: new Date(2023, 2, 7, 15, 0),
-  },
-  {
-    startTime: new Date(2023, 2, 7, 15, 0),
-    endTime: new Date(2023, 2, 7, 16, 0),
-  },
-  {
-    startTime: new Date(2023, 2, 7, 16, 0),
-    endTime: new Date(2023, 2, 7, 17, 0),
-  },
-];
 
 export default function MobileTimeslots({ userType }: TimeslotsProps) {
-  let filteredTimeslots: { startTime: Date; endTime: Date }[] = [];
-  if (userType === "volunteer") {
-    // Filter timeslots between 9 AM and 5 PM for volunteers
-    filteredTimeslots = timeslots.filter(
-      (timeslot) =>
-        timeslot.startTime.getHours() >= 9 && timeslot.endTime.getHours() <= 17
-    );
-  } else if (userType === "rider") {
-    // Filter timeslots between 10 AM and 2 PM for riders
-    filteredTimeslots = timeslots.filter(
-      (timeslot) =>
-        timeslot.startTime.getHours() >= 10 && timeslot.endTime.getHours() <= 14
-    );
-  } else if (userType === "admin") {
-    // show all time slots for admin
-    filteredTimeslots = timeslots;
-  }
+  const [filteredTimeslots, setTs] = useState<LazyTimeslot[]>([]);
+  const updatedSlots = timeslots.map((timeslot: any) => {
+    let backgroundColor = "#90BFCC";
+    //let isBooked = false;
+    let isBookedVolunteer = false;
+    let isDisabled = false;
+    let isBookedRider = false;
+    // checks if rider or volunteer has booking at time or if admin disabled
+    if (userType === "rider") {
+      const hasRiderBooking = timeslot.riderBookings.length > 0;
+      if (hasRiderBooking) {
+        backgroundColor = "#E0EFF1";
+        isBookedRider = true;
+      }
+    } else if (userType === "volunteer") {
+      const hasVolunteerBooking = timeslot.volunteerBookings.length > 0;
+      if (hasVolunteerBooking) {
+        backgroundColor = "#E0EFF1";
+        // console.log("hi");
+        isBookedVolunteer = true;
+      }
+    } else if (userType === "admin") {
+      if (
+        timeslot.unavailableDates.includes(timeslot.startTime.toDateString())
+      ) {
+        backgroundColor = "#E0EFF1";
+        isDisabled = true;
+      }
+    }
+    return {
+      startTime: timeslot.startTime,
+      daysOfWeek: ["1", "2", "3", "4", "5"],
+      endTime: timeslot.endTime,
+      backgroundColor,
+      textColor: "black",
+      isBookedVolunteer,
+      isBookedRider,
+      isDisabled
+    };
+  });
 
   return (
     <Slots>
-      {filteredTimeslots.map((timeslot) => (
+      {updatedSlots.map((booking: any) => (
         <MobileTimeslot
-          startTime={timeslot.startTime}
-          endTime={timeslot.endTime}
+          startTime={booking.startTime}
+          endTime={booking.endTime}
           userType={userType}
-          isDisabled={false}
-          isBooked={false}
+          isDisabled={booking.isDisabled}
+          isBookedVolunteer={booking.isBookedVolunteer}
+          isBookedRider={booking.isBookedRider}
           user={userType}
         />
       ))}
