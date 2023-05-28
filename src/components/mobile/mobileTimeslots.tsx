@@ -22,6 +22,7 @@ interface TimeslotsProps {
 }
 
 export default function MobileTimeslots({ userType }: TimeslotsProps) {
+  
   const [filteredTimeslots, setTs] = useState<LazyTimeslot[]>([]);
   const updatedSlots = timeslots.map((timeslot: any) => {
     let backgroundColor = "#90BFCC";
@@ -30,19 +31,24 @@ export default function MobileTimeslots({ userType }: TimeslotsProps) {
     let isDisabled = false;
     let isBookedRider = false;
     // checks if rider or volunteer has booking at time or if admin disabled
+    
     if (userType === "rider") {
-      const hasRiderBooking = timeslot.riderBookings.length > 0;
-      if (hasRiderBooking) {
+      const isBookedOnSelectedDay = timeslot.riderBookings.some(
+        (booking: any) => booking.date.toDateString() === timeslot.startTime.toDateString()
+      );
+      if (isBookedOnSelectedDay) {
         backgroundColor = "#E0EFF1";
         isBookedRider = true;
       }
     } else if (userType === "volunteer") {
-      const hasVolunteerBooking = timeslot.volunteerBookings.length > 0;
-      if (hasVolunteerBooking) {
+      const isBookedOnSelectedDay = timeslot.volunteerBookings.some(
+        (booking: any) => booking.date.toDateString() === timeslot.startTime.toDateString()
+      );
+      if (isBookedOnSelectedDay) {
         backgroundColor = "#E0EFF1";
-        // console.log("hi");
         isBookedVolunteer = true;
       }
+    
     } else if (userType === "admin") {
       if (
         timeslot.unavailableDates.includes(timeslot.startTime.toDateString())
@@ -51,6 +57,9 @@ export default function MobileTimeslots({ userType }: TimeslotsProps) {
         isDisabled = true;
       }
     }
+
+    const date = userType === "volunteer" ? timeslot.startTime : null;
+
     return {
       startTime: timeslot.startTime,
       daysOfWeek: ["1", "2", "3", "4", "5"],
@@ -59,16 +68,21 @@ export default function MobileTimeslots({ userType }: TimeslotsProps) {
       textColor: "black",
       isBookedVolunteer,
       isBookedRider,
-      isDisabled
+      isDisabled,
+      date
     };
   });
+
+  
 
   return (
     <Slots>
       {updatedSlots.map((booking: any) => (
         <MobileTimeslot
+          key={booking.startTime.toISOString()} 
           startTime={booking.startTime}
           endTime={booking.endTime}
+         // date={booking.date}
           userType={userType}
           isDisabled={booking.isDisabled}
           isBookedVolunteer={booking.isBookedVolunteer}

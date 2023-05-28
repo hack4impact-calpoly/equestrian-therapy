@@ -58,6 +58,7 @@ interface TimeslotProps {
   isBookedVolunteer: boolean;
   isBookedRider: boolean;
   userType: "volunteer" | "rider" | "admin";
+  //date: Date | null; 
 }
 
 export default function MobileTimeslot({

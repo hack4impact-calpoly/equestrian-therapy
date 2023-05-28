@@ -71,7 +71,7 @@ function App() {
             element={
               isMobile ? (
                 <CalendarMobile
-                  user="rider" // default
+                  user={"volunteer"} // default
                   bookings={0}
                   day={day!}
                   setDayProp={setDayProp}
@@ -109,7 +109,7 @@ function App() {
           />
           <Route
             path="/mobile-timeslots"
-            element={<MobileTimeslots userType="rider" />}
+            element={<MobileTimeslots userType="rider"  />}
           />
           <Route path="/timeslot-success" element={<TimeslotSuccess />} />
           <Route
