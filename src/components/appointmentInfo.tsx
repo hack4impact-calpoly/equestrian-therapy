@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { DataStore } from "@aws-amplify/datastore";
 import Horse from "../images/horseRider.svg";
 import Dude from "../images/person.svg";
-import { Booking, User } from "../models";
+import { Booking, User, Timeslot } from "../models";
 import "@fontsource/roboto";
 
 const Wrapper = styled.div`
@@ -43,13 +43,13 @@ type PopupProps = {
 export default function AppointmentInfo({ toggleProp }: PopupProps) {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [users, setUsers] = useState<User[]>([]);
-  console.log(toggleProp);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [timeslot, setTimeslot] = useState<Timeslot>();
+
   useEffect(() => {
     const pullData = async () => {
       const bookingModels = await DataStore.query(Booking);
       setBookings(bookingModels);
-      console.log(bookingModels);
-      console.log("da bookings:");
     };
 
     pullData();
@@ -58,34 +58,62 @@ export default function AppointmentInfo({ toggleProp }: PopupProps) {
     const pullData = async () => {
       const userModel = await DataStore.query(User);
       setUsers(userModel);
-      console.log("da users:");
-      console.log(userModel);
     };
 
     pullData();
   }, []);
-  // this was for experimentation
-  bookings.forEach((booking) => {
-    for (let i = 0; i < users.length; i++) {
-      if (booking.userID === users[i].id) {
-        console.log(users[i].firstName);
-      }
+
+  const RiderNames = () => {
+    if (timeslot) {
+      const riderBookings = bookings.filter(
+        (booking) => booking.timeslotID === timeslot.id
+      );
+      const riderUserIds = riderBookings.map((booking) => booking.userID);
+      const riderUsers = users.filter((user) => riderUserIds.includes(user.id));
+      const riderNames = riderUsers.map(
+        (user) => `${user.firstName} ${user.lastName}`
+      );
+      return riderNames;
     }
-  });
+    return [];
+  };
+
+  const VolunteerNames = () => {
+    if (timeslot) {
+      const volunteerBookings = bookings.filter(
+        (booking) => booking.timeslotID === timeslot.id
+      );
+      const volunteerUserIds = volunteerBookings.map(
+        (booking) => booking.userID
+      );
+      const volunteerUsers = users.filter((user) =>
+        volunteerUserIds.includes(user.id)
+      );
+      const volunteerNames = volunteerUsers.map(
+        (user) => `${user.firstName} ${user.lastName}`
+      );
+      return volunteerNames;
+    }
+    return [];
+  };
 
   return (
     <Wrapper>
-      <RiderInfo
-        style={{ display: toggleProp === "volunteers" ? "none" : "block" }}
-      >
+      <RiderInfo style={{ display: "block" }}>
         <Logo src={Horse} />
-        <RiderContent>Riders: Jane Doe, John Smith</RiderContent>
+        <RiderContent>Riders: {RiderNames().join(", ")}</RiderContent>
       </RiderInfo>
+
       <RiderInfo
-        style={{ display: toggleProp === "riders" ? "none" : "block" }}
+        style={{
+          display:
+            toggleProp === "admin" || toggleProp === "volunteer"
+              ? "block"
+              : "none",
+        }}
       >
         <Logo src={Dude} />
-        <RiderContent>Volunteers: Jane Doe, John Smith</RiderContent>
+        <RiderContent>Volunteers: {VolunteerNames().join(", ")}</RiderContent>
       </RiderInfo>
     </Wrapper>
   );
