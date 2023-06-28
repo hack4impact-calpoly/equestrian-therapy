@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useLayoutEffect, useContext, useMemo } from "react";
 import styled from "styled-components";
-import { DataStore } from "aws-amplify";
+import { DataStore } from "@aws-amplify/datastore";
 import x from "../../images/X.svg";
 import { PopupDiv, PopupBox, X, CancelBtn, SaveBtn } from "../styledComponents";
 import Monthly from "../monthlyView";
 import AptInfo from "../appointmentInfo";
 import Timeslots from "./timeslots";
-import { LazyTimeslot, Timeslot } from "../../models";
+import { User, LazyUser, LazyBooking, LazyTimeslot } from "../../models";
 import TimeslotConfirmation from "./timeslotConfirmation";
 import TimeslotSuccess from "./timeslotSuccess";
 import UserContext from "../../userContext";
@@ -51,16 +51,6 @@ const DateHeader = styled.p`
   padding-bottom: 10px;
 `;
 
-const AptHeader = styled.h1`
-  font-family: "Roboto";
-  font-style: normal;
-  font-weight: 700;
-  font-size: 125%;
-  line-height: 200%;
-  background: white;
-  color: #1b4c5a;
-`;
-
 interface PopupProps {
   popup: boolean;
   confirmPopup: boolean;
@@ -69,7 +59,7 @@ interface PopupProps {
   handleSuccessOpen: () => void;
   onClose: () => void;
   date: Date;
-  toggleProp: string;
+  timeslots: LazyTimeslot[];
 }
 
 interface TsData {
@@ -87,14 +77,15 @@ export default function Popup({
   handleSuccessOpen,
   onClose,
   date,
-  toggleProp,
+  timeslots,
 }: PopupProps) {
-  const [timeslots, setTs] = useState<LazyTimeslot[]>([]);
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   const { userType, id } = realUser;
   const [bookable, setBookable] = useState<TsData[]>([]);
+  const [volunteerBookings, setVolBookings] = useState<LazyUser[]>([]);
+  const [riderBookings, setRidBookings] = useState<LazyUser[]>([]);
 
   const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
@@ -102,13 +93,26 @@ export default function Popup({
     day: "numeric",
   };
   const formattedDate = date.toLocaleDateString("en-US", options);
+  const getSelected = () => {
+    if (popup) {
+      return timeslots.find((timeslot) => {
+        if (timeslot.startTime) {
+          const time = timeslot.startTime.split(":");
+          return (
+            Number(time[0]) === date.getHours() &&
+            Number(time[1]) === date.getMinutes()
+          );
+        }
+        return false;
+      });
+    }
+    return undefined;
+  };
+  const selected = useMemo(() => getSelected(), [popup]);
 
-  useEffect(() => {
-    const pullData = async () => {
-      const ts = await DataStore.query(Timeslot);
-      setTs(ts);
-    };
+  useLayoutEffect(() => {
     const ts: TsData[] = [];
+
     const fetchBookable = async () => {
       if (timeslots.length > 0) {
         timeslots.forEach(async (timeslot) => {
@@ -166,9 +170,47 @@ export default function Popup({
       }
       setBookable(ts);
     };
-    pullData();
+    const getUsers = async (bookings: LazyBooking[]) => {
+      const volUsers: User[] = [];
+      const ridUsers: User[] = []; // eslint-disable-next-line no-restricted-syntax
+      for await (const booking of bookings) {
+        if (booking.date) {
+          if (selected) {
+            if (
+              Number(booking.date.substring(0, 4)) === date.getFullYear() &&
+              Number(booking.date.substring(5, 7)) === date.getMonth() + 1 &&
+              Number(booking.date.substring(8, 10)) === date.getDate() &&
+              booking.timeslotID === selected.id
+            ) {
+              const user = await DataStore.query(User, booking.userID);
+              if (user) {
+                if (user.userType === "Volunteer") {
+                  volUsers.push(user);
+                } else if (user.userType === "Rider") {
+                  ridUsers.push(user);
+                }
+              }
+            }
+          }
+        }
+      }
+      return { volUsers, ridUsers };
+    };
+    const pullData = async () => {
+      if (selected) {
+        const volBookingsArray = await selected.volunteerBookings.toArray(); // turns out the volunteer and rider booking arrays
+        // in our objects just return the same thing so there's not really a point to them
+        const bookings = await getUsers(volBookingsArray);
+        setVolBookings(bookings.volUsers);
+        setRidBookings(bookings.ridUsers);
+      } else {
+        setVolBookings([]);
+        setRidBookings([]);
+      }
+    };
     fetchBookable();
-  }, [popup]);
+    pullData();
+  }, [popup, selected]);
 
   return (
     <div>
@@ -184,8 +226,10 @@ export default function Popup({
             <Wrapper>
               <LeftColumn>
                 <Monthly />
-                <AptHeader>Appointment Info</AptHeader>
-                <AptInfo toggleProp={toggleProp} />
+                <AptInfo
+                  riderBookings={riderBookings}
+                  volunteerBookings={volunteerBookings}
+                />
               </LeftColumn>
               <RightColumn>
                 <DateHeader>{formattedDate}</DateHeader>

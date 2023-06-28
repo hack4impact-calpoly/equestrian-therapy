@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from "styled-components";
-import { DataStore } from "@aws-amplify/datastore";
 import Horse from "../images/horseRider.svg";
 import Dude from "../images/person.svg";
-import { Booking, User } from "../models";
+import { LazyUser } from "../models";
 import "@fontsource/roboto";
 
 const Wrapper = styled.div`
@@ -36,56 +35,62 @@ const RiderContent = styled.text`
   font-size: 16px;
   font-weight: 700;
 `;
+
+const AptHeader = styled.h1`
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 125%;
+  line-height: 200%;
+  background: white;
+  color: #1b4c5a;
+`;
+
 type PopupProps = {
-  toggleProp: string;
+  riderBookings: LazyUser[];
+  volunteerBookings: LazyUser[];
 };
 
-export default function AppointmentInfo({ toggleProp }: PopupProps) {
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
-  console.log(toggleProp);
-  useEffect(() => {
-    const pullData = async () => {
-      const bookingModels = await DataStore.query(Booking);
-      setBookings(bookingModels);
-      console.log(bookingModels);
-      console.log("da bookings:");
-    };
-
-    pullData();
-  }, []);
-  useEffect(() => {
-    const pullData = async () => {
-      const userModel = await DataStore.query(User);
-      setUsers(userModel);
-      console.log("da users:");
-      console.log(userModel);
-    };
-
-    pullData();
-  }, []);
-  // this was for experimentation
-  bookings.forEach((booking) => {
-    for (let i = 0; i < users.length; i++) {
-      if (booking.userID === users[i].id) {
-        console.log(users[i].firstName);
-      }
-    }
-  });
-
+export default function AppointmentInfo({
+  riderBookings,
+  volunteerBookings,
+}: PopupProps) {
   return (
     <Wrapper>
-      <RiderInfo
-        style={{ display: toggleProp === "volunteers" ? "none" : "block" }}
-      >
+      <AptHeader>Appointment Info</AptHeader>
+      <RiderInfo>
         <Logo src={Horse} />
-        <RiderContent>Riders: Jane Doe, John Smith</RiderContent>
+        {riderBookings.length > 0 && (
+          <RiderContent>
+            Riders:
+            {riderBookings
+              .map((booking) => {
+                if (booking.firstName && booking.lastName) {
+                  return " ".concat(booking.firstName, " ", booking.lastName);
+                }
+                return "";
+              })
+              .join()}
+          </RiderContent>
+        )}
       </RiderInfo>
-      <RiderInfo
-        style={{ display: toggleProp === "riders" ? "none" : "block" }}
-      >
+
+      {/* {volunteerBookings.length > 0 && ( */}
+      <RiderInfo>
         <Logo src={Dude} />
-        <RiderContent>Volunteers: Jane Doe, John Smith</RiderContent>
+        {volunteerBookings.length > 0 && (
+          <RiderContent>
+            Volunteers:
+            {volunteerBookings
+              .map((booking) => {
+                if (booking.firstName && booking.lastName) {
+                  return " ".concat(booking.firstName, " ", booking.lastName);
+                }
+                return "";
+              })
+              .join()}
+          </RiderContent>
+        )}
       </RiderInfo>
     </Wrapper>
   );

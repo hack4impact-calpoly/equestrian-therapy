@@ -2,8 +2,8 @@ import React, { useState, useContext, useEffect } from "react";
 import styled from "styled-components";
 import Checked from "../../images/Checked.png";
 import Unchecked from "../../images/Unchecked.png";
-import On from "../../images/onslider.png";
-import Off from "../../images/offslider.png";
+import On from "../../images/OnSlider.png";
+import Off from "../../images/OffSlider.png";
 import UserContext from "../../userContext";
 
 const ButtonToggle = styled.button`
@@ -98,11 +98,9 @@ export default function Timeslot({
   }, [isChecked, tsId]);
   return (
     <Slot border={border}>
-      {/* <TimeBox> */}
       <TimeslotText>
         {`${formatTime(startTime)} to ${formatTime(endTime)}`}
       </TimeslotText>
-      {/* </TimeBox> */}
       {userType === "Volunteer" ? (
         <ButtonToggle onClick={toggleChecked}>
           {isChecked ? (

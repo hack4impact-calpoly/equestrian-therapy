@@ -291,7 +291,7 @@ export default function Calendar({ timeslots }: CalendarProps) {
     const fetchBookings = async () => {
       try {
         const bookingModels = await DataStore.query(Booking);
-        console.log("BOOKINGS ---------", bookingModels);
+        // console.log("BOOKINGS ---------", bookingModels);
         setBookings(bookingModels);
       } catch (error) {
         console.error("Error fetching bookings:", error);
@@ -302,10 +302,12 @@ export default function Calendar({ timeslots }: CalendarProps) {
 
   // console.log("setdate: ", date);
   // const tileDisabled = (thedate: any) => thedate < new Date();
-  console.log(`userType ${userType}`);
+  // console.log(`userType ${userType}`);
 
-  const handleEventClick = (eventClickInfo: any) => {
+  const handleEventClick = async (eventClickInfo: any) => {
     setPopupDate(eventClickInfo.event.start);
+    // eslint-disable-next-line no-promise-executor-return
+    await new Promise((r) => setTimeout(r, 200));
     setPopup(true);
   };
 
@@ -353,6 +355,9 @@ export default function Calendar({ timeslots }: CalendarProps) {
           timeslot.endTime
         }:00`
       );
+      // const string = "2023-06-25";
+
+      // console.log("DATE TEST WOOOOOOOOOOOOOOOOOOOO", string.substring(5, 7));
 
       if (
         bookings.some(
@@ -364,7 +369,9 @@ export default function Calendar({ timeslots }: CalendarProps) {
                   String(booking.date).length - 2,
                   String(booking.date).length
                 )
-              )
+              ) &&
+            dateTest.getMonth() + 1 ===
+              Number(String(booking.date).substring(5, 7))
         )
       ) {
         backgroundColor = "#E0EFF1";
@@ -477,7 +484,7 @@ export default function Calendar({ timeslots }: CalendarProps) {
               handleSuccessOpen={handleSuccessOpen}
               onClose={handlePopupClose}
               date={popupDate}
-              toggleProp={toggles!}
+              timeslots={timeslots}
             />
           </CalDiv>
         </RightColumn>
