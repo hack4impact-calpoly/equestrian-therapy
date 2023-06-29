@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { DataStore } from "@aws-amplify/datastore";
 import UserContext from "../../userContext";
 import MobileTimeslot from "./mobileTimeslot";
-import { Booking, LazyTimeslot } from "../../models";
+import { Booking, Timeslot, LazyTimeslot } from "../../models";
 
 const Slots = styled.section`
   overflow-y: auto;
@@ -20,9 +20,10 @@ interface MobileTimeslotsProps {
   timeslots: LazyTimeslot[];
   date: Date;
   toggleValue: string;
+  setTs: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
 }
 
-interface Timeslot {
+interface TempTimeslot {
   startTime: string;
   endTime: string;
   backgroundColor: string;
@@ -52,6 +53,7 @@ export default function MobileTimeslots({
   timeslots,
   date,
   toggleValue,
+  setTs,
 }: MobileTimeslotsProps) {
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
@@ -64,7 +66,9 @@ export default function MobileTimeslots({
     const fetchBookings = async () => {
       try {
         const bookingModels = await DataStore.query(Booking);
+        const ts = await DataStore.query(Timeslot);
         setBookings(bookingModels);
+        setTs(ts);
         setRequery(false);
       } catch (error) {
         console.error("Error fetching bookings:", error);
@@ -115,7 +119,7 @@ export default function MobileTimeslots({
     };
   }
 
-  function filterTimeSlots(timeslot: Timeslot) {
+  function filterTimeSlots(timeslot: TempTimeslot) {
     if (toggleValue === "Riders" || userType === "Rider") {
       return (
         Number(timeslot.startTime.substring(0, 2)) >= 10 &&

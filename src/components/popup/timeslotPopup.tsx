@@ -60,6 +60,7 @@ interface PopupProps {
   onClose: () => void;
   date: Date;
   timeslots: LazyTimeslot[];
+  setTs: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
 }
 
 interface TsData {
@@ -78,6 +79,7 @@ export default function Popup({
   onClose,
   date,
   timeslots,
+  setTs,
 }: PopupProps) {
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
@@ -247,6 +249,7 @@ export default function Popup({
               handleCancelled={onClose}
               status="book"
               date={date}
+              setTs={setTs}
             />
           )}
           {confirmPopup && successPopup && (
