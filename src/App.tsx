@@ -55,7 +55,7 @@ function App() {
               path="/"
               element={
                 isMobile ? (
-                  <CalendarMobile timeslots={timeslots} />
+                  <CalendarMobile timeslots={timeslots} setTs={setTs} />
                 ) : (
                   <Calendar timeslots={timeslots} setTs={setTs} />
                 )
