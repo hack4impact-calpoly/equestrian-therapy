@@ -57,7 +57,7 @@ function App() {
                 isMobile ? (
                   <CalendarMobile timeslots={timeslots} />
                 ) : (
-                  <Calendar timeslots={timeslots} />
+                  <Calendar timeslots={timeslots} setTs={setTs} />
                 )
               }
             />

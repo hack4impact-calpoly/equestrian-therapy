@@ -244,6 +244,7 @@ const months = [
 
 interface CalendarProps {
   timeslots: LazyTimeslot[];
+  setTs: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
 }
 
 interface Timeslot {
@@ -271,7 +272,7 @@ function convertToYMD(date: Date) {
   return retString;
 }
 
-export default function Calendar({ timeslots }: CalendarProps) {
+export default function Calendar({ timeslots, setTs }: CalendarProps) {
   const [date, setDateProp] = useState(new Date());
   const calRef = useRef<FullCalendarRef>(null);
   const [toggles, setToggle] = useState<string>("");
@@ -485,6 +486,7 @@ export default function Calendar({ timeslots }: CalendarProps) {
               onClose={handlePopupClose}
               date={popupDate}
               timeslots={timeslots}
+              setTs={setTs}
             />
           </CalDiv>
         </RightColumn>
