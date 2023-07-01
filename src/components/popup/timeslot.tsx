@@ -64,9 +64,6 @@ interface TimeslotProps {
   setUncheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-// export const checkedLst: string[] = [];
-// export const uncheckedLst: string[] = [];
-
 export default function Timeslot({
   startTime,
   endTime,
@@ -91,12 +88,10 @@ export default function Timeslot({
       setUncheckedLst(uncheckedLst.concat(tsId));
       setCheckedLst(uncheckedLst.filter((id) => id !== tsId));
       setIsChecked(!isChecked);
-      // console.log("checked");
     } else {
       setCheckedLst(checkedLst.concat(tsId));
       setUncheckedLst(uncheckedLst.filter((id) => id !== tsId));
       setIsChecked(!isChecked);
-      // console.log("unchecked");
     }
   };
   const formatTime = (time: Date) =>
@@ -105,17 +100,6 @@ export default function Timeslot({
       minute: "2-digit",
     });
 
-  // useEffect(() => {
-
-  // }, [isChecked]);
-
-  // useEffect(() => {
-  //   console.log("checked list: ", checkedLst);
-  // }, [checkedLst]);
-
-  // useEffect(() => {
-  //   console.log("unchecked list: ", uncheckedLst);
-  // }, [uncheckedLst]);
   return (
     <Slot border={border}>
       <TimeslotText>

@@ -1,9 +1,7 @@
 import { useContext } from "react";
 import styled from "styled-components";
 import UserContext from "../../userContext";
-// import { Box } from "../styledComponents";
 import Timeslot from "./timeslot";
-// import { LazyTimeslot } from "../../models";
 
 const Wrapper = styled.section`
   display: flex;

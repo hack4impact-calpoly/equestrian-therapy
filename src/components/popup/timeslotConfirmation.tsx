@@ -236,8 +236,6 @@ export default function TimeSlotConfirmation({
     if (uncheckedLst.length !== 0) {
       deleteRVBooking(uncheckedLst, id);
     }
-    console.log("Checked list: ", checkedLst);
-    console.log("Unchecked list: ", uncheckedLst);
   };
 
   const handleCancel = () => {
