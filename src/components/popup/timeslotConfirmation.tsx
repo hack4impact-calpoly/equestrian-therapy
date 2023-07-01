@@ -17,7 +17,6 @@ import { CancelBtn, SaveBtn, Description, Header } from "../styledComponents";
 export type TimeslotConfirmProps = {
   handleClicked: () => void;
   handleCancelled: () => void;
-  status: String;
   date: Date;
   setTs: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
   checkedLst: string[];
@@ -64,7 +63,6 @@ function convertToYMD(date: Date) {
 export default function TimeSlotConfirmation({
   handleClicked,
   handleCancelled,
-  status,
   date,
   setTs,
   checkedLst,
@@ -213,7 +211,6 @@ export default function TimeSlotConfirmation({
             b.date.eq(convertToYMD(date)),
           ])
         );
-        // console.log(booking);
         bookings.forEach((booking) => {
           DataStore.delete(booking);
         });
@@ -247,13 +244,9 @@ export default function TimeSlotConfirmation({
     handleCancelled();
   };
 
-  const handleBookingCancel = () => {
-    deleteRVBooking(uncheckedLst, id);
-  };
-
   return (
     <div>
-      {userType === "admin" && (
+      {userType === "admin" ? (
         <Wrapper>
           <Warning src={warning} />
           <Header>Save changes?</Header>
@@ -266,32 +259,24 @@ export default function TimeSlotConfirmation({
             <SaveBtn onClick={handleConfirmationAdmin}>Confirm</SaveBtn>
           </BtnContainer>
         </Wrapper>
-      )}
-      {userType !== "Admin" && status === "cancel" && (
+      ) : (
         <Wrapper>
           <Warning src={warning} />
-          <Header>Confirm cancellation?</Header>
+          <Header>
+            {`Confirm ${
+              checkedLst.length < uncheckedLst.length
+                ? "cancellation"
+                : "booking"
+            }?`}
+          </Header>
           <Description>
-            You are choosing to cancel one or more time slots. Are you sure you
-            want to do this?
+            {`You are choosing to ${
+              checkedLst.length < uncheckedLst.length ? "cancel" : "book"
+            } one or more time slots. Are you sure you want to do this?`}
           </Description>
           <BtnContainer>
             <CancelBtn onClick={handleCancel}>Cancel</CancelBtn>
-            <SaveBtn onClick={handleBookingCancel}>Confirm</SaveBtn>
-          </BtnContainer>
-        </Wrapper>
-      )}
-      {userType !== "admin" && status === "book" && (
-        <Wrapper>
-          <Warning src={warning} />
-          <Header>Confirm booking?</Header>
-          <Description>
-            You are choosing to book one or more time slots. Are you sure you
-            want to do this?
-          </Description>
-          <BtnContainer>
-            <CancelBtn onClick={handleCancel}>Cancel</CancelBtn>
-            <SaveBtn onClick={handleConfirmationRV}>Book</SaveBtn>
+            <SaveBtn onClick={handleConfirmationRV}>Confirm</SaveBtn>
           </BtnContainer>
         </Wrapper>
       )}

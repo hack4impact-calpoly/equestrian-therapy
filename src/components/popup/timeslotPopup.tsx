@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useLayoutEffect,
-  useContext,
-  useMemo,
-  useEffect,
-} from "react";
+import React, { useState, useLayoutEffect, useContext, useMemo } from "react";
 import styled from "styled-components";
 import { DataStore } from "@aws-amplify/datastore";
 import x from "../../images/X.svg";
@@ -290,7 +284,6 @@ export default function Popup({
             <TimeslotConfirmation
               handleClicked={handleSuccessOpen}
               handleCancelled={onClose}
-              status="book"
               date={date}
               setTs={setTs}
               checkedLst={checkedLst}
