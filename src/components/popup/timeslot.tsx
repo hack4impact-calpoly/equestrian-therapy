@@ -58,10 +58,14 @@ interface TimeslotProps {
   tsId: string;
   checked: boolean;
   border: string;
+  checkedLst: string[];
+  uncheckedLst: string[];
+  setCheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
+  setUncheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-export const checkedLst: string[] = [];
-export const uncheckedLst: string[] = [];
+// export const checkedLst: string[] = [];
+// export const uncheckedLst: string[] = [];
 
 export default function Timeslot({
   startTime,
@@ -69,6 +73,10 @@ export default function Timeslot({
   tsId,
   checked,
   border,
+  checkedLst,
+  uncheckedLst,
+  setCheckedLst,
+  setUncheckedLst,
 }: TimeslotProps) {
   const [isChecked, setIsChecked] = useState(checked);
   const currentUserFR = useContext(UserContext);
@@ -79,7 +87,17 @@ export default function Timeslot({
   // console.log("The timeslot is: ", startTime, "THE BORDER IS: ", border);
 
   const toggleChecked = () => {
-    setIsChecked(!isChecked);
+    if (isChecked) {
+      setUncheckedLst(uncheckedLst.concat(tsId));
+      setCheckedLst(uncheckedLst.filter((id) => id !== tsId));
+      setIsChecked(!isChecked);
+      // console.log("checked");
+    } else {
+      setCheckedLst(checkedLst.concat(tsId));
+      setUncheckedLst(uncheckedLst.filter((id) => id !== tsId));
+      setIsChecked(!isChecked);
+      // console.log("unchecked");
+    }
   };
   const formatTime = (time: Date) =>
     time.toLocaleTimeString([], {
@@ -87,15 +105,17 @@ export default function Timeslot({
       minute: "2-digit",
     });
 
-  useEffect(() => {
-    if (isChecked) {
-      checkedLst.push(tsId);
-      uncheckedLst.splice(uncheckedLst.indexOf(tsId), 1);
-    } else {
-      uncheckedLst.push(tsId);
-      checkedLst.splice(checkedLst.indexOf(tsId), 1);
-    }
-  }, [isChecked, tsId]);
+  // useEffect(() => {
+
+  // }, [isChecked]);
+
+  // useEffect(() => {
+  //   console.log("checked list: ", checkedLst);
+  // }, [checkedLst]);
+
+  // useEffect(() => {
+  //   console.log("unchecked list: ", uncheckedLst);
+  // }, [uncheckedLst]);
   return (
     <Slot border={border}>
       <TimeslotText>

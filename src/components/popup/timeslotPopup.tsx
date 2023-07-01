@@ -1,4 +1,10 @@
-import React, { useState, useLayoutEffect, useContext, useMemo } from "react";
+import React, {
+  useState,
+  useLayoutEffect,
+  useContext,
+  useMemo,
+  useEffect,
+} from "react";
 import styled from "styled-components";
 import { DataStore } from "@aws-amplify/datastore";
 import x from "../../images/X.svg";
@@ -102,6 +108,8 @@ export default function Popup({
   const [bookable, setBookable] = useState<TsData[]>([]);
   const [volunteerBookings, setVolBookings] = useState<LazyUser[]>([]);
   const [riderBookings, setRidBookings] = useState<LazyUser[]>([]);
+  const [checkedLst, setCheckedLst] = useState<string[]>([]);
+  const [uncheckedLst, setUncheckedLst] = useState<string[]>([]);
 
   const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
@@ -238,6 +246,8 @@ export default function Popup({
     };
     fetchBookable();
     pullData();
+    setCheckedLst([]);
+    setUncheckedLst([]);
   }, [popup, selected]);
 
   return (
@@ -261,7 +271,14 @@ export default function Popup({
               </LeftColumn>
               <RightColumn>
                 <DateHeader>{formattedDate}</DateHeader>
-                <Timeslots bookable={bookable} selectedDate={date} />
+                <Timeslots
+                  bookable={bookable}
+                  selectedDate={date}
+                  checkedLst={checkedLst}
+                  uncheckedLst={uncheckedLst}
+                  setCheckedLst={setCheckedLst}
+                  setUncheckedLst={setUncheckedLst}
+                />
                 <BtnContainer>
                   <CancelBtn onClick={onClose}>Cancel</CancelBtn>
                   <SaveBtn onClick={handleConfirmOpen}>Save</SaveBtn>
@@ -276,6 +293,8 @@ export default function Popup({
               status="book"
               date={date}
               setTs={setTs}
+              checkedLst={checkedLst}
+              uncheckedLst={uncheckedLst}
             />
           )}
           {confirmPopup && successPopup && (
