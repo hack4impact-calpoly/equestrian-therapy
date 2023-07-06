@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 import { useContext } from "react";
 import styled from "styled-components";
-// import { useNavigate } from "react-router-dom";
 import { DataStore } from "aws-amplify";
 import UserContext from "../../userContext";
 import { Timeslot, User, Booking } from "../../models";
@@ -96,15 +95,9 @@ export default function TimeSlotConfirmation({
         const original = await DataStore.query(Timeslot, timeslotId);
         if (original && Array.isArray(original.unavailableDates)) {
           const convertedDate = convertToYMD(new Date(availableDate));
-
-          const updatedList = original.unavailableDates.filter((dateString) => {
-            if (dateString !== null) {
-              const isoDate = convertToYMD(new Date(dateString));
-              return convertedDate !== isoDate;
-            }
-            return false;
-          });
-
+          const updatedList = original.unavailableDates.filter(
+            (dateString) => convertedDate !== dateString
+          );
           await DataStore.save(
             Timeslot.copyOf(original, (updated) => {
               updated.unavailableDates = updatedList; // eslint-disable-line no-param-reassign
@@ -139,7 +132,6 @@ export default function TimeSlotConfirmation({
             userID,
           });
           await DataStore.save(booking);
-          // setNewBooking(booked);
         });
       } else if (original && original.userType === "Rider") {
         if (TimeslotIDs.length === 1) {
@@ -154,7 +146,6 @@ export default function TimeSlotConfirmation({
             userID,
           });
           await DataStore.save(booking);
-          // setNewBooking(booked);
         }
       }
     } catch (error: unknown) {
@@ -165,11 +156,8 @@ export default function TimeSlotConfirmation({
   }
 
   async function deleteRVBooking(
-    TimeslotIDs: string[], // which time they want to cancel
-    userID: string
+    TimeslotIDs: string[] // which time they want to cancel
   ) {
-    console.log(TimeslotIDs);
-    console.log(userID);
     /*
     go through entire booking table, find the booking id that matches
     the timeslotid, and the date
@@ -195,8 +183,12 @@ export default function TimeSlotConfirmation({
 
   const handleConfirmationAdmin = () => {
     handleClicked();
-    addUnavailability(uncheckedLst, date); // YYYY-MM-DD
-    deleteUnavailability(checkedLst, date); // YYYY-MM-DD
+    if (uncheckedLst.length !== 0) {
+      addUnavailability(uncheckedLst, date); // YYYY-MM-DD
+    }
+    if (checkedLst.length !== 0) {
+      deleteUnavailability(checkedLst, date); // YYYY-MM-DD
+    }
   };
 
   const handleConfirmationRV = () => {
@@ -205,7 +197,7 @@ export default function TimeSlotConfirmation({
       addRVBooking(checkedLst, id, date);
     }
     if (uncheckedLst.length !== 0) {
-      deleteRVBooking(uncheckedLst, id);
+      deleteRVBooking(uncheckedLst);
     }
   };
 
