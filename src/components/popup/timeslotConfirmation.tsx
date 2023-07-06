@@ -4,7 +4,6 @@ import styled from "styled-components";
 // import { useNavigate } from "react-router-dom";
 import { DataStore } from "aws-amplify";
 import UserContext from "../../userContext";
-import { checkedLst, uncheckedLst } from "./timeslot";
 import {
   Timeslot,
   User,
@@ -15,12 +14,13 @@ import {
 import warning from "../../images/warning.svg";
 import { CancelBtn, SaveBtn, Description, Header } from "../styledComponents";
 
-export type TimeSlotProps = {
+export type TimeslotConfirmProps = {
   handleClicked: () => void;
   handleCancelled: () => void;
-  status: String;
   date: Date;
   setTs: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
+  checkedLst: string[];
+  uncheckedLst: string[];
 };
 
 const Wrapper = styled.div`
@@ -63,10 +63,11 @@ function convertToYMD(date: Date) {
 export default function TimeSlotConfirmation({
   handleClicked,
   handleCancelled,
-  status = "",
   date,
   setTs,
-}: TimeSlotProps) {
+  checkedLst,
+  uncheckedLst,
+}: TimeslotConfirmProps) {
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
@@ -76,7 +77,6 @@ export default function TimeSlotConfirmation({
   useEffect(() => {
     const pullData = async () => {
       const ts = await DataStore.query(Timeslot);
-      console.log("pulled timeslots");
       setTs(ts);
     };
     pullData();
@@ -199,26 +199,28 @@ export default function TimeSlotConfirmation({
   ) {
     console.log(TimeslotIDs);
     console.log(userID);
+    /*
+    go through entire booking table, find the booking id that matches
+    the timeslotid, and the date
+     */
+    try {
+      TimeslotIDs.forEach(async (TimeslotID) => {
+        const bookings = await DataStore.query(Booking, (book) =>
+          book.and((b) => [
+            b.timeslotID.eq(TimeslotID),
+            b.date.eq(convertToYMD(date)),
+          ])
+        );
+        bookings.forEach((booking) => {
+          DataStore.delete(booking);
+        });
+      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log("An error occurred: ", error.message); // eslint-disable-line no-console
+      }
+    }
   }
-  //   /*
-  //   go through entire booking table, find the booking id that matches
-  //   the timeslotid, and the date
-  //    */
-  //   try {
-  //     const BookingTable = await DataStore.query(Booking);
-  //     TimeslotIDs.forEach((TimeslotID) => {
-  //       BookingTable.forEach((booking) => {
-  //         if (booking.userID === userID && booking.timeslotID === TimeslotID) {
-  //           DataStore.delete(booking);
-  //         }
-  //       });
-  //     });
-  //   } catch (error: unknown) {
-  //     if (error instanceof Error) {
-  //       console.log("An error occurred: ", error.message); // eslint-disable-line no-console
-  //     }
-  //   }
-  // }
 
   const handleConfirmationAdmin = () => {
     handleClicked();
@@ -228,20 +230,21 @@ export default function TimeSlotConfirmation({
 
   const handleConfirmationRV = () => {
     handleClicked();
-    addRVBooking(checkedLst, id, date);
+    if (checkedLst.length !== 0) {
+      addRVBooking(checkedLst, id, date);
+    }
+    if (uncheckedLst.length !== 0) {
+      deleteRVBooking(uncheckedLst, id);
+    }
   };
 
   const handleCancel = () => {
     handleCancelled();
   };
 
-  const handleBookingCancel = () => {
-    deleteRVBooking(uncheckedLst, id);
-  };
-
   return (
     <div>
-      {userType === "admin" && (
+      {userType === "admin" ? (
         <Wrapper>
           <Warning src={warning} />
           <Header>Save changes?</Header>
@@ -254,32 +257,24 @@ export default function TimeSlotConfirmation({
             <SaveBtn onClick={handleConfirmationAdmin}>Confirm</SaveBtn>
           </BtnContainer>
         </Wrapper>
-      )}
-      {userType !== "Admin" && status === "cancel" && (
+      ) : (
         <Wrapper>
           <Warning src={warning} />
-          <Header>Confirm cancellation?</Header>
+          <Header>
+            {`Confirm ${
+              checkedLst.length < uncheckedLst.length
+                ? "cancellation"
+                : "booking"
+            }?`}
+          </Header>
           <Description>
-            You are choosing to cancel one or more time slots. Are you sure you
-            want to do this?
+            {`You are choosing to ${
+              checkedLst.length < uncheckedLst.length ? "cancel" : "book"
+            } one or more time slots. Are you sure you want to do this?`}
           </Description>
           <BtnContainer>
             <CancelBtn onClick={handleCancel}>Cancel</CancelBtn>
-            <SaveBtn onClick={handleBookingCancel}>Confirm</SaveBtn>
-          </BtnContainer>
-        </Wrapper>
-      )}
-      {userType !== "admin" && checkedLst.length !== 0 && (
-        <Wrapper>
-          <Warning src={warning} />
-          <Header>Confirm booking?</Header>
-          <Description>
-            You are choosing to book one or more time slots. Are you sure you
-            want to do this?
-          </Description>
-          <BtnContainer>
-            <CancelBtn onClick={handleCancel}>Cancel</CancelBtn>
-            <SaveBtn onClick={handleConfirmationRV}>Book</SaveBtn>
+            <SaveBtn onClick={handleConfirmationRV}>Confirm</SaveBtn>
           </BtnContainer>
         </Wrapper>
       )}

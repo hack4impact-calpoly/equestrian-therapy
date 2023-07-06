@@ -69,7 +69,21 @@ interface TsData {
   checked: boolean;
   id: string;
 }
+function convertToYMD(date: Date) {
+  const localString = date.toLocaleDateString();
+  const splitDate = localString.split("/");
+  let retString = `${localString.split("/")[2]}-`;
 
+  if (splitDate[0].length === 1) {
+    retString += `0`;
+  }
+  retString += `${localString.split("/")[0]}-`;
+  if (splitDate[1].length === 1) {
+    retString += `0`;
+  }
+  retString += `${localString.split("/")[1]}`;
+  return retString;
+}
 export default function Popup({
   popup,
   confirmPopup,
@@ -88,6 +102,8 @@ export default function Popup({
   const [bookable, setBookable] = useState<TsData[]>([]);
   const [volunteerBookings, setVolBookings] = useState<LazyUser[]>([]);
   const [riderBookings, setRidBookings] = useState<LazyUser[]>([]);
+  const [checkedLst, setCheckedLst] = useState<string[]>([]);
+  const [uncheckedLst, setUncheckedLst] = useState<string[]>([]);
 
   const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
@@ -115,57 +131,69 @@ export default function Popup({
   useLayoutEffect(() => {
     const ts: TsData[] = [];
 
+    const fetchBookableRV = async (timeslot: LazyTimeslot) => {
+      // available bookings are unbooked bookings, bookings booked by current user, and
+      // bookings that are not in the unavailable dates set by admin
+      let bookings;
+      if (userType === "Volunteer") {
+        bookings = await timeslot.volunteerBookings.toArray();
+      } else {
+        bookings = await timeslot.riderBookings.toArray();
+      }
+      let checked = false;
+      let available = true;
+      if (bookings) {
+        checked = bookings.some((booking) => {
+          if (booking.date) {
+            if (booking.date === convertToYMD(date)) {
+              if (booking.userID === id) {
+                return true;
+              }
+              available = false;
+            }
+            return false;
+          }
+          return false;
+        });
+      }
+      if (
+        available &&
+        timeslot.unavailableDates &&
+        !timeslot.unavailableDates.includes(convertToYMD(date))
+      ) {
+        ts.push({
+          startTime: new Date(`July 4 1776 ${timeslot.startTime}`),
+          endTime: new Date(`July 4 1776 ${timeslot.endTime}`),
+          checked,
+          id: timeslot.id,
+        });
+      }
+    };
+
+    const fetchBookableAdmin = async (timeslot: LazyTimeslot) => {
+      let checked = true;
+      if (
+        timeslot.unavailableDates &&
+        timeslot.unavailableDates.includes(convertToYMD(date))
+      ) {
+        checked = false;
+      }
+      ts.push({
+        startTime: new Date(`July 4 1776 ${timeslot.startTime}`),
+        endTime: new Date(`July 4 1776 ${timeslot.endTime}`),
+        checked,
+        id: timeslot.id,
+      });
+    };
+
     const fetchBookable = async () => {
       if (timeslots.length > 0) {
         timeslots.forEach(async (timeslot) => {
           if (timeslot.startTime && timeslot.endTime) {
             if (userType === "Volunteer" || userType === "Rider") {
-              let bookings;
-              if (userType === "Volunteer") {
-                bookings = await timeslot.volunteerBookings.toArray();
-              } else {
-                bookings = await timeslot.riderBookings.toArray();
-              }
-              let checked = false;
-              let available = true;
-              if (bookings) {
-                checked = bookings.some((booking) => {
-                  if (booking.date) {
-                    const dateCopy = new Date(booking.date);
-                    const bookingDate = new Date(
-                      dateCopy.setDate(dateCopy.getDate() + 1)
-                    );
-                    if (
-                      bookingDate.getMonth() === date.getMonth() &&
-                      bookingDate.getDate() === date.getDate() &&
-                      bookingDate.getFullYear() === date.getFullYear()
-                    ) {
-                      if (booking.userID === id) {
-                        return true;
-                      }
-                      available = false;
-                    }
-                    return false;
-                  }
-                  return false;
-                });
-              }
-              if (available) {
-                ts.push({
-                  startTime: new Date(`July 4 1776 ${timeslot.startTime}`),
-                  endTime: new Date(`July 4 1776 ${timeslot.endTime}`),
-                  checked,
-                  id: timeslot.id,
-                });
-              }
+              fetchBookableRV(timeslot);
             } else {
-              // todo: uncheck for unavailable
-              ts.push({
-                startTime: new Date(`July 4 1776 ${timeslot.startTime}`),
-                endTime: new Date(`July 4 1776 ${timeslot.endTime}`),
-                checked: true,
-                id: timeslot.id,
-              });
+              fetchBookableAdmin(timeslot);
             }
           }
         });
@@ -212,6 +240,8 @@ export default function Popup({
     };
     fetchBookable();
     pullData();
+    setCheckedLst([]);
+    setUncheckedLst([]);
   }, [popup, selected]);
 
   return (
@@ -235,7 +265,14 @@ export default function Popup({
               </LeftColumn>
               <RightColumn>
                 <DateHeader>{formattedDate}</DateHeader>
-                <Timeslots bookable={bookable} selectedDate={date} />
+                <Timeslots
+                  bookable={bookable}
+                  selectedDate={date}
+                  checkedLst={checkedLst}
+                  uncheckedLst={uncheckedLst}
+                  setCheckedLst={setCheckedLst}
+                  setUncheckedLst={setUncheckedLst}
+                />
                 <BtnContainer>
                   <CancelBtn onClick={onClose}>Cancel</CancelBtn>
                   <SaveBtn onClick={handleConfirmOpen}>Save</SaveBtn>
@@ -247,9 +284,10 @@ export default function Popup({
             <TimeslotConfirmation
               handleClicked={handleSuccessOpen}
               handleCancelled={onClose}
-              status="book"
               date={date}
               setTs={setTs}
+              checkedLst={checkedLst}
+              uncheckedLst={uncheckedLst}
             />
           )}
           {confirmPopup && successPopup && (

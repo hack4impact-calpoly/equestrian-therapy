@@ -1,9 +1,7 @@
 import { useContext } from "react";
 import styled from "styled-components";
 import UserContext from "../../userContext";
-// import { Box } from "../styledComponents";
 import Timeslot from "./timeslot";
-// import { LazyTimeslot } from "../../models";
 
 const Wrapper = styled.section`
   display: flex;
@@ -34,9 +32,20 @@ interface TsData {
 interface TimeslotsProps {
   bookable: TsData[];
   selectedDate: Date;
+  checkedLst: string[];
+  uncheckedLst: string[];
+  setCheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
+  setUncheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-export default function Timeslots({ bookable, selectedDate }: TimeslotsProps) {
+export default function Timeslots({
+  bookable,
+  selectedDate,
+  checkedLst,
+  uncheckedLst,
+  setCheckedLst,
+  setUncheckedLst,
+}: TimeslotsProps) {
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
@@ -75,6 +84,10 @@ export default function Timeslots({ bookable, selectedDate }: TimeslotsProps) {
                   ? "2px solid #000000"
                   : "1px solid #c4c4c4"
               }
+              checkedLst={checkedLst}
+              uncheckedLst={uncheckedLst}
+              setCheckedLst={setCheckedLst}
+              setUncheckedLst={setUncheckedLst}
             />
           ))}
       </Slots>
