@@ -6,7 +6,13 @@ import { PopupDiv, PopupBox, X, CancelBtn, SaveBtn } from "../styledComponents";
 import Monthly from "../monthlyView";
 import AptInfo from "../appointmentInfo";
 import Timeslots from "./timeslots";
-import { User, LazyUser, LazyBooking, LazyTimeslot } from "../../models";
+import {
+  User,
+  Timeslot,
+  LazyUser,
+  LazyBooking,
+  LazyTimeslot,
+} from "../../models";
 import TimeslotConfirmation from "./timeslotConfirmation";
 import TimeslotSuccess from "./timeslotSuccess";
 import UserContext from "../../userContext";
@@ -130,7 +136,6 @@ export default function Popup({
 
   useLayoutEffect(() => {
     const ts: TsData[] = [];
-
     const fetchBookableRV = async (timeslot: LazyTimeslot) => {
       // available bookings are unbooked bookings, bookings booked by current user, and
       // bookings that are not in the unavailable dates set by admin
@@ -227,6 +232,10 @@ export default function Popup({
       return { volUsers, ridUsers };
     };
     const pullData = async () => {
+      if (!popup) {
+        const timeslotsArray = await DataStore.query(Timeslot);
+        setTs(timeslotsArray);
+      }
       if (selected) {
         const volBookingsArray = await selected.volunteerBookings.toArray(); // turns out the volunteer and rider booking arrays
         // in our objects just return the same thing so there's not really a point to them
@@ -285,7 +294,6 @@ export default function Popup({
               handleClicked={handleSuccessOpen}
               handleCancelled={onClose}
               date={date}
-              setTs={setTs}
               checkedLst={checkedLst}
               uncheckedLst={uncheckedLst}
             />
