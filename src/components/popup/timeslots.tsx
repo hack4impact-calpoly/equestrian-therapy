@@ -51,25 +51,26 @@ export default function Timeslots({
   const [realUser] = currentUser;
   const { userType } = realUser;
 
-  function filterTimeSlots(
-    isVolunteers: boolean,
-    ts: {
-      startTime: Date;
-      endTime: Date;
-      checked: boolean;
+  function filterTimeSlots(ts: {
+    startTime: Date;
+    endTime: Date;
+    checked: boolean;
+  }) {
+    switch (userType) {
+      case "Volunteer":
+        return ts.startTime.getHours() >= 9 && ts.startTime.getHours() < 17;
+      case "Rider":
+        return ts.startTime.getHours() >= 10 && ts.startTime.getHours() < 14;
+      default:
+        return ts;
     }
-  ) {
-    if (isVolunteers) {
-      return ts.startTime.getHours() >= 9 && ts.startTime.getHours() < 17;
-    }
-    return ts.startTime.getHours() >= 10 && ts.startTime.getHours() < 14;
   }
 
   return (
     <Wrapper>
       <Slots>
         {bookable
-          .filter((ts) => filterTimeSlots(userType === "Volunteer", ts))
+          .filter((ts) => filterTimeSlots(ts))
           .sort((a, b) => (a.startTime < b.startTime ? -1 : 1))
           .map((timeslot, i) => (
             <Timeslot // eslint-disable-next-line react/no-array-index-key
