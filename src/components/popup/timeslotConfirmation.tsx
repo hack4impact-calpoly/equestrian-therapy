@@ -1,16 +1,9 @@
 /* eslint-disable no-console */
-import { useContext, useState, useEffect } from "react";
+import { useContext } from "react";
 import styled from "styled-components";
-// import { useNavigate } from "react-router-dom";
 import { DataStore } from "aws-amplify";
 import UserContext from "../../userContext";
-import {
-  Timeslot,
-  User,
-  Booking,
-  LazyTimeslot,
-  LazyBooking,
-} from "../../models";
+import { Timeslot, User, Booking } from "../../models";
 import warning from "../../images/warning.svg";
 import { CancelBtn, SaveBtn, Description, Header } from "../styledComponents";
 
@@ -18,7 +11,6 @@ export type TimeslotConfirmProps = {
   handleClicked: () => void;
   handleCancelled: () => void;
   date: Date;
-  setTs: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
   checkedLst: string[];
   uncheckedLst: string[];
 };
@@ -64,7 +56,6 @@ export default function TimeSlotConfirmation({
   handleClicked,
   handleCancelled,
   date,
-  setTs,
   checkedLst,
   uncheckedLst,
 }: TimeslotConfirmProps) {
@@ -72,25 +63,12 @@ export default function TimeSlotConfirmation({
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   const { userType, id } = realUser;
-  const [newBooking, setNewBooking] = useState<LazyBooking>();
-
-  useEffect(() => {
-    const pullData = async () => {
-      const ts = await DataStore.query(Timeslot);
-      setTs(ts);
-    };
-    pullData();
-  }, [newBooking]);
 
   async function addUnavailability(ids: string[], unavailableDate: Date) {
     try {
-      ids.forEach(async (userId) => {
-        const original = await DataStore.query(Timeslot, userId);
-        if (
-          original !== null &&
-          original !== undefined &&
-          Array.isArray(original.unavailableDates)
-        ) {
+      ids.forEach(async (timeslotId) => {
+        const original = await DataStore.query(Timeslot, timeslotId);
+        if (original && Array.isArray(original.unavailableDates)) {
           const ymdDate = convertToYMD(new Date(unavailableDate));
           const updatedList = new Set(original.unavailableDates);
           if (!updatedList.has(ymdDate)) {
@@ -113,19 +91,13 @@ export default function TimeSlotConfirmation({
 
   async function deleteUnavailability(ids: string[], availableDate: Date) {
     try {
-      ids.forEach(async (userId) => {
-        const original = await DataStore.query(Timeslot, userId);
+      ids.forEach(async (timeslotId) => {
+        const original = await DataStore.query(Timeslot, timeslotId);
         if (original && Array.isArray(original.unavailableDates)) {
           const convertedDate = convertToYMD(new Date(availableDate));
-
-          const updatedList = original.unavailableDates.filter((dateString) => {
-            if (dateString !== null) {
-              const isoDate = convertToYMD(new Date(dateString));
-              return convertedDate !== isoDate;
-            }
-            return false;
-          });
-
+          const updatedList = original.unavailableDates.filter(
+            (dateString) => convertedDate !== dateString
+          );
           await DataStore.save(
             Timeslot.copyOf(original, (updated) => {
               updated.unavailableDates = updatedList; // eslint-disable-line no-param-reassign
@@ -147,11 +119,7 @@ export default function TimeSlotConfirmation({
   ) {
     try {
       const original = await DataStore.query(User, userID);
-      if (
-        original !== null &&
-        original !== undefined &&
-        original.userType === "Volunteer"
-      ) {
+      if (original && original.userType === "Volunteer") {
         const tempDate = new Date(bookedDate);
         const formattedDate = convertToYMD(tempDate);
         const descriptionStr: string = `User: ${userID} Booked Time: ${formattedDate}`;
@@ -163,14 +131,9 @@ export default function TimeSlotConfirmation({
             timeslotID: TimeslotID,
             userID,
           });
-          const booked = await DataStore.save(booking);
-          setNewBooking(booked);
+          await DataStore.save(booking);
         });
-      } else if (
-        original !== null &&
-        original !== undefined &&
-        original.userType === "Rider"
-      ) {
+      } else if (original && original.userType === "Rider") {
         if (TimeslotIDs.length === 1) {
           const tempDate = new Date(bookedDate);
           const formattedDate = convertToYMD(tempDate);
@@ -182,8 +145,7 @@ export default function TimeSlotConfirmation({
             timeslotID: TimeslotIDs[0],
             userID,
           });
-          const booked = await DataStore.save(booking);
-          setNewBooking(booked);
+          await DataStore.save(booking);
         }
       }
     } catch (error: unknown) {
@@ -194,11 +156,8 @@ export default function TimeSlotConfirmation({
   }
 
   async function deleteRVBooking(
-    TimeslotIDs: string[], // which time they want to cancel
-    userID: string
+    TimeslotIDs: string[] // which time they want to cancel
   ) {
-    console.log(TimeslotIDs);
-    console.log(userID);
     /*
     go through entire booking table, find the booking id that matches
     the timeslotid, and the date
@@ -224,8 +183,12 @@ export default function TimeSlotConfirmation({
 
   const handleConfirmationAdmin = () => {
     handleClicked();
-    addUnavailability(uncheckedLst, date); // YYYY-MM-DD
-    deleteUnavailability(checkedLst, date); // YYYY-MM-DD
+    if (uncheckedLst.length !== 0) {
+      addUnavailability(uncheckedLst, date); // YYYY-MM-DD
+    }
+    if (checkedLst.length !== 0) {
+      deleteUnavailability(checkedLst, date); // YYYY-MM-DD
+    }
   };
 
   const handleConfirmationRV = () => {
@@ -234,7 +197,7 @@ export default function TimeSlotConfirmation({
       addRVBooking(checkedLst, id, date);
     }
     if (uncheckedLst.length !== 0) {
-      deleteRVBooking(uncheckedLst, id);
+      deleteRVBooking(uncheckedLst);
     }
   };
 
@@ -244,7 +207,7 @@ export default function TimeSlotConfirmation({
 
   return (
     <div>
-      {userType === "admin" ? (
+      {userType === "Admin" ? (
         <Wrapper>
           <Warning src={warning} />
           <Header>Save changes?</Header>
