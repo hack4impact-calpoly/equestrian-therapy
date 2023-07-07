@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Auth } from "aws-amplify";
 import eyeSlash from "../images/eyeSlash.svg";
+import eye from "../images/eye.svg";
 import backArrow from "../images/backArrow.png";
 import {
   Wrapper,
@@ -126,9 +127,11 @@ export default function ResetPassword({ email }: EmailProps) {
             required
           />
           {/* changes the truth value of show password */}
-          <EyeSlash onClick={handleClickShowPassword}>
-            <img src={eyeSlash} alt="didn't work" />
-          </EyeSlash>
+          {input.showPassword ? (
+            <EyeSlash onClick={handleClickShowPassword} src={eye} />
+          ) : (
+            <EyeSlash onClick={handleClickShowPassword} src={eyeSlash} />
+          )}
         </PasswordContainer>
         <Label>Confirm New Password</Label>
         <PasswordContainer>
@@ -140,9 +143,11 @@ export default function ResetPassword({ email }: EmailProps) {
             onChange={onInputChange}
             required
           />
-          <EyeSlash onClick={handleClickShowPassword2}>
-            <img src={eyeSlash} alt="didn't work" />
-          </EyeSlash>
+          {input.showPassword2 ? (
+            <EyeSlash onClick={handleClickShowPassword2} src={eye} />
+          ) : (
+            <EyeSlash onClick={handleClickShowPassword2} src={eyeSlash} />
+          )}
         </PasswordContainer>
         <Button onClick={handleClick}>Submit</Button>
       </Box>
