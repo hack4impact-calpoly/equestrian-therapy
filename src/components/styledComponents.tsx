@@ -55,7 +55,7 @@ const Row = styled.div`
   display: flex;
   flex-direction: row;
 `;
-const CenteredHeader = styled.text`
+const CenteredHeader = styled.p`
   cursor: text;
   margin: 1.5rem 0rem;
 
@@ -110,7 +110,7 @@ const Input = styled.input`
   }
 `;
 
-const Description = styled.text`
+const Description = styled.p`
   font-family: "Rubik";
   font-style: normal;
   font-weight: 400;
@@ -120,7 +120,7 @@ const Description = styled.text`
   padding-bottom: 20px;
 `;
 
-const CenteredDescription = styled.text`
+const CenteredDescription = styled.p`
   font-family: "Rubik";
   font-style: normal;
   font-weight: 400;
@@ -130,13 +130,8 @@ const CenteredDescription = styled.text`
   padding-bottom: 20px;
 `;
 
-const Label = styled.text`
+const Label = styled.p`
   font-size: 18px;
-  padding-top: 15px;
-  padding-bottom: 5px;
-  @media (max-width: 500px) {
-    font-size: 14px;
-  }
 `;
 
 const PasswordContainer = styled.div`
@@ -145,14 +140,14 @@ const PasswordContainer = styled.div`
   width: 100%;
 `;
 
-const EyeSlash = styled.image`
+const EyeSlash = styled.img`
   cursor: pointer;
   position: absolute;
   align-self: center;
   padding-right: 5px;
 `;
 
-const Question = styled.text`
+const Question = styled.p`
   position: relative;
   font-size: 0.9rem;
   right: 5px;
@@ -176,7 +171,7 @@ const TextLink = styled(Link)`
   }
 `;
 
-const ErrorMessage = styled.text`
+const ErrorMessage = styled.p`
   flex: content;
   height: 8%;
   padding: 3%;

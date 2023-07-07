@@ -58,13 +58,10 @@ export default function Login() {
       });
 
       const posts = await DataStore.query(User, (c) => c.userName.eq(email));
-      console.log(posts);
       setUser(posts as User[]);
-      console.log("Success!");
 
       navigate("/");
     } catch (errore) {
-      console.log("error signing in", errore);
       if (errore instanceof Error) {
         setError(errore.message);
       } else {
@@ -108,13 +105,11 @@ export default function Login() {
 
         <Label>Password</Label>
         <PasswordContainer>
-          <EyeSlash onClick={togglePassword}>
-            {passwordShown ? (
-              <img src={eye} alt="did work" />
-            ) : (
-              <img src={eyeSlash} alt="didn't work" />
-            )}
-          </EyeSlash>
+          {passwordShown ? (
+            <EyeSlash onClick={togglePassword} src={eye} />
+          ) : (
+            <EyeSlash onClick={togglePassword} src={eyeSlash} />
+          )}
           <Input
             type={passwordShown ? "text" : "password"}
             value={password}

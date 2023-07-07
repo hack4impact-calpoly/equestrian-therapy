@@ -222,13 +222,11 @@ export default function CreateAccount() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <EyeSlash onClick={togglePassword}>
-            {passwordShown ? (
-              <img src={eye} alt="did work" />
-            ) : (
-              <img src={eyeSlash} alt="didn't work" />
-            )}
-          </EyeSlash>
+          {passwordShown ? (
+            <EyeSlash onClick={togglePassword} src={eye} />
+          ) : (
+            <EyeSlash onClick={togglePassword} src={eyeSlash} />
+          )}
         </PasswordContainer>
         <Button onClick={handleSubmit}>Sign Up</Button>
         <Question>

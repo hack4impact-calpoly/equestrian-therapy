@@ -16,6 +16,7 @@ const Logo = styled.img`
 `;
 
 const RiderInfo = styled.div`
+  display: flex;
   font-family: "Roboto";
   font-style: normal;
   font-weight: 700;
@@ -28,8 +29,7 @@ const RiderInfo = styled.div`
   margin-left: 2%;
   width: 100%;
 `;
-const RiderContent = styled.text`
-  flex-direction: row;
+const RiderContent = styled.p`
   width: 100%;
   margin-left: 10px;
   font-size: 16px;
@@ -75,7 +75,6 @@ export default function AppointmentInfo({
         )}
       </RiderInfo>
 
-      {/* {volunteerBookings.length > 0 && ( */}
       <RiderInfo>
         <Logo src={Dude} />
         {volunteerBookings.length > 0 && (

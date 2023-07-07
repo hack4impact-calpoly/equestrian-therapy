@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import styled from "styled-components";
 import "@fontsource/roboto";
 import UserContext from "../userContext";
@@ -53,7 +53,7 @@ type ToggleProps = {
   setToggleProp: (val: string) => void;
 };
 
-export default function AdminToggle({ setToggleProp }: ToggleProps) {
+export default function CalendarToggle({ setToggleProp }: ToggleProps) {
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
@@ -90,19 +90,21 @@ export default function AdminToggle({ setToggleProp }: ToggleProps) {
     // inverse the boolean state of passwordShown
     setShowAvailability(!showAvailability);
   };
-  if (showBoth && userType === "Admin") {
-    setToggleProp("both");
-  } else if (showAvailability && userType !== "Admin") {
-    setToggleProp("availability");
-  } else if (!showAvailability && userType !== "Admin") {
-    setToggleProp("slots");
-  } else if (showRiders) {
-    setToggleProp("riders");
-  } else if (showVolunteers) {
-    setToggleProp("volunteers");
-  } else {
-    setToggleProp("none");
-  }
+  useEffect(() => {
+    if (showBoth && userType === "Admin") {
+      setToggleProp("both");
+    } else if (showAvailability && userType !== "Admin") {
+      setToggleProp("availability");
+    } else if (!showAvailability && userType !== "Admin") {
+      setToggleProp("slots");
+    } else if (showRiders) {
+      setToggleProp("riders");
+    } else if (showVolunteers) {
+      setToggleProp("volunteers");
+    } else {
+      setToggleProp("none");
+    }
+  }, [showBoth, showRiders, showVolunteers, showAvailability]);
 
   return (
     <div>

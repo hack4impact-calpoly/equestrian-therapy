@@ -36,14 +36,14 @@ export default function ResetPassword({ email }: EmailProps) {
     code: "",
   });
   // const [showPassword, setShowPassword] = useState(false);
-  const [passwordShown, setPasswordShown] = useState(false);
+  const [passwordShown, setPasswordShown] = useState(true);
   // Password toggle handler
   const togglePassword = () => {
     // When the handler is invoked
     // inverse the boolean state of passwordShown
     setPasswordShown(!passwordShown);
   };
-  const [passwordShown1, setPasswordShown1] = useState(false);
+  const [passwordShown1, setPasswordShown1] = useState(true);
   // Password toggle handler
   const togglePassword1 = () => {
     // When the handler is invoked
@@ -139,13 +139,11 @@ export default function ResetPassword({ email }: EmailProps) {
             required
           />
           {/* changes the truth value of show password */}
-          <EyeSlash onClick={togglePassword}>
-            {passwordShown ? (
-              <img src={eye} alt="did work" />
-            ) : (
-              <img src={eyeSlash} alt="didn't work" />
-            )}
-          </EyeSlash>
+          {passwordShown ? (
+            <EyeSlash onClick={togglePassword} src={eye} />
+          ) : (
+            <EyeSlash onClick={togglePassword} src={eyeSlash} />
+          )}
         </PasswordContainer>
         <Label>Confirm New Password</Label>
         <PasswordContainer>
@@ -157,13 +155,11 @@ export default function ResetPassword({ email }: EmailProps) {
             onChange={onInputChange}
             required
           />
-          <EyeSlash onClick={togglePassword1}>
-            {passwordShown1 ? (
-              <img src={eye} alt="did work" />
-            ) : (
-              <img src={eyeSlash} alt="didn't work" />
-            )}
-          </EyeSlash>
+          {passwordShown1 ? (
+            <EyeSlash onClick={togglePassword1} src={eye} />
+          ) : (
+            <EyeSlash onClick={togglePassword1} src={eyeSlash} />
+          )}
         </PasswordContainer>
         <Button onClick={handleClick}>Submit</Button>
       </Box>
