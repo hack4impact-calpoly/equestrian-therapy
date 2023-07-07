@@ -1,8 +1,8 @@
-/***************************************************************************
+/** *************************************************************************
  * The contents of this file were generated with Amplify Studio.           *
  * Please refrain from making any modifications to this file.              *
  * Any changes to this file will be overwritten when running amplify pull. *
- **************************************************************************/
+ ************************************************************************* */
 
 /* eslint-disable */
 import * as React from "react";
@@ -169,47 +169,27 @@ export default function TimeslotCreateForm(props) {
     startTime: undefined,
     endTime: undefined,
     unavailableDates: [],
-    volunteerBookings: [],
-    riderBookings: [],
   };
   const [startTime, setStartTime] = React.useState(initialValues.startTime);
   const [endTime, setEndTime] = React.useState(initialValues.endTime);
   const [unavailableDates, setUnavailableDates] = React.useState(
     initialValues.unavailableDates
   );
-  const [volunteerBookings, setVolunteerBookings] = React.useState(
-    initialValues.volunteerBookings
-  );
-  const [riderBookings, setRiderBookings] = React.useState(
-    initialValues.riderBookings
-  );
   const [errors, setErrors] = React.useState({});
   const resetStateValues = () => {
     setStartTime(initialValues.startTime);
     setEndTime(initialValues.endTime);
     setUnavailableDates(initialValues.unavailableDates);
-    setCurrentUnavailableDatesValue(undefined);
-    setVolunteerBookings(initialValues.volunteerBookings);
-    setCurrentVolunteerBookingsValue(undefined);
-    setRiderBookings(initialValues.riderBookings);
-    setCurrentRiderBookingsValue(undefined);
+    setCurrentUnavailableDatesValue("");
     setErrors({});
   };
   const [currentUnavailableDatesValue, setCurrentUnavailableDatesValue] =
     React.useState(undefined);
   const unavailableDatesRef = React.createRef();
-  const [currentVolunteerBookingsValue, setCurrentVolunteerBookingsValue] =
-    React.useState(undefined);
-  const volunteerBookingsRef = React.createRef();
-  const [currentRiderBookingsValue, setCurrentRiderBookingsValue] =
-    React.useState(undefined);
-  const riderBookingsRef = React.createRef();
   const validations = {
     startTime: [],
     endTime: [],
     unavailableDates: [],
-    volunteerBookings: [],
-    riderBookings: [],
   };
   const runValidationTasks = async (fieldName, value) => {
     let validationResponse = validateField(value, validations[fieldName]);
@@ -232,8 +212,6 @@ export default function TimeslotCreateForm(props) {
           startTime,
           endTime,
           unavailableDates,
-          volunteerBookings,
-          riderBookings,
         };
         const validationResponses = await Promise.all(
           Object.keys(validations).reduce((promises, fieldName) => {
@@ -279,6 +257,7 @@ export default function TimeslotCreateForm(props) {
         isRequired={false}
         isReadOnly={false}
         type="time"
+        value={startTime}
         onChange={(e) => {
           let { value } = e.target;
           if (onChange) {
@@ -286,8 +265,6 @@ export default function TimeslotCreateForm(props) {
               startTime: value,
               endTime,
               unavailableDates,
-              volunteerBookings,
-              riderBookings,
             };
             const result = onChange(modelFields);
             value = result?.startTime ?? value;
@@ -307,6 +284,7 @@ export default function TimeslotCreateForm(props) {
         isRequired={false}
         isReadOnly={false}
         type="time"
+        value={endTime}
         onChange={(e) => {
           let { value } = e.target;
           if (onChange) {
@@ -314,8 +292,6 @@ export default function TimeslotCreateForm(props) {
               startTime,
               endTime: value,
               unavailableDates,
-              volunteerBookings,
-              riderBookings,
             };
             const result = onChange(modelFields);
             value = result?.endTime ?? value;
@@ -338,8 +314,6 @@ export default function TimeslotCreateForm(props) {
               startTime,
               endTime,
               unavailableDates: values,
-              volunteerBookings,
-              riderBookings,
             };
             const result = onChange(modelFields);
             values = result?.unavailableDates ?? values;
@@ -375,101 +349,6 @@ export default function TimeslotCreateForm(props) {
           hasError={errors.unavailableDates?.hasError}
           ref={unavailableDatesRef}
           {...getOverrideProps(overrides, "unavailableDates")}
-        ></TextField>
-      </ArrayField>
-      <ArrayField
-        onChange={async (items) => {
-          let values = items;
-          if (onChange) {
-            const modelFields = {
-              startTime,
-              endTime,
-              unavailableDates,
-              volunteerBookings: values,
-              riderBookings,
-            };
-            const result = onChange(modelFields);
-            values = result?.volunteerBookings ?? values;
-          }
-          setVolunteerBookings(values);
-          setCurrentVolunteerBookingsValue(undefined);
-        }}
-        currentFieldValue={currentVolunteerBookingsValue}
-        label={"Volunteer bookings"}
-        items={volunteerBookings}
-        hasError={errors.volunteerBookings?.hasError}
-        setFieldValue={setCurrentVolunteerBookingsValue}
-        inputFieldRef={volunteerBookingsRef}
-        defaultFieldValue={undefined}
-      >
-        <TextField
-          label="Volunteer bookings"
-          isRequired={false}
-          isReadOnly={false}
-          value={currentVolunteerBookingsValue}
-          onChange={(e) => {
-            let { value } = e.target;
-            if (errors.volunteerBookings?.hasError) {
-              runValidationTasks("volunteerBookings", value);
-            }
-            setCurrentVolunteerBookingsValue(value);
-          }}
-          onBlur={() =>
-            runValidationTasks(
-              "volunteerBookings",
-              currentVolunteerBookingsValue
-            )
-          }
-          errorMessage={errors.volunteerBookings?.errorMessage}
-          hasError={errors.volunteerBookings?.hasError}
-          ref={volunteerBookingsRef}
-          {...getOverrideProps(overrides, "volunteerBookings")}
-        ></TextField>
-      </ArrayField>
-      <ArrayField
-        onChange={async (items) => {
-          let values = items;
-          if (onChange) {
-            const modelFields = {
-              startTime,
-              endTime,
-              unavailableDates,
-              volunteerBookings,
-              riderBookings: values,
-            };
-            const result = onChange(modelFields);
-            values = result?.riderBookings ?? values;
-          }
-          setRiderBookings(values);
-          setCurrentRiderBookingsValue(undefined);
-        }}
-        currentFieldValue={currentRiderBookingsValue}
-        label={"Rider bookings"}
-        items={riderBookings}
-        hasError={errors.riderBookings?.hasError}
-        setFieldValue={setCurrentRiderBookingsValue}
-        inputFieldRef={riderBookingsRef}
-        defaultFieldValue={undefined}
-      >
-        <TextField
-          label="Rider bookings"
-          isRequired={false}
-          isReadOnly={false}
-          value={currentRiderBookingsValue}
-          onChange={(e) => {
-            let { value } = e.target;
-            if (errors.riderBookings?.hasError) {
-              runValidationTasks("riderBookings", value);
-            }
-            setCurrentRiderBookingsValue(value);
-          }}
-          onBlur={() =>
-            runValidationTasks("riderBookings", currentRiderBookingsValue)
-          }
-          errorMessage={errors.riderBookings?.errorMessage}
-          hasError={errors.riderBookings?.hasError}
-          ref={riderBookingsRef}
-          {...getOverrideProps(overrides, "riderBookings")}
         ></TextField>
       </ArrayField>
       <Flex

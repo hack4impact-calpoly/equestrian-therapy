@@ -1,8 +1,8 @@
-/***************************************************************************
+/** *************************************************************************
  * The contents of this file were generated with Amplify Studio.           *
  * Please refrain from making any modifications to this file.              *
  * Any changes to this file will be overwritten when running amplify pull. *
- **************************************************************************/
+ ************************************************************************* */
 
 /* eslint-disable */
 import * as React from "react";
@@ -13,8 +13,8 @@ import { Button, Flex, Grid, TextField } from "@aws-amplify/ui-react";
 import { DataStore } from "aws-amplify";
 export default function UserUpdateForm(props) {
   const {
-    id,
-    user,
+    id: idProp,
+    user: userModelProp,
     onSuccess,
     onError,
     onSubmit,
@@ -43,14 +43,16 @@ export default function UserUpdateForm(props) {
     setUserType(cleanValues.userType);
     setErrors({});
   };
-  const [userRecord, setUserRecord] = React.useState(user);
+  const [userRecord, setUserRecord] = React.useState(userModelProp);
   React.useEffect(() => {
     const queryData = async () => {
-      const record = id ? await DataStore.query(User, id) : user;
+      const record = idProp
+        ? await DataStore.query(User, idProp)
+        : userModelProp;
       setUserRecord(record);
     };
     queryData();
-  }, [id, user]);
+  }, [idProp, userModelProp]);
   React.useEffect(resetStateValues, [userRecord]);
   const validations = {
     userName: [],
@@ -236,7 +238,11 @@ export default function UserUpdateForm(props) {
         <Button
           children="Reset"
           type="reset"
-          onClick={resetStateValues}
+          onClick={(event) => {
+            event.preventDefault();
+            resetStateValues();
+          }}
+          isDisabled={!(idProp || userModelProp)}
           {...getOverrideProps(overrides, "ResetButton")}
         ></Button>
         <Flex
@@ -255,7 +261,10 @@ export default function UserUpdateForm(props) {
             children="Submit"
             type="submit"
             variation="primary"
-            isDisabled={Object.values(errors).some((e) => e?.hasError)}
+            isDisabled={
+              !(idProp || userModelProp) ||
+              Object.values(errors).some((e) => e?.hasError)
+            }
             {...getOverrideProps(overrides, "SubmitButton")}
           ></Button>
         </Flex>

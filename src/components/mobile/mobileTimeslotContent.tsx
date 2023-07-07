@@ -1,11 +1,14 @@
 import styled from "styled-components";
 import "@fontsource/roboto";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import Horse from "../../images/horseRider.svg";
 import Dude from "../../images/person.svg";
 import Bookmark from "../../images/bookmark.svg";
-import OnSlide from "../../images/onslider.png";
-import OffSlide from "../../images/offslider.png";
+import OnSlide from "../../images/OnSlider.png";
+import OffSlide from "../../images/OffSlider.png";
+import UserContext from "../../userContext";
+import MobileTimeSlotConfirmation from "./mobileTimeslotConfirmation";
+import TimeslotSuccess from "../popup/timeslotSuccess";
 
 const RiderInfo = styled.div`
   display: flex;
@@ -36,8 +39,10 @@ const BoxMobile = styled.div`
   display: flex;
   font-family: "Rubik", sans-serif;
   background: white;
-  // width: 85%;
+  width: 80%;
+  margin-left: -12%;
 `;
+
 const HeaderMobile = styled.h1`
   color: #1b4c5a;
   font-family: "Rubik";
@@ -48,31 +53,27 @@ const HeaderMobile = styled.h1`
   margin-bottom: 13%;
   margin-left: 2%;
 `;
+
 const WrapperMobile = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  margin-bottom: 10px;
 `;
+
 const BoxMobileContent = styled.div`
   display: flex;
   flex-direction: column;
   margin: 4%;
-  width: 310px;
+  width: 300px;
 `;
+
 const RiderContent = styled.text`
   flex-direction: row;
   width: 100%;
   margin-left: 10px;
   font-size: 16px;
   font-weight: 700;
-`;
-
-const TimeslotButtonWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
 `;
 const TimeslotButton = styled.button`
   color: #1b4c5a;
@@ -81,6 +82,7 @@ const TimeslotButton = styled.button`
   font-weight: 700;
   font-size: 14px;
   line-height: 16px;
+  margin-left: 45%;
   margin-bottom: 5%;
   cursor: pointer;
 `;
@@ -90,140 +92,177 @@ const OnOffSlide = styled.img`
   margin-left: 75%;
   margin-top: 20%;
 `;
-type UserType = {
-  user: string;
-  bookings: number;
+
+type TimeslotMobileContentProps = {
+  bookingsfake: number;
+  date: Date;
+  tId: string;
+  setRequery: (requery: boolean) => void;
 };
-// READ: bookings prop will always be 1 or -1 cause I hardcoded the initial value of bookings
-// (line 103) so it turns back to 0 every run. Hopefully this logic works once we get the
-// props working on the other pages.
-export default function TimeslotMobileContent({ user, bookings }: UserType) {
+
+export default function TimeslotMobileContent({
+  bookingsfake,
+  date,
+  tId,
+  setRequery,
+}: TimeslotMobileContentProps) {
   const [booked, setBooked] = useState(true);
   const [onOff, setOnOff] = useState(true);
+  const [confirmationShown, setConfirmationShown] = useState(false);
+  const [successShown, setSuccessShown] = useState(false);
+  const currentUserFR = useContext(UserContext);
+  const { currentUser } = currentUserFR;
+  const [realUser] = currentUser;
+  const { userType } = realUser;
 
   // eslint-disable-next-line no-param-reassign
-  bookings = 0;
+  // bookings = 0;
   const handleSlide = () => {
     setOnOff(!onOff);
   };
+
+  const handleConfirmationShown = () => {
+    setConfirmationShown(true);
+  };
+
+  const handleSuccessShown = () => {
+    setSuccessShown(true);
+  };
+
+  const handleCancelled = () => {
+    setSuccessShown(false);
+    setConfirmationShown(false);
+  };
+
   const handleClick = () => {
     // Keeping track of the bookings for the user type because rider can't book
     // more than one sesh
     if (booked === false) {
       // add one from bookings if they add their booking
       // eslint-disable-next-line no-param-reassign
-      bookings += 1;
+      bookingsfake += 1;
       setBooked(!booked);
-    } else if (user === "rider" && bookings === 1) {
+    } else if (userType === "Rider" && bookingsfake === 1) {
       // if they're a rider and already have a booking don't add more
       // eslint-disable-next-line no-param-reassign
-      bookings = 1;
+      bookingsfake = 1;
     } else {
       // minus one from bookings if they cancel
       // eslint-disable-next-line no-param-reassign
-      bookings -= 1;
+      bookingsfake -= 1;
       setBooked(!booked);
     }
     // eslint-disable-next-line no-console
     // console.log(bookings);
   };
 
-  // HARD CODED
-  // eslint-disable-next-line no-param-reassign
-  // user = "admin";
-  // eslint-disable-next-line no-console
-  // console.log(user);
-  // eslint-disable-next-line no-console
-  // console.log(booked);
-  // eslint-disable-next-line no-console
-  // console.log("onOff", onOff);
   return (
     <WrapperMobile>
-      <BoxMobile>
-        <BoxMobileContent>
-          <HeaderMobile>Appointment Info</HeaderMobile>
-          <RiderInfo
-            style={{
-              display:
-                (user === "admin" && onOff === true) ||
-                user === "rider" ||
-                user === "volunteer"
-                  ? "flex"
-                  : "none",
-            }}
-          >
-            <LogoRider src={Horse} />{" "}
-            <RiderContent> Riders: Jane Doe, John Smith</RiderContent>
-          </RiderInfo>
+      <BoxMobile style={{ display: "block" }}>
+        {!confirmationShown && (
+          <BoxMobileContent>
+            <HeaderMobile>Appointment Info</HeaderMobile>
+            <RiderInfo
+              style={{
+                display:
+                  (userType === "Admin" && onOff === true) ||
+                  userType === "Rider" ||
+                  userType === "Volunteer"
+                    ? "block"
+                    : "none",
+              }}
+            >
+              <LogoRider src={Horse} />{" "}
+              <RiderContent> Riders: Jane Doe, John Smith</RiderContent>
+            </RiderInfo>
 
-          <RiderInfo
-            style={{
-              display:
-                user === "rider" || (user === "admin" && onOff === false)
-                  ? "none"
-                  : "flex",
-            }}
-          >
-            <LogoDude src={Dude} />{" "}
-            <RiderContent>Volunteers: Jane Doe, John Smith</RiderContent>
-          </RiderInfo>
-          {booked === false ? (
-            <RiderInfo style={{ display: user === "admin" ? "none" : "flex" }}>
-              <LogoBookmark src={Bookmark} />{" "}
-              <RiderContent>Status: Booked</RiderContent>
+            <RiderInfo
+              style={{
+                display:
+                  userType === "Rider" ||
+                  (userType === "Admin" && onOff === false)
+                    ? "none"
+                    : "block",
+              }}
+            >
+              <LogoDude src={Dude} />{" "}
+              <RiderContent>Volunteers: Jane Doe, John Smith</RiderContent>
             </RiderInfo>
-          ) : (
-            <RiderInfo style={{ display: user === "admin" ? "none" : "flex" }}>
-              <LogoBookmark src={Bookmark} />{" "}
-              <RiderContent>Status: Unbooked</RiderContent>
-            </RiderInfo>
-          )}
-          {/* don't have a way of counting number of bookings for people across multiple sessions yet 
+            {booked === false ? (
+              <RiderInfo
+                style={{ display: userType === "Admin" ? "none" : "block" }}
+              >
+                <LogoBookmark src={Bookmark} />{" "}
+                <RiderContent>Status: Booked</RiderContent>
+              </RiderInfo>
+            ) : (
+              <RiderInfo
+                style={{ display: userType === "Admin" ? "none" : "block" }}
+              >
+                <LogoBookmark src={Bookmark} />{" "}
+                <RiderContent>Status: Unbooked</RiderContent>
+              </RiderInfo>
+            )}
+            {/* don't have a way of counting number of bookings for people across multiple sessions yet 
               because I am only making the appt pop up. Will probably have to add more functionality
               when implementing the pop up in the calendar */}
-          {booked === true ? (
-            <TimeslotButtonWrapper>
+            {booked === true ? (
               <TimeslotButton
                 style={{
                   display:
-                    user === "admin" || (user === "rider" && bookings === 1)
+                    userType === "Admin" ||
+                    (userType === "Rider" && bookingsfake === 1)
                       ? "none"
-                      : "flex",
+                      : "block",
                 }}
-                onClick={handleClick}
+                onClick={handleConfirmationShown}
               >
                 Book time slot
               </TimeslotButton>
-            </TimeslotButtonWrapper>
-          ) : (
-            <TimeslotButtonWrapper>
+            ) : (
               <TimeslotButton
                 style={{
                   display:
-                    user === "admin" || (user === "rider" && bookings === 1)
+                    userType === "Admin" ||
+                    (userType === "Rider" && bookingsfake === 1)
                       ? "none"
-                      : "flex",
+                      : "block",
                 }}
                 onClick={handleClick}
               >
                 Cancel time slot
               </TimeslotButton>
-            </TimeslotButtonWrapper>
-          )}
-          {onOff === true ? (
-            <OnOffSlide
-              style={{ display: user === "admin" ? "flex" : "none" }}
-              onClick={handleSlide}
-              src={OnSlide}
+            )}
+            {onOff === true ? (
+              <OnOffSlide
+                style={{ display: userType === "Admin" ? "block" : "none" }}
+                onClick={handleSlide}
+                src={OnSlide}
+              />
+            ) : (
+              <OnOffSlide
+                style={{ display: userType === "Admin" ? "block" : "none" }}
+                onClick={handleSlide}
+                src={OffSlide}
+              />
+            )}
+          </BoxMobileContent>
+        )}
+        {confirmationShown && !successShown && (
+          <BoxMobileContent>
+            <MobileTimeSlotConfirmation
+              handleClicked={handleSuccessShown}
+              handleCancelled={handleCancelled}
+              status="book"
+              date={date}
+              tId={tId}
+              setRequery={setRequery}
             />
-          ) : (
-            <OnOffSlide
-              style={{ display: user === "admin" ? "flex" : "none" }}
-              onClick={handleSlide}
-              src={OffSlide}
-            />
-          )}
-        </BoxMobileContent>
+          </BoxMobileContent>
+        )}
+        {confirmationShown && successShown && (
+          <TimeslotSuccess handleCancelled={handleCancelled} />
+        )}
       </BoxMobile>
     </WrapperMobile>
   );

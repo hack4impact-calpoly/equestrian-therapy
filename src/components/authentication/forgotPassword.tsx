@@ -76,7 +76,7 @@ export default function forgotPassword({ setEmailProp }: ForgotPasswordProps) {
         <Label>Email</Label>
         <Input
           placeholder=""
-          type="email"
+          type="text"
           className="invalidEmail"
           value={email} // add newEmail as the input's value
           onChange={(e: ChangeEvent<HTMLInputElement>) => {

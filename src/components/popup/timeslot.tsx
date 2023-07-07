@@ -1,19 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import styled from "styled-components";
-import { Box } from "../styledComponents";
 import Checked from "../../images/Checked.png";
 import Unchecked from "../../images/Unchecked.png";
-import On from "../../images/onslider.png";
-import Off from "../../images/offslider.png";
-
-const TimeBox = styled(Box)`
-  white-space: nowrap;
-  text-overflow: clip;
-  border: 0;
-  box-shadow: none;
-  padding: 0;
-  width: 100%;
-`;
+import On from "../../images/OnSlider.png";
+import Off from "../../images/OffSlider.png";
+import UserContext from "../../userContext";
 
 const ButtonToggle = styled.button`
   cursor: pointer;
@@ -36,51 +27,72 @@ const UnCheckedImg = styled.img`
   align-self: left;
 `;
 
-const OnSliderImg = styled.img`
+const SliderImg = styled.img`
   width: 80px;
   margin: 0px;
   align-self: left;
+  padding-right: 20px;
 `;
 
-const OffSliderImg = styled.img`
-  width: 80px;
-  margin: 0px;
-  align-self: left;
-`;
-
-const Slot = styled(Box)`
-  /* font-family: "Rubik", sans-serif;
+const Slot = styled.div<{ border: string }>`
   align-items: center;
   justify-content: center;
-  border: 1px solid #c4c4c4;
-  /* box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); */
-  /* height: 30vh; /* For 10% screen height */
-  /* width: 30vw; /* For 10% screen width */
+  border: ${({ border }) => border};
   display: flex;
   flex-direction: row;
   padding: 3%;
   align-items: left;
-  /* border: none; */
-  width: 80%;
-  // width: fit-content;
   block-size: fit-content;
 `;
 
+const TimeslotText = styled.p`
+  padding-left: 50px;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+`;
+
 interface TimeslotProps {
-  userType: "volunteer" | "rider" | "admin";
   startTime: Date;
   endTime: Date;
+  tsId: string;
+  checked: boolean;
+  border: string;
+  checkedLst: string[];
+  uncheckedLst: string[];
+  setCheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
+  setUncheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 export default function Timeslot({
-  userType,
   startTime,
   endTime,
+  tsId,
+  checked,
+  border,
+  checkedLst,
+  uncheckedLst,
+  setCheckedLst,
+  setUncheckedLst,
 }: TimeslotProps) {
-  const [isChecked, setIsChecked] = useState(false);
+  const [isChecked, setIsChecked] = useState(checked);
+  const currentUserFR = useContext(UserContext);
+  const { currentUser } = currentUserFR;
+  const [realUser] = currentUser;
+  const { userType } = realUser;
+
+  // console.log("The timeslot is: ", startTime, "THE BORDER IS: ", border);
 
   const toggleChecked = () => {
-    setIsChecked(!isChecked);
+    if (isChecked) {
+      setUncheckedLst(uncheckedLst.concat(tsId));
+      setCheckedLst(uncheckedLst.filter((id) => id !== tsId));
+      setIsChecked(!isChecked);
+    } else {
+      setCheckedLst(checkedLst.concat(tsId));
+      setUncheckedLst(uncheckedLst.filter((id) => id !== tsId));
+      setIsChecked(!isChecked);
+    }
   };
   const formatTime = (time: Date) =>
     time.toLocaleTimeString([], {
@@ -89,9 +101,11 @@ export default function Timeslot({
     });
 
   return (
-    <Slot>
-      <TimeBox>{`${formatTime(startTime)} to ${formatTime(endTime)}`}</TimeBox>
-      {userType === "volunteer" ? (
+    <Slot border={border}>
+      <TimeslotText>
+        {`${formatTime(startTime)} to ${formatTime(endTime)}`}
+      </TimeslotText>
+      {userType === "Volunteer" ? (
         <ButtonToggle onClick={toggleChecked}>
           {isChecked ? (
             <CheckedImg src={Checked} alt="Checked Img" />
@@ -102,9 +116,9 @@ export default function Timeslot({
       ) : (
         <ButtonToggle onClick={toggleChecked}>
           {isChecked ? (
-            <OnSliderImg src={On} alt="On Img" />
+            <SliderImg src={On} alt="On Img" />
           ) : (
-            <OffSliderImg src={Off} alt="Off Img" />
+            <SliderImg src={Off} alt="Off Img" />
           )}
         </ButtonToggle>
       )}

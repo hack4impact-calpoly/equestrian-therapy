@@ -4,3 +4,4 @@ docs
 .eslintignore
 .gitignore
 *.jpg
+*.png

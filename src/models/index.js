@@ -4,10 +4,10 @@ import { schema } from './schema';
 
 
 
-const { Timeslot, Event, User } = initSchema(schema);
+const { Timeslot, Booking, User } = initSchema(schema);
 
 export {
   Timeslot,
-  Event,
+  Booking,
   User
 };

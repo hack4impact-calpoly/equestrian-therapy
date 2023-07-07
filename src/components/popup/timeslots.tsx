@@ -1,103 +1,94 @@
-import React from "react";
+import { useContext } from "react";
 import styled from "styled-components";
-import { Box } from "../styledComponents";
+import UserContext from "../../userContext";
 import Timeslot from "./timeslot";
 
 const Wrapper = styled.section`
   display: flex;
   align-items: left;
-  justify-content: center;
-  padding: 4%;
-  max-height: 600px;
+  width: 100%;
+  max-height: 400px;
   overflow-y: scroll;
 `;
 
-const Slots = styled(Box)`
+const Slots = styled.div`
   //justify content limits view of timeslots
   /* display: flex; */
   flex-direction: column;
-  align-items: center;
-  // For 100% screen height
-  /* width: max; */
-  //width: 70vw; /* For 100% screen width */
   border: none;
   box-shadow: none;
   width: 100%;
   height: 100%;
+  font-family: "Rubik", sans-serif;
 `;
 
-const timeslots = [
-  {
-    startTime: new Date(2023, 2, 7, 9, 0),
-    endTime: new Date(2023, 2, 7, 10, 30),
-    checked: false,
-  },
-  {
-    startTime: new Date(2023, 2, 7, 9, 30),
-    endTime: new Date(2023, 2, 7, 10, 0),
-    checked: false,
-  },
-  {
-    startTime: new Date(2023, 2, 7, 10, 0),
-    endTime: new Date(2023, 2, 7, 10, 30),
-    checked: false,
-  },
-  {
-    startTime: new Date(2023, 2, 7, 10, 35),
-    endTime: new Date(2023, 2, 7, 11, 5),
-    checked: false,
-  },
-  {
-    startTime: new Date(2023, 2, 7, 13, 0),
-    endTime: new Date(2023, 2, 7, 14, 0),
-    checked: false,
-  },
-  {
-    startTime: new Date(2023, 2, 7, 14, 0),
-    endTime: new Date(2023, 2, 7, 15, 0),
-    checked: false,
-  },
-  {
-    startTime: new Date(2023, 2, 7, 15, 0),
-    endTime: new Date(2023, 2, 7, 16, 0),
-    checked: false,
-  },
-  {
-    startTime: new Date(2023, 2, 7, 16, 0),
-    endTime: new Date(2023, 2, 7, 17, 0),
-    checked: false,
-  },
-];
-
-interface TimeslotsProps {
-  userType: "volunteer" | "rider";
+interface TsData {
+  startTime: Date;
+  endTime: Date;
+  checked: boolean;
+  id: string;
 }
 
-export default function Timeslots({ userType }: TimeslotsProps) {
-  function filterTimeSlots(
-    isVolunteers: boolean,
-    ts: {
-      startTime: Date;
-      endTime: Date;
-      checked: boolean;
+interface TimeslotsProps {
+  bookable: TsData[];
+  selectedDate: Date;
+  checkedLst: string[];
+  uncheckedLst: string[];
+  setCheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
+  setUncheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
+}
+
+export default function Timeslots({
+  bookable,
+  selectedDate,
+  checkedLst,
+  uncheckedLst,
+  setCheckedLst,
+  setUncheckedLst,
+}: TimeslotsProps) {
+  const currentUserFR = useContext(UserContext);
+  const { currentUser } = currentUserFR;
+  const [realUser] = currentUser;
+  const { userType } = realUser;
+
+  function filterTimeSlots(ts: {
+    startTime: Date;
+    endTime: Date;
+    checked: boolean;
+  }) {
+    switch (userType) {
+      case "Volunteer":
+        return ts.startTime.getHours() >= 9 && ts.startTime.getHours() < 17;
+      case "Rider":
+        return ts.startTime.getHours() >= 10 && ts.startTime.getHours() < 14;
+      default:
+        return ts;
     }
-  ) {
-    if (isVolunteers) {
-      return ts.startTime.getHours() >= 9 && ts.endTime.getHours() <= 17;
-    }
-    return ts.startTime.getHours() >= 10 && ts.endTime.getHours() <= 14;
   }
 
   return (
     <Wrapper>
       <Slots>
-        {timeslots
-          .filter((ts) => filterTimeSlots(userType === "volunteer", ts))
-          .map((timeslot) => (
-            <Timeslot
-              userType={userType}
+        {bookable
+          .filter((ts) => filterTimeSlots(ts))
+          .sort((a, b) => (a.startTime < b.startTime ? -1 : 1))
+          .map((timeslot, i) => (
+            <Timeslot // eslint-disable-next-line react/no-array-index-key
+              key={i}
               startTime={timeslot.startTime}
               endTime={timeslot.endTime}
+              tsId={timeslot.id}
+              checked={timeslot.checked}
+              border={
+                timeslot.startTime.getHours() === selectedDate.getHours() &&
+                timeslot.startTime.getMinutes() === selectedDate.getMinutes()
+                  ? "2px solid #000000"
+                  : "1px solid #c4c4c4"
+              }
+              checkedLst={checkedLst}
+              uncheckedLst={uncheckedLst}
+              setCheckedLst={setCheckedLst}
+              setUncheckedLst={setUncheckedLst}
             />
           ))}
       </Slots>

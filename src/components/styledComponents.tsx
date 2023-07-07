@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import { Modal } from "@mui/material";
 import "@fontsource/rubik";
 import "@fontsource/roboto";
 
@@ -32,7 +33,7 @@ const Box = styled.section`
   }
 `;
 
-const Header = styled.text`
+const Header = styled.p`
   display: flex;
   cursor: text;
   margin: 1.5rem 0rem;
@@ -191,6 +192,50 @@ const ErrorMessage = styled.text`
   margin-bottom: 10px;
 `;
 
+const PopupDiv = styled(Modal)`
+  padding-left: 14px;
+  padding-right: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const PopupBox = styled.div`
+  width: 70rem;
+  height: auto;
+  background: #ffffff;
+  border: none;
+`;
+const X = styled.img`
+  width: 2rem;
+  height: 2rem;
+  padding: 2rem;
+  cursor: pointer;
+`;
+
+const CancelBtn = styled.button`
+  background-color: white;
+  border: 4px solid #1b4c5a;
+  color: #1b4c5a;
+  font-family: "Rubik";
+  font-weight: 700;
+  font-size: 16pt;
+  width: 250px;
+  height: 60px;
+  cursor: pointer;
+`;
+
+const SaveBtn = styled.button`
+  background-color: #1b4c5a;
+  color: white;
+  border: 4px solid #1b4c5a;
+  font-family: "Rubik";
+  font-weight: 700;
+  font-size: 16pt;
+  width: 250px;
+  height: 60px;
+  cursor: pointer;
+`;
+
 export {
   Wrapper,
   Box,
@@ -208,4 +253,9 @@ export {
   TextLink,
   ErrorMessage,
   Row,
+  PopupDiv,
+  PopupBox,
+  X,
+  CancelBtn,
+  SaveBtn,
 };

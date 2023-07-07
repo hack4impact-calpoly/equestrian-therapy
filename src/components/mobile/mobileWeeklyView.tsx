@@ -11,8 +11,9 @@ const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
     padding: 8%;
-    padding-top: 10%;
+    padding-top: 0%;
   }
+  margin-bottom: 16%;
 `;
 
 const Head = styled.div`
@@ -45,8 +46,10 @@ const ChevronRight = styled.img`
   display: block;
   transform: scaleX(-1);
 `;
+
 const WeekDates = styled.table`
   @media (max-width: 500px) {
+    table-layout: fixed;
     width: 100%;
     padding-top: 5%;
     font-weight: lighter;
@@ -54,18 +57,8 @@ const WeekDates = styled.table`
     td {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: space-evenly;
     }
-  }
-`;
-const Header1 = styled.text`
-  display: none;
-  @media (max-width: 500px) {
-    display: flex;
-    align-self: left;
-    font-size: 140%;
-    padding-bottom: 8%;
-    color: #1b4c5a;
   }
 `;
 
@@ -80,34 +73,78 @@ const Month = styled.text`
   }
 `;
 
+// setter props for setting the currently selected date to pass into mobile calendar + start date
 interface WeeklyViewMobileProps {
-  startDate: Date;
+  currentDate: Date;
+  setCurrentDate: (val: Date) => void;
+  setDayProp: (val: string) => void;
+  setMonthProp: (val: string) => void;
+  setWeekdayProp: (val: string) => void;
 }
 
-export default function WeeklyViewMobile({ startDate }: WeeklyViewMobileProps) {
-  const [currentDate, setCurrentDate] = useState(startDate);
+export default function WeeklyViewMobile({
+  currentDate,
+  setCurrentDate,
+  setDayProp,
+  setMonthProp,
+  setWeekdayProp,
+}: WeeklyViewMobileProps) {
   const days: Date[] = [];
+  // for getting todays day
+  const currentTime = new Date();
+  const currentDay = currentTime.getDay();
+  // selected date will start on todays date
+  const [selected, setSelected] = useState(currentDay);
+
+  function getStartOfWeek(day: Date): Date {
+    const dateCopy = new Date(day.getTime());
+    const diff = dateCopy.getDate() - dateCopy.getDay();
+    return new Date(dateCopy.setDate(diff));
+  }
+
   for (let i = 0; i < 7; i++) {
-    days.push(new Date(currentDate.getTime() + i * 24 * 60 * 60 * 1000));
+    days.push(
+      new Date(getStartOfWeek(currentDate).getTime() + i * 24 * 60 * 60 * 1000)
+    );
   }
 
   const handleNextWeek = () => {
-    setCurrentDate(new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000));
+    setCurrentDate(
+      new Date(getStartOfWeek(currentDate).getTime() + 7 * 24 * 60 * 60 * 1000)
+    );
+    setSelected(0);
   };
 
   const handlePrevWeek = () => {
-    setCurrentDate(new Date(currentDate.getTime() - 7 * 24 * 60 * 60 * 1000));
+    setCurrentDate(
+      new Date(getStartOfWeek(currentDate).getTime() - 7 * 24 * 60 * 60 * 1000)
+    );
+    setSelected(0);
   };
 
-  function getStartOfWeek(day: Date): Date {
-    const diff = day.getDate() - day.getDay() + (day.getDay() === -1 ? -7 : 0);
-    return new Date(day.setDate(diff));
+  function handleUpdating(i: number) {
+    setSelected(i);
+    setCurrentDate(days[i]);
+    setDayProp(
+      days[i].toLocaleDateString("en-us", {
+        day: "numeric",
+      })
+    );
+    // setting the currently selected day of the week
+    setWeekdayProp(
+      days[i].toLocaleDateString("en-us", {
+        weekday: "short",
+      })
+    );
+    const month = days[i].toLocaleDateString("en-us", {
+      month: "long",
+    });
+    setMonthProp(month);
   }
 
   return (
     <Wrapper>
       <Head>
-        <Header1>Schedule</Header1>
         <WeeklySwitch>
           <Arrow type="button" onClick={handlePrevWeek}>
             <ChevronLeft src={chevronLeft} />
@@ -134,8 +171,22 @@ export default function WeeklyViewMobile({ startDate }: WeeklyViewMobileProps) {
             ))}
           </tr>
           <tr>
-            {days.map((day) => (
-              <th key={day.toDateString()}>
+            {days.map((day, i) => (
+              <th
+                // eslint-disable-next-line react/no-array-index-key
+                key={i}
+                style={{
+                  clipPath:
+                    i === selected ? "circle(13px at 50% 50%)" : "initial",
+                  color: "#000000",
+                  background: i === selected ? "#e0eff1" : "initial",
+                  paddingTop: "10px",
+                  paddingBottom: "10px",
+                }}
+                onClick={() => {
+                  handleUpdating(i);
+                }}
+              >
                 {day.toLocaleDateString("en-us", { day: "numeric" })}
               </th>
             ))}

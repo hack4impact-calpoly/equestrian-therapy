@@ -1,10 +1,12 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useContext, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { Auth } from "aws-amplify";
+import { Auth, DataStore } from "aws-amplify";
 import logoPic from "../../images/PETlogo.jpg";
 import eyeSlash from "../../images/eyeSlash.svg";
 import eye from "../../images/eye.svg";
+import UserContext from "../../userContext";
+
 import {
   Wrapper,
   Box,
@@ -17,6 +19,9 @@ import {
   TextLink,
   ErrorMessage,
 } from "../styledComponents";
+import { User } from "../../models";
+
+// import { Users } from "../../types";
 
 const Logo = styled.img`
   display: flex;
@@ -26,13 +31,17 @@ const Logo = styled.img`
 `;
 
 export default function Login() {
-  // const [user, setUser] = useState("");
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
+  // const [verifiedEmail, setVerifiedEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const { setUser } = useContext(UserContext);
+  // const [users, setUserModels] = useState<User[]>([]);
   // Initialize a boolean state
   const [passwordShown, setPasswordShown] = useState(false);
+  // const [currentUser, setCurrentUser] = useState<User[]>([]);
+  // const [userName] = useContext(email);
   // Password toggle handler
   const togglePassword = () => {
     // When the handler is invoked
@@ -42,14 +51,17 @@ export default function Login() {
 
   async function signIn() {
     try {
-      console.log(email);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { user } = await Auth.signIn({
         username: email,
         password,
       });
+
+      const posts = await DataStore.query(User, (c) => c.userName.eq(email));
+      console.log(posts);
+      setUser(posts as User[]);
       console.log("Success!");
-      console.log(user);
-      // Navigates to Home page with weekly calendar
+
       navigate("/");
     } catch (errore) {
       console.log("error signing in", errore);
@@ -80,7 +92,7 @@ export default function Login() {
         <Label>Email</Label>
         <Input
           placeholder=""
-          type="email"
+          type="text"
           value={email} // add newEmail as the input's value
           onChange={(e: ChangeEvent<HTMLInputElement>) => {
             setEmail(e.target.value);

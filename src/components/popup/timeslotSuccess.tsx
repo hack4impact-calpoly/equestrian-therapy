@@ -1,14 +1,21 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import logo from "../../images/horseRider.svg";
 import {
-  Wrapper,
-  Box,
   Button,
   CenteredDescription,
   CenteredHeader,
 } from "../styledComponents";
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-left: 15%;
+  padding-right: 15%;
+  padding-bottom: 10%;
+`;
 
 const Logo = styled.img`
   width: 2.5em;
@@ -17,23 +24,21 @@ const Logo = styled.img`
   margin-right: auto;
 `;
 
-export default function timeslotSuccess() {
-  const navigate = useNavigate();
+export type TimeslotSuccessProps = {
+  handleCancelled: () => void;
+};
 
-  const handleClick = () => {
-    navigate("/");
-  };
-
+export default function timeslotSuccess({
+  handleCancelled,
+}: TimeslotSuccessProps) {
   return (
     <Wrapper>
-      <Box>
-        <Logo src={logo} />
-        <CenteredHeader>Success!</CenteredHeader>
-        <CenteredDescription>
-          You have successfully made changes to one or more time slots.
-        </CenteredDescription>
-        <Button onClick={handleClick}>Return to Calendar</Button>
-      </Box>
+      <Logo src={logo} />
+      <CenteredHeader>Success!</CenteredHeader>
+      <CenteredDescription>
+        You have successfully made changes to one or more time slots.
+      </CenteredDescription>
+      <Button onClick={handleCancelled}>Return to Calendar</Button>
     </Wrapper>
   );
 }

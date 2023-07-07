@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Auth } from "aws-amplify";
+import { DataStore } from "@aws-amplify/datastore";
 import styled from "styled-components";
+import { User } from "../../models";
 import eyeSlash from "../../images/eyeSlash.svg";
 import eye from "../../images/eye.svg";
 import backArrow from "../../images/backArrow.png";
@@ -96,6 +98,16 @@ export default function CreateAccount() {
           enabled: true,
         },
       });
+
+      // add user to Datastore
+      await DataStore.save(
+        new User({
+          userName: email,
+          firstName,
+          lastName,
+          userType: role,
+        })
+      );
       // eslint-disable-next-line no-console
       console.log(user);
       localStorage.setItem("username", email);
@@ -110,7 +122,6 @@ export default function CreateAccount() {
       }
     }
   }
-
   const handleSubmit = () => {
     setError("");
 
