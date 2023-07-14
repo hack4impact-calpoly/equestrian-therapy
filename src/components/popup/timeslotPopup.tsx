@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useContext, useMemo } from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
 import styled from "styled-components";
 import { DataStore } from "@aws-amplify/datastore";
 import x from "../../images/X.svg";
@@ -110,6 +110,7 @@ export default function Popup({
   const [riderBookings, setRidBookings] = useState<LazyUser[]>([]);
   const [checkedLst, setCheckedLst] = useState<string[]>([]);
   const [uncheckedLst, setUncheckedLst] = useState<string[]>([]);
+  const [bookedToday, setBookedToday] = useState(1);
 
   const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
@@ -134,12 +135,14 @@ export default function Popup({
   };
   const selected = useMemo(() => getSelected(), [popup]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const ts: TsData[] = [];
+    let countBookedToday = 0;
     const fetchBookableRV = async (timeslot: LazyTimeslot) => {
       // available bookings are unbooked bookings, bookings booked by current user, and
       // bookings that are not in the unavailable dates set by admin
       let bookings;
+      let countBookings = 0;
       if (userType === "Volunteer") {
         bookings = await timeslot.volunteerBookings.toArray();
       } else {
@@ -152,6 +155,7 @@ export default function Popup({
           if (booking.date) {
             if (booking.date === convertToYMD(date)) {
               if (booking.userID === id) {
+                countBookings += 1;
                 return true;
               }
               available = false;
@@ -173,6 +177,7 @@ export default function Popup({
           id: timeslot.id,
         });
       }
+      return countBookings;
     };
 
     const fetchBookableAdmin = async (timeslot: LazyTimeslot) => {
@@ -193,17 +198,20 @@ export default function Popup({
 
     const fetchBookable = async () => {
       if (timeslots.length > 0) {
-        timeslots.forEach(async (timeslot) => {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const timeslot of timeslots) {
           if (timeslot.startTime && timeslot.endTime) {
             if (userType === "Volunteer" || userType === "Rider") {
-              fetchBookableRV(timeslot);
+              // eslint-disable-next-line no-await-in-loop
+              countBookedToday += await fetchBookableRV(timeslot);
             } else {
               fetchBookableAdmin(timeslot);
             }
           }
-        });
+        }
       }
       setBookable(ts);
+      setBookedToday(countBookedToday);
     };
     const getUsers = async (bookings: LazyBooking[]) => {
       const volUsers: User[] = [];
@@ -277,10 +285,12 @@ export default function Popup({
                 <Timeslots
                   bookable={bookable}
                   selectedDate={date}
+                  bookedToday={bookedToday}
                   checkedLst={checkedLst}
                   uncheckedLst={uncheckedLst}
                   setCheckedLst={setCheckedLst}
                   setUncheckedLst={setUncheckedLst}
+                  setBookedToday={setBookedToday}
                 />
                 <BtnContainer>
                   <CancelBtn onClick={onClose}>Cancel</CancelBtn>

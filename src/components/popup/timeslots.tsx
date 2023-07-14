@@ -1,4 +1,5 @@
-import { useContext } from "react";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { useContext, useEffect } from "react";
 import styled from "styled-components";
 import UserContext from "../../userContext";
 import Timeslot from "./timeslot";
@@ -32,24 +33,43 @@ interface TsData {
 interface TimeslotsProps {
   bookable: TsData[];
   selectedDate: Date;
+  bookedToday: number;
   checkedLst: string[];
   uncheckedLst: string[];
   setCheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
   setUncheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
+  setBookedToday: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function Timeslots({
   bookable,
   selectedDate,
+  bookedToday,
   checkedLst,
   uncheckedLst,
   setCheckedLst,
   setUncheckedLst,
+  setBookedToday,
 }: TimeslotsProps) {
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   const { userType } = realUser;
+
+  // useEffect(() => {
+  //   let count = 0;
+  //   console.log("Bookable = ", bookable);
+  //   // eslint-disable-next-line no-restricted-syntax
+  //   for (const timeslot of bookable) {
+  //     if (timeslot.checked === true) {
+  //       count += 1;
+  //     }
+  //   }
+  //   setBookedToday(count);
+  //   console.log("count after loop", count);
+  //   // console.log("TESTING TESTING", bookable);
+  //   // console.log(bookedToday);
+  // }, []);
 
   function filterTimeSlots(ts: {
     startTime: Date;
@@ -85,8 +105,10 @@ export default function Timeslots({
                   ? "2px solid #000000"
                   : "1px solid #c4c4c4"
               }
+              bookedToday={bookedToday}
               checkedLst={checkedLst}
               uncheckedLst={uncheckedLst}
+              setBookedToday={setBookedToday}
               setCheckedLst={setCheckedLst}
               setUncheckedLst={setUncheckedLst}
             />
