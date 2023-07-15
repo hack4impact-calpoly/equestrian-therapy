@@ -56,21 +56,6 @@ export default function Timeslots({
   const [realUser] = currentUser;
   const { userType } = realUser;
 
-  // useEffect(() => {
-  //   let count = 0;
-  //   console.log("Bookable = ", bookable);
-  //   // eslint-disable-next-line no-restricted-syntax
-  //   for (const timeslot of bookable) {
-  //     if (timeslot.checked === true) {
-  //       count += 1;
-  //     }
-  //   }
-  //   setBookedToday(count);
-  //   console.log("count after loop", count);
-  //   // console.log("TESTING TESTING", bookable);
-  //   // console.log(bookedToday);
-  // }, []);
-
   function filterTimeSlots(ts: {
     startTime: Date;
     endTime: Date;
