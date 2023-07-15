@@ -92,7 +92,7 @@ export default function Timeslot({
       setIsChecked(!isChecked);
       setBookedToday(bookedToday - 1);
     } else {
-      if (bookedToday === 1) {
+      if (bookedToday >= 1 && userType === "Rider") {
         return;
       }
       setCheckedLst(checkedLst.concat(tsId));
