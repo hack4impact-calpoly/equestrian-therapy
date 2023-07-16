@@ -2,8 +2,8 @@ import React, { useState, useContext } from "react";
 import styled from "styled-components";
 import Checked from "../../images/Checked.png";
 import Unchecked from "../../images/Unchecked.png";
-import On from "../../images/OnSlider.png";
-import Off from "../../images/OffSlider.png";
+import On from "../../images/onslider.png";
+import Off from "../../images/offslider.png";
 import UserContext from "../../userContext";
 
 const ButtonToggle = styled.button`
@@ -58,8 +58,10 @@ interface TimeslotProps {
   tsId: string;
   checked: boolean;
   border: string;
+  bookedToday: number;
   checkedLst: string[];
   uncheckedLst: string[];
+  setBookedToday: React.Dispatch<React.SetStateAction<number>>;
   setCheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
   setUncheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
 }
@@ -70,8 +72,10 @@ export default function Timeslot({
   tsId,
   checked,
   border,
+  bookedToday,
   checkedLst,
   uncheckedLst,
+  setBookedToday,
   setCheckedLst,
   setUncheckedLst,
 }: TimeslotProps) {
@@ -81,19 +85,23 @@ export default function Timeslot({
   const [realUser] = currentUser;
   const { userType } = realUser;
 
-  // console.log("The timeslot is: ", startTime, "THE BORDER IS: ", border);
-
   const toggleChecked = () => {
     if (isChecked) {
       setUncheckedLst(uncheckedLst.concat(tsId));
       setCheckedLst(uncheckedLst.filter((id) => id !== tsId));
       setIsChecked(!isChecked);
+      setBookedToday(bookedToday - 1);
     } else {
+      if (bookedToday >= 1 && userType === "Rider") {
+        return;
+      }
       setCheckedLst(checkedLst.concat(tsId));
       setUncheckedLst(uncheckedLst.filter((id) => id !== tsId));
       setIsChecked(!isChecked);
+      setBookedToday(bookedToday + 1);
     }
   };
+
   const formatTime = (time: Date) =>
     time.toLocaleTimeString([], {
       hour: "numeric",
@@ -105,7 +113,7 @@ export default function Timeslot({
       <TimeslotText>
         {`${formatTime(startTime)} to ${formatTime(endTime)}`}
       </TimeslotText>
-      {userType === "Volunteer" ? (
+      {userType !== "Admin" ? (
         <ButtonToggle onClick={toggleChecked}>
           {isChecked ? (
             <CheckedImg src={Checked} alt="Checked Img" />

@@ -372,7 +372,9 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
                 )
               ) &&
             dateTest.getMonth() + 1 ===
-              Number(String(booking.date).substring(5, 7))
+              Number(String(booking.date).substring(5, 7)) &&
+            dateTest.getFullYear() ===
+              Number(String(booking.date).substring(0, 4))
         )
       ) {
         backgroundColor = "#E0EFF1";

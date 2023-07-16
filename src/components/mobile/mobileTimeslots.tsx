@@ -91,7 +91,10 @@ export default function MobileTimeslots({
                 String(booking.date).length - 2,
                 String(booking.date).length
               )
-            )
+            ) &&
+          date.getMonth() + 1 ===
+            Number(String(booking.date).substring(5, 7)) &&
+          date.getFullYear() === Number(String(booking.date).substring(0, 4))
       )
     ) {
       backgroundColor = "#E0EFF1";

@@ -1,4 +1,5 @@
-import { useContext } from "react";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { useContext, useEffect } from "react";
 import styled from "styled-components";
 import UserContext from "../../userContext";
 import Timeslot from "./timeslot";
@@ -32,19 +33,23 @@ interface TsData {
 interface TimeslotsProps {
   bookable: TsData[];
   selectedDate: Date;
+  bookedToday: number;
   checkedLst: string[];
   uncheckedLst: string[];
   setCheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
   setUncheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
+  setBookedToday: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function Timeslots({
   bookable,
   selectedDate,
+  bookedToday,
   checkedLst,
   uncheckedLst,
   setCheckedLst,
   setUncheckedLst,
+  setBookedToday,
 }: TimeslotsProps) {
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
@@ -85,8 +90,10 @@ export default function Timeslots({
                   ? "2px solid #000000"
                   : "1px solid #c4c4c4"
               }
+              bookedToday={bookedToday}
               checkedLst={checkedLst}
               uncheckedLst={uncheckedLst}
+              setBookedToday={setBookedToday}
               setCheckedLst={setCheckedLst}
               setUncheckedLst={setUncheckedLst}
             />
