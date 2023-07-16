@@ -4,7 +4,7 @@ import { DataStore } from "@aws-amplify/datastore";
 import x from "../../images/X.svg";
 import { PopupDiv, PopupBox, X, CancelBtn, SaveBtn } from "../styledComponents";
 import Monthly from "../monthlyView";
-import AptInfo from "../appointmentInfo";
+import AppointmentInfo from "../appointmentInfo";
 import Timeslots from "./timeslots";
 import {
   User,
@@ -267,7 +267,7 @@ export default function Popup({
             <Wrapper>
               <LeftColumn>
                 <Monthly />
-                <AptInfo
+                <AppointmentInfo
                   riderBookings={riderBookings}
                   volunteerBookings={volunteerBookings}
                 />
