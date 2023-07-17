@@ -141,13 +141,8 @@ export default function Popup({
     const fetchBookableRV = async (timeslot: LazyTimeslot) => {
       // available bookings are unbooked bookings, bookings booked by current user, and
       // bookings that are not in the unavailable dates set by admin
-      let bookings;
       let countBookings = 0;
-      if (userType === "Volunteer") {
-        bookings = await timeslot.volunteerBookings.toArray();
-      } else {
-        bookings = await timeslot.riderBookings.toArray();
-      }
+      const bookings = await timeslot.bookings.toArray();
       let checked = false;
       let available = true;
       if (bookings) {
@@ -245,7 +240,7 @@ export default function Popup({
         setTs(timeslotsArray);
       }
       if (selected) {
-        const volBookingsArray = await selected.volunteerBookings.toArray(); // turns out the volunteer and rider booking arrays
+        const volBookingsArray = await selected.bookings.toArray(); // turns out the volunteer and rider booking arrays
         // in our objects just return the same thing so there's not really a point to them
         const bookings = await getUsers(volBookingsArray);
         setVolBookings(bookings.volUsers);

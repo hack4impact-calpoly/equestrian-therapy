@@ -32,22 +32,8 @@ export const schema = {
           attributes: [],
           isArrayNullable: true,
         },
-        volunteerBookings: {
-          name: "volunteerBookings",
-          isArray: true,
-          type: {
-            model: "Booking",
-          },
-          isRequired: false,
-          attributes: [],
-          isArrayNullable: true,
-          association: {
-            connectionType: "HAS_MANY",
-            associatedWith: ["timeslotID"],
-          },
-        },
-        riderBookings: {
-          name: "riderBookings",
+        bookings: {
+          name: "bookings",
           isArray: true,
           type: {
             model: "Booking",
@@ -140,6 +126,13 @@ export const schema = {
           isArray: false,
           type: "ID",
           isRequired: true,
+          attributes: [],
+        },
+        userType: {
+          name: "userType",
+          isArray: false,
+          type: "String",
+          isRequired: false,
           attributes: [],
         },
         createdAt: {
@@ -285,6 +278,6 @@ export const schema = {
   },
   enums: {},
   nonModels: {},
-  codegenVersion: "3.4.3",
-  version: "824e4e9880749aeeb66ba127ed2c001a",
+  codegenVersion: "3.4.2",
+  version: "2edbade7bdaa86ff5761973cc7060e1c",
 };

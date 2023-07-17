@@ -130,6 +130,7 @@ export default function TimeSlotConfirmation({
             description: descriptionStr,
             timeslotID: TimeslotID,
             userID,
+            userType,
           });
           await DataStore.save(booking);
         });
@@ -144,6 +145,7 @@ export default function TimeSlotConfirmation({
             description: descriptionStr,
             timeslotID: TimeslotIDs[0],
             userID,
+            userType,
           });
           await DataStore.save(booking);
         }
