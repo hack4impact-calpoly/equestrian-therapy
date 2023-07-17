@@ -132,38 +132,6 @@ function convertToYMD(date: Date) {
   return retString;
 }
 
-async function addRVBooking(
-  TimeslotID: string,
-  userID: string,
-  bookedDate: Date
-) {
-  try {
-    console.log("THE DATE SELECTED IS", bookedDate);
-    const original = await DataStore.query(User, userID);
-    if (
-      original !== null &&
-      original !== undefined &&
-      (original.userType === "Volunteer" || original.userType === "Rider")
-    ) {
-      const tempDate = new Date(bookedDate);
-      const formattedDate = convertToYMD(tempDate);
-      const descriptionStr: string = `User: ${userID} Booked Time: ${formattedDate}`;
-      const booking = new Booking({
-        title: `New Booking -- ${original.userType}`,
-        date: formattedDate,
-        description: descriptionStr,
-        timeslotID: TimeslotID,
-        userID,
-      });
-      await DataStore.save(booking);
-    }
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.log("An error occurred: ", error.message); // eslint-disable-line no-console
-    }
-  }
-}
-
 // async function deleteRVBooking(
 //   TimeslotIDs: string[], // which time they want to cancel
 //   userID: string
@@ -212,6 +180,39 @@ export default function MobileTimeSlotConfirmation({
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   const { userType, id } = realUser;
+
+  async function addRVBooking(
+    TimeslotID: string,
+    userID: string,
+    bookedDate: Date
+  ) {
+    try {
+      console.log("THE DATE SELECTED IS", bookedDate);
+      const original = await DataStore.query(User, userID);
+      if (
+        original !== null &&
+        original !== undefined &&
+        (original.userType === "Volunteer" || original.userType === "Rider")
+      ) {
+        const tempDate = new Date(bookedDate);
+        const formattedDate = convertToYMD(tempDate);
+        const descriptionStr: string = `User: ${userID} Booked Time: ${formattedDate}`;
+        const booking = new Booking({
+          title: `New Booking -- ${original.userType}`,
+          date: formattedDate,
+          description: descriptionStr,
+          timeslotID: TimeslotID,
+          userID,
+          userType,
+        });
+        await DataStore.save(booking);
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log("An error occurred: ", error.message); // eslint-disable-line no-console
+      }
+    }
+  }
 
   const handleConfirmationAdmin = () => {
     handleClicked();
