@@ -56,6 +56,7 @@ type TimeslotMobileContentProps = {
   tId: string;
   riderBookings: LazyUser[];
   volunteerBookings: LazyUser[];
+  booked: boolean;
   setRequery: (requery: boolean) => void;
 };
 
@@ -65,13 +66,13 @@ export default function TimeslotMobileContent({
   tId,
   riderBookings,
   volunteerBookings,
+  booked,
   setRequery,
 }: TimeslotMobileContentProps) {
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   const { userType } = realUser;
-  const [booked] = useState(true);
   const [onOff, setOnOff] = useState(true);
   const [confirmationShown, setConfirmationShown] = useState(false);
   const [successShown, setSuccessShown] = useState(false);

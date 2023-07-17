@@ -52,6 +52,7 @@ interface TimeslotProps {
   endTime: string;
   date: Date;
   backgroundColor: string;
+  checked: boolean;
   tId: string;
   setRequery: (requery: boolean) => void;
 }
@@ -62,6 +63,7 @@ export default function MobileTimeslot({
   date,
   backgroundColor,
   tId,
+  checked,
   setRequery,
 }: TimeslotProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -111,6 +113,7 @@ export default function MobileTimeslot({
       //   setTs(timeslotsArray);
       // }
       if (selected) {
+        console.log(selected);
         const volBookingsArray = await selected.volunteerBookings.toArray(); // turns out the volunteer and rider booking arrays
         // in our objects just return the same thing so there's not really a point to them
         const bookings = await getUsers(volBookingsArray);
@@ -137,6 +140,7 @@ export default function MobileTimeslot({
             tId={tId}
             riderBookings={riderBookings}
             volunteerBookings={volunteerBookings}
+            booked={checked}
             setRequery={setRequery}
           />
         )}
