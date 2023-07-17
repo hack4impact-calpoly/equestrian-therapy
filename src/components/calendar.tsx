@@ -361,21 +361,39 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
       // console.log("DATE TEST WOOOOOOOOOOOOOOOOOOOO", string.substring(5, 7));
 
       if (
-        bookings.some(
-          (booking) =>
-            booking.timeslotID === timeslot.id &&
-            dateTest.getDate() ===
-              Number(
-                String(booking.date).substring(
-                  String(booking.date).length - 2,
-                  String(booking.date).length
-                )
-              ) &&
-            dateTest.getMonth() + 1 ===
-              Number(String(booking.date).substring(5, 7)) &&
-            dateTest.getFullYear() ===
-              Number(String(booking.date).substring(0, 4))
-        )
+        (userType === "Rider" &&
+          bookings.some(
+            (booking) =>
+              booking.timeslotID === timeslot.id &&
+              dateTest.getDate() ===
+                Number(
+                  String(booking.date).substring(
+                    String(booking.date).length - 2,
+                    String(booking.date).length
+                  )
+                ) &&
+              dateTest.getMonth() + 1 ===
+                Number(String(booking.date).substring(5, 7)) &&
+              dateTest.getFullYear() ===
+                Number(String(booking.date).substring(0, 4)) &&
+              booking.userType === "Rider"
+          )) ||
+        (userType !== "Rider" &&
+          bookings.some(
+            (booking) =>
+              booking.timeslotID === timeslot.id &&
+              dateTest.getDate() ===
+                Number(
+                  String(booking.date).substring(
+                    String(booking.date).length - 2,
+                    String(booking.date).length
+                  )
+                ) &&
+              dateTest.getMonth() + 1 ===
+                Number(String(booking.date).substring(5, 7)) &&
+              dateTest.getFullYear() ===
+                Number(String(booking.date).substring(0, 4))
+          ))
       ) {
         backgroundColor = "#E0EFF1";
       }
@@ -408,7 +426,7 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
   if (toggles === "riders" || userType === "Rider") {
     slots = slots.filter(
       (timeslot) =>
-        timeslot.start.getHours() >= 10 && timeslot.end.getHours() <= 14
+        timeslot.start.getHours() >= 10 && timeslot.start.getHours() < 14
     );
   }
   if (toggles === "slots") {
@@ -444,7 +462,6 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
               nextLabel=" > "
               prevLabel=" < "
               defaultView="month"
-              // tileDisabled={tileDisabled}
               view="month"
               calendarType="US"
               onClickDay={(day) => {
