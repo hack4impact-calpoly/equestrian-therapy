@@ -51,7 +51,6 @@ const OnOffSlide = styled.img`
 `;
 
 type TimeslotMobileContentProps = {
-  // bookingsfake: number;
   date: Date;
   tId: string;
   riderBookings: LazyUser[];
@@ -61,7 +60,6 @@ type TimeslotMobileContentProps = {
 };
 
 export default function TimeslotMobileContent({
-  // bookingsfake,
   date,
   tId,
   riderBookings,
@@ -78,7 +76,6 @@ export default function TimeslotMobileContent({
   const [successShown, setSuccessShown] = useState(false);
 
   // eslint-disable-next-line no-param-reassign
-  // bookings = 0;
   const handleSlide = () => {
     setOnOff(!onOff);
   };
@@ -106,12 +103,9 @@ export default function TimeslotMobileContent({
               volunteerBookings={volunteerBookings}
               booked={booked}
             />
-            {/* don't have a way of counting number of bookings for people across multiple sessions yet 
-              because I am only making the appt pop up. Will probably have to add more functionality
-              when implementing the pop up in the calendar */}
             {userType !== "Admin" ? (
               <TimeslotButton onClick={handleConfirmationShown}>
-                {`${booked ? "Book" : "Cancel"} time slot`}
+                {`${booked ? "Cancel" : "Book"} time slot`}
               </TimeslotButton>
             ) : (
               <OnOffSlide
@@ -126,7 +120,7 @@ export default function TimeslotMobileContent({
             <MobileTimeSlotConfirmation
               handleClicked={handleSuccessShown}
               handleCancelled={handleCancelled}
-              status="book"
+              booked={booked}
               date={date}
               tId={tId}
               setRequery={setRequery}
