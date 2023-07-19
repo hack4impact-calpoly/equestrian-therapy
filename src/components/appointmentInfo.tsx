@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import Horse from "../images/horseRider.svg";
 import Dude from "../images/person.svg";
+import Bookmark from "../images/bookmark.svg";
 import { LazyUser } from "../models";
+import UserContext from "../userContext";
 import "@fontsource/roboto";
 
 const Wrapper = styled.div`
@@ -49,12 +51,18 @@ const AptHeader = styled.h1`
 type PopupProps = {
   riderBookings: LazyUser[];
   volunteerBookings: LazyUser[];
+  booked?: boolean;
 };
 
 export default function AppointmentInfo({
   riderBookings,
   volunteerBookings,
+  booked = false,
 }: PopupProps) {
+  const currentUserFR = useContext(UserContext);
+  const { currentUser } = currentUserFR;
+  const [realUser] = currentUser;
+  const { userType } = realUser;
   return (
     <Wrapper>
       <AptHeader>Appointment Info</AptHeader>
@@ -91,6 +99,18 @@ export default function AppointmentInfo({
           </RiderContent>
         )}
       </RiderInfo>
+      {userType !== "Admin" && (
+        <RiderInfo>
+          <Logo src={Bookmark} />
+          <RiderContent>
+            {`Status: ${booked ? "Booked" : "Unbooked"}`}
+          </RiderContent>
+        </RiderInfo>
+      )}
     </Wrapper>
   );
 }
+
+AppointmentInfo.defaultProps = {
+  booked: false,
+};

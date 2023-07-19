@@ -80,7 +80,7 @@ export default function MobileTimeslots({
   function mapTimeslotColors(timeslot: LazyTimeslot) {
     let backgroundColor = "#90BFCC";
     let enabled = true;
-
+    let checked = false;
     if (
       bookings.some(
         (booking) =>
@@ -98,6 +98,7 @@ export default function MobileTimeslots({
       )
     ) {
       backgroundColor = "#E0EFF1";
+      checked = true;
     }
 
     if (
@@ -116,7 +117,7 @@ export default function MobileTimeslots({
       endTime: String(timeslot.endTime),
       backgroundColor,
       textColor: "black",
-      checked: false,
+      checked,
       enabled,
       timeslotId: timeslot.id,
     };
@@ -157,6 +158,7 @@ export default function MobileTimeslots({
             date={date}
             backgroundColor={timeslot.backgroundColor}
             tId={timeslot.timeslotId}
+            checked={timeslot.checked}
             setRequery={setRequery}
           />
         ))}
