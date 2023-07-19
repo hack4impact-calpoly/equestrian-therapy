@@ -99,7 +99,7 @@ export default function AppointmentInfo({
           </RiderContent>
         )}
       </RiderInfo>
-      {userType !== "Admin" && (
+      {userType !== "Admin" && window.outerWidth <= 500 && (
         <RiderInfo>
           <Logo src={Bookmark} />
           <RiderContent>
