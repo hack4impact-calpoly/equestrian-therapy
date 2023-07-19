@@ -96,28 +96,6 @@ export default function TimeslotMobileContent({
     setConfirmationShown(false);
   };
 
-  // const handleClick = () => {
-  //   // Keeping track of the bookings for the user type because rider can't book
-  //   // more than one sesh
-  //   if (booked === false) {
-  //     // add one from bookings if they add their booking
-  //     // eslint-disable-next-line no-param-reassign
-  //     bookingsfake += 1;
-  //     setBooked(!booked);
-  //   } else if (userType === "Rider" && bookingsfake === 1) {
-  //     // if they're a rider and already have a booking don't add more
-  //     // eslint-disable-next-line no-param-reassign
-  //     bookingsfake = 1;
-  //   } else {
-  //     // minus one from bookings if they cancel
-  //     // eslint-disable-next-line no-param-reassign
-  //     bookingsfake -= 1;
-  //     setBooked(!booked);
-  //   }
-  //   // eslint-disable-next-line no-console
-  //   // console.log(bookings);
-  // };
-
   return (
     <WrapperMobile>
       <BoxMobile style={{ display: "block" }}>
