@@ -3,7 +3,6 @@ import { useContext } from "react";
 import styled from "styled-components";
 import { DataStore } from "aws-amplify";
 import UserContext from "../../userContext";
-// import { checkedLst, uncheckedLst } from "./timeslot";
 import { User, Booking } from "../../models";
 import warning from "../../images/warning.svg";
 import {
@@ -59,63 +58,6 @@ const BtnContainer = styled.div`
   gap: 20px;
 `;
 
-// async function addUnavailability(ids: string[], unavailableDate: Date) {
-//   try {
-//     ids.forEach(async (id) => {
-//       const original = await DataStore.query(Timeslot, id);
-//       if (
-//         original !== null &&
-//         original !== undefined &&
-//         Array.isArray(original.unavailableDates)
-//       ) {
-//         const isoDate = new Date(unavailableDate).toISOString().split("T")[0];
-//         const updatedList = new Set(original.unavailableDates);
-//         if (!updatedList.has(isoDate)) {
-//           updatedList.add(isoDate);
-//           await DataStore.save(
-//             Timeslot.copyOf(original, (updated) => {
-//               // eslint-disable-next-line no-param-reassign
-//               updated.unavailableDates = Array.from(updatedList);
-//             })
-//           );
-//         }
-//       }
-//     });
-//   } catch (error: unknown) {
-//     if (error instanceof Error) {
-//       console.log("An error occurred: ", error.message); // eslint-disable-line no-console
-//     }
-//   }
-// }
-
-// async function deleteUnavailability(ids: string[], availableDate: Date) {
-//   try {
-//     ids.forEach(async (id) => {
-//       const original = await DataStore.query(Timeslot, id);
-//       if (original && Array.isArray(original.unavailableDates)) {
-//         const date = new Date(availableDate).toISOString().split("T")[0];
-
-//         const updatedList = original.unavailableDates.filter((dateString) => {
-//           if (dateString !== null) {
-//             const isoDate = new Date(dateString).toISOString().split("T")[0];
-//             return date !== isoDate;
-//           }
-//           return false;
-//         });
-
-//         await DataStore.save(
-//           Timeslot.copyOf(original, (updated) => {
-//             updated.unavailableDates = updatedList; // eslint-disable-line no-param-reassign
-//           })
-//         );
-//       }
-//     });
-//   } catch (error: unknown) {
-//     if (error instanceof Error) {
-//       console.log("An error occurred: ", error.message); // eslint-disable-line no-console
-//     }
-//   }
-// }
 function convertToYMD(date: Date) {
   const localString = date.toLocaleDateString();
   const splitDate = localString.split("/");
@@ -132,37 +74,10 @@ function convertToYMD(date: Date) {
   return retString;
 }
 
-// async function deleteRVBooking(
-//   TimeslotIDs: string[], // which time they want to cancel
-//   userID: string
-// ) {
-//   console.log(TimeslotIDs);
-//   console.log(userID);
-// }
-//   /*
-//   go through entire booking table, find the booking id that matches
-//   the timeslotid, and the date
-//    */
-//   try {
-//     const BookingTable = await DataStore.query(Booking);
-//     TimeslotIDs.forEach((TimeslotID) => {
-//       BookingTable.forEach((booking) => {
-//         if (booking.userID === userID && booking.timeslotID === TimeslotID) {
-//           DataStore.delete(booking);
-//         }
-//       });
-//     });
-//   } catch (error: unknown) {
-//     if (error instanceof Error) {
-//       console.log("An error occurred: ", error.message); // eslint-disable-line no-console
-//     }
-//   }
-// }
-
 interface MobileTimeSlotConfirmationProps {
   handleClicked: () => void;
   handleCancelled: () => void;
-  status: String;
+  booked: boolean;
   date: Date;
   tId: string;
   setRequery: (requery: boolean) => void;
@@ -171,7 +86,7 @@ interface MobileTimeSlotConfirmationProps {
 export default function MobileTimeSlotConfirmation({
   handleClicked,
   handleCancelled,
-  status = "",
+  booked,
   date,
   tId,
   setRequery,
@@ -190,8 +105,7 @@ export default function MobileTimeSlotConfirmation({
       console.log("THE DATE SELECTED IS", bookedDate);
       const original = await DataStore.query(User, userID);
       if (
-        original !== null &&
-        original !== undefined &&
+        original &&
         (original.userType === "Volunteer" || original.userType === "Rider")
       ) {
         const tempDate = new Date(bookedDate);
@@ -214,6 +128,30 @@ export default function MobileTimeSlotConfirmation({
     }
   }
 
+  async function deleteRVBooking(
+    TimeslotID: string // which time they want to cancel
+  ) {
+    /*
+    go through entire booking table, find the booking id that matches
+    the timeslotid, and the date
+     */
+    try {
+      const bookings = await DataStore.query(Booking, (book) =>
+        book.and((b) => [
+          b.timeslotID.eq(TimeslotID),
+          b.date.eq(convertToYMD(date)),
+        ])
+      );
+      bookings.forEach((booking) => {
+        DataStore.delete(booking);
+      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log("An error occurred: ", error.message); // eslint-disable-line no-console
+      }
+    }
+  }
+
   const handleConfirmationAdmin = () => {
     handleClicked();
     // addUnavailability(uncheckedLst, date); // YYYY-MM-DD
@@ -222,7 +160,13 @@ export default function MobileTimeSlotConfirmation({
 
   const handleConfirmationRV = () => {
     handleClicked();
-    addRVBooking(tId, id, date);
+    if (booked) {
+      deleteRVBooking(tId);
+      console.log("booked");
+    } else {
+      addRVBooking(tId, id, date);
+      console.log("unbooked");
+    }
     setRequery(true);
   };
 
@@ -230,13 +174,9 @@ export default function MobileTimeSlotConfirmation({
     handleCancelled();
   };
 
-  const handleBookingCancel = () => {
-    // deleteRVBooking(uncheckedLst, id);
-  };
-
   return (
     <div>
-      {userType === "admin" && (
+      {userType === "Admin" ? (
         <Wrapper>
           <Box>
             <Warning src={warning} />
@@ -251,35 +191,21 @@ export default function MobileTimeSlotConfirmation({
             </BtnContainer>
           </Box>
         </Wrapper>
-      )}
-      {userType !== "Admin" && status === "cancel" && (
+      ) : (
         <Wrapper>
           <Box>
             <Warning src={warning} />
-            <CenteredHeader>Confirm cancellation?</CenteredHeader>
+            <CenteredHeader>
+              {`Confirm ${booked ? "cancellation" : "booking"}?`}
+            </CenteredHeader>
             <CenteredDescription>
-              You are choosing to cancel one or more time slots. Are you sure
-              you want to do this?
+              {`You are choosing to ${
+                booked ? "cancel" : "book"
+              } one or more time slots. Are you sure you want to do this?`}
             </CenteredDescription>
             <BtnContainer>
               <CancelBtn onClick={handleCancel}>Cancel</CancelBtn>
-              <SaveBtn onClick={handleBookingCancel}>Confirm</SaveBtn>
-            </BtnContainer>
-          </Box>
-        </Wrapper>
-      )}
-      {userType !== "admin" && tId && (
-        <Wrapper>
-          <Box>
-            <Warning src={warning} />
-            <CenteredHeader>Confirm booking?</CenteredHeader>
-            <CenteredDescription>
-              You are choosing to book this timeslot. Are you sure you want to
-              do this?
-            </CenteredDescription>
-            <BtnContainer>
-              <CancelBtn onClick={handleCancel}>Cancel</CancelBtn>
-              <SaveBtn onClick={handleConfirmationRV}>Book</SaveBtn>
+              <SaveBtn onClick={handleConfirmationRV}>Confirm</SaveBtn>
             </BtnContainer>
           </Box>
         </Wrapper>
