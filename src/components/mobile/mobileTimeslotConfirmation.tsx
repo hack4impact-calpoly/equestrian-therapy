@@ -176,54 +176,6 @@ export default function MobileTimeSlotConfirmation({
 
   return (
     <div>
-      {/* {userType === "admin" && (
-        <Wrapper>
-          <Box>
-            <Warning src={warning} />
-            <CenteredHeader>Save changes?</CenteredHeader>
-            <CenteredDescription>
-              You are choosing to edit the availability of one or more time
-              slots. Are you sure you want to do this?
-            </CenteredDescription>
-            <BtnContainer>
-              <CancelBtn onClick={handleCancel}>Cancel</CancelBtn>
-              <SaveBtn onClick={handleConfirmationAdmin}>Confirm</SaveBtn>
-            </BtnContainer>
-          </Box>
-        </Wrapper>
-      )}
-      {userType !== "Admin" && booked && (
-        <Wrapper>
-          <Box>
-            <Warning src={warning} />
-            <CenteredHeader>Confirm cancellation?</CenteredHeader>
-            <CenteredDescription>
-              You are choosing to cancel one or more time slots. Are you sure
-              you want to do this?
-            </CenteredDescription>
-            <BtnContainer>
-              <CancelBtn onClick={handleCancel}>Cancel</CancelBtn>
-              <SaveBtn onClick={handleBookingCancel}>Confirm</SaveBtn>
-            </BtnContainer>
-          </Box>
-        </Wrapper>
-      )}
-      {userType !== "admin" && !booked && (
-        <Wrapper>
-          <Box>
-            <Warning src={warning} />
-            <CenteredHeader>Confirm booking?</CenteredHeader>
-            <CenteredDescription>
-              You are choosing to book this timeslot. Are you sure you want to
-              do this?
-            </CenteredDescription>
-            <BtnContainer>
-              <CancelBtn onClick={handleCancel}>Cancel</CancelBtn>
-              <SaveBtn onClick={handleConfirmationRV}>Book</SaveBtn>
-            </BtnContainer>
-          </Box>
-        </Wrapper>
-      )} */}
       {userType === "Admin" ? (
         <Wrapper>
           <Box>
