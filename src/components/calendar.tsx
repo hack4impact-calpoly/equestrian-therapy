@@ -370,8 +370,7 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
                 Number(String(booking.date).substring(0, 4)) &&
               booking.userType === "Rider"
           )) ||
-        (userType !== "Rider" &&
-          toggleValue === "both" &&
+        ((toggleValue === "Both" || userType === "Volunteer") &&
           bookings.some(
             (booking) =>
               booking.timeslotID === timeslot.id &&

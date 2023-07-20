@@ -92,7 +92,7 @@ export default function CalendarToggle({ setToggleProp }: ToggleProps) {
   };
   useEffect(() => {
     if (showBoth && userType === "Admin") {
-      setToggleProp("both");
+      setToggleProp("Both");
     } else if (showAvailability && userType !== "Admin") {
       setToggleProp("availability");
     } else if (!showAvailability && userType !== "Admin") {
