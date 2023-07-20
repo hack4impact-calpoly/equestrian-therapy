@@ -275,7 +275,7 @@ function convertToYMD(date: Date) {
 export default function Calendar({ timeslots, setTs }: CalendarProps) {
   const [date, setDateProp] = useState(new Date());
   const calRef = useRef<FullCalendarRef>(null);
-  const [toggles, setToggle] = useState<string>("");
+  const [toggleValue, setToggleValue] = useState<string>("");
   const [popup, setPopup] = useState(false);
   const [confirmPopup, setConfirmPopup] = useState(false);
   const [successPopup, setSuccessPopup] = useState(false);
@@ -292,7 +292,6 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
     const fetchBookings = async () => {
       try {
         const bookingModels = await DataStore.query(Booking);
-        // console.log("BOOKINGS ---------", bookingModels);
         setBookings(bookingModels);
       } catch (error) {
         console.error("Error fetching bookings:", error);
@@ -300,10 +299,6 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
     };
     fetchBookings();
   }, [popup]);
-
-  // console.log("setdate: ", date);
-  // const tileDisabled = (thedate: any) => thedate < new Date();
-  // console.log(`userType ${userType}`);
 
   const handleEventClick = async (eventClickInfo: any) => {
     setPopupDate(eventClickInfo.event.start);
@@ -356,9 +351,6 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
           timeslot.endTime
         }:00`
       );
-      // const string = "2023-06-25";
-
-      // console.log("DATE TEST WOOOOOOOOOOOOOOOOOOOO", string.substring(5, 7));
 
       if (
         (userType === "Rider" &&
@@ -423,13 +415,13 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
 
   slots = slots.filter((timeslot) => timeslot.enabled);
 
-  if (toggles === "riders" || userType === "Rider") {
+  if (toggleValue === "Riders" || userType === "Rider") {
     slots = slots.filter(
       (timeslot) =>
         timeslot.start.getHours() >= 10 && timeslot.start.getHours() < 14
     );
   }
-  if (toggles === "slots") {
+  if (toggleValue === "slots") {
     slots = slots.filter((timeslot) =>
       bookings.some(
         (booking) =>
@@ -474,7 +466,7 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
               }}
             />
           </CalendarContainer>
-          <Toggle setToggleProp={setToggle} />
+          <Toggle setToggleProp={setToggleValue} />
         </LeftColumn>
         <RightColumn>
           <CalDiv>
@@ -506,6 +498,7 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
               date={popupDate}
               timeslots={timeslots}
               setTs={setTs}
+              toggleValue={toggleValue}
             />
           </CalDiv>
         </RightColumn>

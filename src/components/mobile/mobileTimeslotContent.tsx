@@ -57,6 +57,7 @@ type TimeslotMobileContentProps = {
   volunteerBookings: LazyUser[];
   booked: boolean;
   setRequery: (requery: boolean) => void;
+  toggleValue: string;
 };
 
 export default function TimeslotMobileContent({
@@ -66,6 +67,7 @@ export default function TimeslotMobileContent({
   volunteerBookings,
   booked,
   setRequery,
+  toggleValue,
 }: TimeslotMobileContentProps) {
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
@@ -102,6 +104,7 @@ export default function TimeslotMobileContent({
               riderBookings={riderBookings}
               volunteerBookings={volunteerBookings}
               booked={booked}
+              toggleValue={toggleValue}
             />
             {userType !== "Admin" ? (
               <TimeslotButton onClick={handleConfirmationShown}>

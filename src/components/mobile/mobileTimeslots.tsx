@@ -178,6 +178,7 @@ export default function MobileTimeslots({
             tId={timeslot.timeslotId}
             checked={timeslot.checked}
             setRequery={setRequery}
+            toggleValue={toggleValue}
           />
         ))}
     </Slots>

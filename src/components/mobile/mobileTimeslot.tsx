@@ -55,6 +55,7 @@ interface TimeslotProps {
   checked: boolean;
   tId: string;
   setRequery: (requery: boolean) => void;
+  toggleValue: string;
 }
 
 export default function MobileTimeslot({
@@ -65,6 +66,7 @@ export default function MobileTimeslot({
   tId,
   checked,
   setRequery,
+  toggleValue,
 }: TimeslotProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [volunteerBookings, setVolBookings] = useState<LazyUser[]>([]);
@@ -142,6 +144,7 @@ export default function MobileTimeslot({
             volunteerBookings={volunteerBookings}
             booked={checked}
             setRequery={setRequery}
+            toggleValue={toggleValue}
           />
         )}
       </Dropdown>
