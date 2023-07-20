@@ -82,20 +82,38 @@ export default function MobileTimeslots({
     let enabled = true;
     let checked = false;
     if (
-      bookings.some(
-        (booking) =>
-          booking.timeslotID === timeslot.id &&
-          date.getDate() ===
-            Number(
-              String(booking.date).substring(
-                String(booking.date).length - 2,
-                String(booking.date).length
-              )
-            ) &&
-          date.getMonth() + 1 ===
-            Number(String(booking.date).substring(5, 7)) &&
-          date.getFullYear() === Number(String(booking.date).substring(0, 4))
-      )
+      (userType === "Rider" &&
+        bookings.some(
+          (booking) =>
+            booking.timeslotID === timeslot.id &&
+            date.getDate() ===
+              Number(
+                String(booking.date).substring(
+                  String(booking.date).length - 2,
+                  String(booking.date).length
+                )
+              ) &&
+            date.getMonth() + 1 ===
+              Number(String(booking.date).substring(5, 7)) &&
+            date.getFullYear() ===
+              Number(String(booking.date).substring(0, 4)) &&
+            booking.userType === "Rider"
+        )) ||
+      (userType !== "Rider" &&
+        bookings.some(
+          (booking) =>
+            booking.timeslotID === timeslot.id &&
+            date.getDate() ===
+              Number(
+                String(booking.date).substring(
+                  String(booking.date).length - 2,
+                  String(booking.date).length
+                )
+              ) &&
+            date.getMonth() + 1 ===
+              Number(String(booking.date).substring(5, 7)) &&
+            date.getFullYear() === Number(String(booking.date).substring(0, 4))
+        ))
     ) {
       backgroundColor = "#E0EFF1";
       checked = true;
