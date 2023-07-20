@@ -124,13 +124,6 @@ export default function MobileTimeslots({
   }
 
   function filterTimeSlots(timeslot: TempTimeslot) {
-    if (toggleValue === "Riders" || userType === "Rider") {
-      return (
-        Number(timeslot.startTime.substring(0, 2)) >= 10 &&
-        Number(timeslot.startTime.substring(0, 2)) < 14 &&
-        timeslot.enabled
-      );
-    }
     if (toggleValue === "My Slots") {
       return (
         bookings.some(
@@ -139,6 +132,13 @@ export default function MobileTimeslots({
             booking.timeslotID === timeslot.timeslotId &&
             booking.date === convertToYMD(date)
         ) && timeslot.enabled
+      );
+    }
+    if (toggleValue === "Riders" || userType === "Rider") {
+      return (
+        Number(timeslot.startTime.substring(0, 2)) >= 10 &&
+        Number(timeslot.startTime.substring(0, 2)) < 14 &&
+        timeslot.enabled
       );
     }
     return timeslot.enabled;
