@@ -353,7 +353,7 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
       );
 
       if (
-        (userType === "Rider" &&
+        ((userType === "Rider" || toggleValue === "Riders") &&
           bookings.some(
             (booking) =>
               booking.timeslotID === timeslot.id &&
@@ -371,6 +371,7 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
               booking.userType === "Rider"
           )) ||
         (userType !== "Rider" &&
+          toggleValue === "both" &&
           bookings.some(
             (booking) =>
               booking.timeslotID === timeslot.id &&
@@ -385,6 +386,24 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
                 Number(String(booking.date).substring(5, 7)) &&
               dateTest.getFullYear() ===
                 Number(String(booking.date).substring(0, 4))
+          )) ||
+        (userType === "Admin" &&
+          toggleValue === "Volunteers" &&
+          bookings.some(
+            (booking) =>
+              booking.timeslotID === timeslot.id &&
+              dateTest.getDate() ===
+                Number(
+                  String(booking.date).substring(
+                    String(booking.date).length - 2,
+                    String(booking.date).length
+                  )
+                ) &&
+              dateTest.getMonth() + 1 ===
+                Number(String(booking.date).substring(5, 7)) &&
+              dateTest.getFullYear() ===
+                Number(String(booking.date).substring(0, 4)) &&
+              booking.userType === "Volunteer"
           ))
       ) {
         backgroundColor = "#E0EFF1";
