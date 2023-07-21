@@ -81,8 +81,10 @@ export default function MobileTimeslots({
     let backgroundColor = "#90BFCC";
     let enabled = true;
     let checked = false;
+    // console.log("toggleValue = ", toggleValue);
+    // console.log("usertype = ", userType);
     if (
-      (userType === "Rider" &&
+      ((userType === "Rider" || toggleValue === "Riders") &&
         bookings.some(
           (booking) =>
             booking.timeslotID === timeslot.id &&
@@ -99,7 +101,11 @@ export default function MobileTimeslots({
               Number(String(booking.date).substring(0, 4)) &&
             booking.userType === "Rider"
         )) ||
-      (userType !== "Rider" &&
+      ((toggleValue === "Both" ||
+        (userType === "Admin" &&
+          toggleValue !== "Riders" &&
+          toggleValue !== "Volunteers") ||
+        userType === "Volunteer") &&
         bookings.some(
           (booking) =>
             booking.timeslotID === timeslot.id &&
@@ -113,6 +119,24 @@ export default function MobileTimeslots({
             date.getMonth() + 1 ===
               Number(String(booking.date).substring(5, 7)) &&
             date.getFullYear() === Number(String(booking.date).substring(0, 4))
+        )) ||
+      (userType === "Admin" &&
+        toggleValue === "Volunteers" &&
+        bookings.some(
+          (booking) =>
+            booking.timeslotID === timeslot.id &&
+            date.getDate() ===
+              Number(
+                String(booking.date).substring(
+                  String(booking.date).length - 2,
+                  String(booking.date).length
+                )
+              ) &&
+            date.getMonth() + 1 ===
+              Number(String(booking.date).substring(5, 7)) &&
+            date.getFullYear() ===
+              Number(String(booking.date).substring(0, 4)) &&
+            booking.userType === "Volunteer"
         ))
     ) {
       backgroundColor = "#E0EFF1";
@@ -178,6 +202,7 @@ export default function MobileTimeslots({
             tId={timeslot.timeslotId}
             checked={timeslot.checked}
             setRequery={setRequery}
+            toggleValue={toggleValue}
           />
         ))}
     </Slots>

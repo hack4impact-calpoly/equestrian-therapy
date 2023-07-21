@@ -67,6 +67,7 @@ interface PopupProps {
   date: Date;
   timeslots: LazyTimeslot[];
   setTs: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
+  toggleValue: string;
 }
 
 interface TsData {
@@ -100,6 +101,7 @@ export default function Popup({
   date,
   timeslots,
   setTs,
+  toggleValue,
 }: PopupProps) {
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
@@ -273,6 +275,7 @@ export default function Popup({
                 <AppointmentInfo
                   riderBookings={riderBookings}
                   volunteerBookings={volunteerBookings}
+                  toggleValue={toggleValue}
                 />
               </LeftColumn>
               <RightColumn>
