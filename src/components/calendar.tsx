@@ -256,6 +256,13 @@ interface Timeslot {
   timeslotId: string;
 }
 
+interface TsData {
+  startTime: Date;
+  endTime: Date;
+  checked: boolean;
+  id: string;
+}
+
 function convertToYMD(date: Date) {
   const localString = date.toLocaleDateString();
   const splitDate = localString.split("/");
@@ -281,6 +288,7 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
   const [successPopup, setSuccessPopup] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
   const [popupDate, setPopupDate] = useState<Date>(new Date());
+  const [bookable, setBookable] = useState<TsData[]>([]);
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
@@ -311,6 +319,7 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
     setPopup(false);
     setConfirmPopup(false);
     setSuccessPopup(false);
+    setBookable([]);
   };
 
   const handleConfirmOpen = () => {
@@ -517,6 +526,8 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
               timeslots={timeslots}
               setTs={setTs}
               toggleValue={toggleValue}
+              bookable={bookable}
+              setBookable={setBookable}
             />
           </CalDiv>
         </RightColumn>

@@ -68,6 +68,8 @@ interface PopupProps {
   timeslots: LazyTimeslot[];
   setTs: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
   toggleValue: string;
+  bookable: TsData[];
+  setBookable: React.Dispatch<React.SetStateAction<TsData[]>>;
 }
 
 interface TsData {
@@ -76,6 +78,7 @@ interface TsData {
   checked: boolean;
   id: string;
 }
+
 function convertToYMD(date: Date) {
   const localString = date.toLocaleDateString();
   const splitDate = localString.split("/");
@@ -102,12 +105,14 @@ export default function Popup({
   timeslots,
   setTs,
   toggleValue,
+  bookable,
+  setBookable,
 }: PopupProps) {
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   const { userType, id } = realUser;
-  const [bookable, setBookable] = useState<TsData[]>([]);
+  // const [bookable, setBookable] = useState<TsData[]>([]);
   const [volunteerBookings, setVolBookings] = useState<LazyUser[]>([]);
   const [riderBookings, setRidBookings] = useState<LazyUser[]>([]);
   const [checkedLst, setCheckedLst] = useState<string[]>([]);
@@ -138,7 +143,7 @@ export default function Popup({
   const selected = useMemo(() => getSelected(), [popup]);
 
   useEffect(() => {
-    const ts: TsData[] = [];
+    const ts: TsData[] = [...bookable];
     let countBookedToday = 0;
     const fetchBookableRV = async (timeslot: LazyTimeslot) => {
       // available bookings are unbooked bookings, bookings booked by current user, and
@@ -194,6 +199,9 @@ export default function Popup({
     };
 
     const fetchBookable = async () => {
+      while (ts.length > 0) {
+        ts.pop();
+      }
       if (timeslots.length > 0) {
         // eslint-disable-next-line no-restricted-syntax
         for (const timeslot of timeslots) {
@@ -207,6 +215,8 @@ export default function Popup({
           }
         }
       }
+      // console.log("Bookable = ", bookable);
+      // console.log("TS about to be set = ", ts);
       setBookable(ts);
       setBookedToday(countBookedToday);
     };
@@ -242,9 +252,8 @@ export default function Popup({
         setTs(timeslotsArray);
       }
       if (selected) {
-        const volBookingsArray = await selected.bookings.toArray(); // turns out the volunteer and rider booking arrays
-        // in our objects just return the same thing so there's not really a point to them
-        const bookings = await getUsers(volBookingsArray);
+        const bookingsArray = await selected.bookings.toArray();
+        const bookings = await getUsers(bookingsArray);
         setVolBookings(bookings.volUsers);
         setRidBookings(bookings.ridUsers);
       } else {
@@ -257,6 +266,10 @@ export default function Popup({
     setCheckedLst([]);
     setUncheckedLst([]);
   }, [popup, selected]);
+
+  useEffect(() => {
+    console.log("Bookable just updated", bookable);
+  }, [bookable]);
 
   return (
     <div>

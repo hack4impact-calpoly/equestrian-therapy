@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import styled from "styled-components";
 import Checked from "../../images/Checked.png";
 import Unchecked from "../../images/Unchecked.png";
@@ -84,6 +84,11 @@ export default function Timeslot({
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   const { userType } = realUser;
+
+  useEffect(() => {
+    // console.log("Bookable just updated", checked);
+    setIsChecked(checked);
+  }, [checked]);
 
   const toggleChecked = () => {
     if (isChecked) {
