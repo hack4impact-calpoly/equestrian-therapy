@@ -7,7 +7,7 @@ import MobileTimeslots from "./mobileTimeslots";
 import MobileWeeklyView from "./mobileWeeklyView";
 import { LazyTimeslot } from "../../models";
 import { Dropdown, Option } from "./dropdown";
-import signoutarrow from "../../images/SignOutArrow.png";
+import signoutarrow from "../../images/signOutArrow.png";
 import { Wrapper } from "../styledComponents";
 
 const CurrentDate = styled.p`

@@ -1,9 +1,9 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import styled from "styled-components";
-import Checked from "../../images/Checked.png";
-import Unchecked from "../../images/Unchecked.png";
-import On from "../../images/OnSlider.png";
-import Off from "../../images/OffSlider.png";
+import Checked from "../../images/checked.png";
+import Unchecked from "../../images/unchecked.png";
+import On from "../../images/onSlider.png";
+import Off from "../../images/offSlider.png";
 import UserContext from "../../userContext";
 
 const ButtonToggle = styled.button`
@@ -84,6 +84,11 @@ export default function Timeslot({
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   const { userType } = realUser;
+
+  useEffect(() => {
+    // console.log("Bookable just updated", checked);
+    setIsChecked(checked);
+  }, [checked]);
 
   const toggleChecked = () => {
     if (isChecked) {
