@@ -68,8 +68,8 @@ interface PopupProps {
   timeslots: LazyTimeslot[];
   setTs: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
   toggleValue: string;
-  bookable: TsData[];
-  setBookable: React.Dispatch<React.SetStateAction<TsData[]>>;
+  // bookable: TsData[];
+  // setBookable: React.Dispatch<React.SetStateAction<TsData[]>>;
 }
 
 interface TsData {
@@ -105,14 +105,12 @@ export default function Popup({
   timeslots,
   setTs,
   toggleValue,
-  bookable,
-  setBookable,
 }: PopupProps) {
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   const { userType, id } = realUser;
-  // const [bookable, setBookable] = useState<TsData[]>([]);
+  const [bookable, setBookable] = useState<TsData[]>([]);
   const [volunteerBookings, setVolBookings] = useState<LazyUser[]>([]);
   const [riderBookings, setRidBookings] = useState<LazyUser[]>([]);
   const [checkedLst, setCheckedLst] = useState<string[]>([]);
@@ -250,6 +248,7 @@ export default function Popup({
       if (!popup) {
         const timeslotsArray = await DataStore.query(Timeslot);
         setTs(timeslotsArray);
+        setBookable([]);
       }
       if (selected) {
         const bookingsArray = await selected.bookings.toArray();
@@ -267,9 +266,9 @@ export default function Popup({
     setUncheckedLst([]);
   }, [popup, selected]);
 
-  useEffect(() => {
-    console.log("Bookable just updated", bookable);
-  }, [bookable]);
+  // useEffect(() => {
+  //   console.log("Bookable just updated", bookable);
+  // }, [bookable]);
 
   return (
     <div>
