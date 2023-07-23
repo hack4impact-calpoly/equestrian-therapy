@@ -1,9 +1,9 @@
 import React, { useState, useContext, useEffect } from "react";
 import styled from "styled-components";
-import Checked from "../../images/Checked.png";
-import Unchecked from "../../images/Unchecked.png";
-import On from "../../images/OnSlider.png";
-import Off from "../../images/OffSlider.png";
+import Checked from "../../images/checked.png";
+import Unchecked from "../../images/unchecked.png";
+import On from "../../images/onSlider.png";
+import Off from "../../images/offSlider.png";
 import UserContext from "../../userContext";
 
 const ButtonToggle = styled.button`

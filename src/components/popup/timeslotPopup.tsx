@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useMemo } from "react";
 import styled from "styled-components";
 import { DataStore } from "@aws-amplify/datastore";
-import x from "../../images/X.svg";
+import x from "../../images/x.svg";
 import { PopupDiv, PopupBox, X, CancelBtn, SaveBtn } from "../styledComponents";
 import Monthly from "../monthlyView";
 import AppointmentInfo from "../appointmentInfo";
