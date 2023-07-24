@@ -77,13 +77,9 @@ export default function TimeslotMobileContent({
   const [confirmationShown, setConfirmationShown] = useState(false);
   const [successShown, setSuccessShown] = useState(false);
 
-  // eslint-disable-next-line no-param-reassign
-  const handleSlide = () => {
-    setOnOff(!onOff);
-  };
-
   const handleConfirmationShown = () => {
     setConfirmationShown(true);
+    setOnOff(!onOff);
   };
 
   const handleSuccessShown = () => {
@@ -112,7 +108,7 @@ export default function TimeslotMobileContent({
               </TimeslotButton>
             ) : (
               <OnOffSlide
-                onClick={handleSlide}
+                onClick={handleConfirmationShown}
                 src={onOff ? OnSlide : OffSlide}
               />
             )}
@@ -124,6 +120,7 @@ export default function TimeslotMobileContent({
               handleClicked={handleSuccessShown}
               handleCancelled={handleCancelled}
               booked={booked}
+              enabled={onOff}
               date={date}
               tId={tId}
               setRequery={setRequery}

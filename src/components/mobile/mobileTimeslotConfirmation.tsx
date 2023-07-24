@@ -3,7 +3,7 @@ import { useContext } from "react";
 import styled from "styled-components";
 import { DataStore } from "aws-amplify";
 import UserContext from "../../userContext";
-import { User, Booking } from "../../models";
+import { User, Booking, Timeslot } from "../../models";
 import warning from "../../images/warning.svg";
 import {
   CancelBtn,
@@ -78,6 +78,7 @@ interface MobileTimeSlotConfirmationProps {
   handleClicked: () => void;
   handleCancelled: () => void;
   booked: boolean;
+  enabled: boolean;
   date: Date;
   tId: string;
   setRequery: (requery: boolean) => void;
@@ -87,6 +88,7 @@ export default function MobileTimeSlotConfirmation({
   handleClicked,
   handleCancelled,
   booked,
+  enabled,
   date,
   tId,
   setRequery,
@@ -96,6 +98,49 @@ export default function MobileTimeSlotConfirmation({
   const [realUser] = currentUser;
   const { userType, id } = realUser;
 
+  async function addUnavailability(timeslotId: string, unavailableDate: Date) {
+    try {
+      const original = await DataStore.query(Timeslot, timeslotId);
+      if (original && Array.isArray(original.unavailableDates)) {
+        const ymdDate = convertToYMD(new Date(unavailableDate));
+        const updatedList = new Set(original.unavailableDates);
+        if (!updatedList.has(ymdDate)) {
+          updatedList.add(ymdDate);
+          await DataStore.save(
+            Timeslot.copyOf(original, (updated) => {
+              // eslint-disable-next-line no-param-reassign
+              updated.unavailableDates = Array.from(updatedList);
+            })
+          );
+        }
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log("An error occurred: ", error.message); // eslint-disable-line no-console
+      }
+    }
+  }
+
+  async function deleteUnavailability(timeslotId: string, availableDate: Date) {
+    try {
+      const original = await DataStore.query(Timeslot, timeslotId);
+      if (original && Array.isArray(original.unavailableDates)) {
+        const convertedDate = convertToYMD(new Date(availableDate));
+        const updatedList = original.unavailableDates.filter(
+          (dateString) => convertedDate !== dateString
+        );
+        await DataStore.save(
+          Timeslot.copyOf(original, (updated) => {
+            updated.unavailableDates = updatedList; // eslint-disable-line no-param-reassign
+          })
+        );
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log("An error occurred: ", error.message); // eslint-disable-line no-console
+      }
+    }
+  }
   async function addRVBooking(
     TimeslotID: string,
     userID: string,
@@ -154,8 +199,14 @@ export default function MobileTimeSlotConfirmation({
 
   const handleConfirmationAdmin = () => {
     handleClicked();
-    // addUnavailability(uncheckedLst, date); // YYYY-MM-DD
-    // deleteUnavailability(checkedLst, date); // YYYY-MM-DD
+    if (enabled) {
+      deleteUnavailability(tId, date); // YYYY-MM-DD
+      console.log("enabled");
+    } else {
+      addUnavailability(tId, date); // YYYY-MM-DD
+      console.log("disabled");
+    }
+    setRequery(true);
   };
 
   const handleConfirmationRV = () => {
