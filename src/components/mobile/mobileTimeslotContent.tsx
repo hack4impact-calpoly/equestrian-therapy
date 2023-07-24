@@ -95,7 +95,7 @@ export default function TimeslotMobileContent({
 
   return (
     <WrapperMobile>
-      <BoxMobile style={{ display: "block" }}>
+      <BoxMobile>
         {!confirmationShown && (
           <BoxMobileContent>
             <AppointmentInfo
