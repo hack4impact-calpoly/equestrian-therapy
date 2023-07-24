@@ -56,6 +56,7 @@ type TimeslotMobileContentProps = {
   riderBookings: LazyUser[];
   volunteerBookings: LazyUser[];
   booked: boolean;
+  enabled: boolean;
   setRequery: (requery: boolean) => void;
   toggleValue: string;
 };
@@ -66,6 +67,7 @@ export default function TimeslotMobileContent({
   riderBookings,
   volunteerBookings,
   booked,
+  enabled,
   setRequery,
   toggleValue,
 }: TimeslotMobileContentProps) {
@@ -73,13 +75,13 @@ export default function TimeslotMobileContent({
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   const { userType } = realUser;
-  const [onOff, setOnOff] = useState(true);
+  const [onOff, setOnOff] = useState(enabled);
   const [confirmationShown, setConfirmationShown] = useState(false);
   const [successShown, setSuccessShown] = useState(false);
 
   const handleConfirmationShown = () => {
     setConfirmationShown(true);
-    setOnOff(!onOff);
+    setOnOff(!enabled);
   };
 
   const handleSuccessShown = () => {

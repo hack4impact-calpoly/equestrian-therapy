@@ -53,6 +53,7 @@ interface TimeslotProps {
   date: Date;
   backgroundColor: string;
   checked: boolean;
+  enabled: boolean;
   tId: string;
   setRequery: (requery: boolean) => void;
   toggleValue: string;
@@ -65,6 +66,7 @@ export default function MobileTimeslot({
   backgroundColor,
   tId,
   checked,
+  enabled,
   setRequery,
   toggleValue,
 }: TimeslotProps) {
@@ -143,6 +145,7 @@ export default function MobileTimeslot({
             riderBookings={riderBookings}
             volunteerBookings={volunteerBookings}
             booked={checked}
+            enabled={enabled}
             setRequery={setRequery}
             toggleValue={toggleValue}
           />
