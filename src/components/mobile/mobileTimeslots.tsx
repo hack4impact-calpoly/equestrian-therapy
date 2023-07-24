@@ -149,9 +149,8 @@ export default function MobileTimeslots({
     ) {
       if (userType === "Admin") {
         backgroundColor = "#C1C1C1";
-      } else {
-        enabled = false;
       }
+      enabled = false;
     }
 
     return {
@@ -183,7 +182,7 @@ export default function MobileTimeslots({
         timeslot.enabled
       );
     }
-    return timeslot.enabled;
+    return true;
   }
 
   return (
@@ -201,6 +200,7 @@ export default function MobileTimeslots({
             backgroundColor={timeslot.backgroundColor}
             tId={timeslot.timeslotId}
             checked={timeslot.checked}
+            enabled={timeslot.enabled}
             setRequery={setRequery}
             toggleValue={toggleValue}
           />

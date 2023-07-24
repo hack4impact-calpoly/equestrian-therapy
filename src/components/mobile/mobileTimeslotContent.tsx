@@ -56,6 +56,7 @@ type TimeslotMobileContentProps = {
   riderBookings: LazyUser[];
   volunteerBookings: LazyUser[];
   booked: boolean;
+  enabled: boolean;
   setRequery: (requery: boolean) => void;
   toggleValue: string;
 };
@@ -66,6 +67,7 @@ export default function TimeslotMobileContent({
   riderBookings,
   volunteerBookings,
   booked,
+  enabled,
   setRequery,
   toggleValue,
 }: TimeslotMobileContentProps) {
@@ -73,17 +75,13 @@ export default function TimeslotMobileContent({
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   const { userType } = realUser;
-  const [onOff, setOnOff] = useState(true);
+  const [onOff, setOnOff] = useState(enabled);
   const [confirmationShown, setConfirmationShown] = useState(false);
   const [successShown, setSuccessShown] = useState(false);
 
-  // eslint-disable-next-line no-param-reassign
-  const handleSlide = () => {
-    setOnOff(!onOff);
-  };
-
   const handleConfirmationShown = () => {
     setConfirmationShown(true);
+    setOnOff(!enabled);
   };
 
   const handleSuccessShown = () => {
@@ -97,7 +95,7 @@ export default function TimeslotMobileContent({
 
   return (
     <WrapperMobile>
-      <BoxMobile style={{ display: "block" }}>
+      <BoxMobile>
         {!confirmationShown && (
           <BoxMobileContent>
             <AppointmentInfo
@@ -112,7 +110,7 @@ export default function TimeslotMobileContent({
               </TimeslotButton>
             ) : (
               <OnOffSlide
-                onClick={handleSlide}
+                onClick={handleConfirmationShown}
                 src={onOff ? OnSlide : OffSlide}
               />
             )}
@@ -124,6 +122,7 @@ export default function TimeslotMobileContent({
               handleClicked={handleSuccessShown}
               handleCancelled={handleCancelled}
               booked={booked}
+              enabled={onOff}
               date={date}
               tId={tId}
               setRequery={setRequery}
