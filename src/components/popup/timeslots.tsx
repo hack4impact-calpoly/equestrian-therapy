@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import UserContext from "../../userContext";
 import Timeslot from "./timeslot";
@@ -55,6 +55,7 @@ export default function Timeslots({
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   const { userType } = realUser;
+  const [oneSelected, setOneSelected] = useState(false);
 
   function filterTimeSlots(ts: {
     startTime: Date;
@@ -96,6 +97,8 @@ export default function Timeslots({
               setBookedToday={setBookedToday}
               setCheckedLst={setCheckedLst}
               setUncheckedLst={setUncheckedLst}
+              oneSelected={oneSelected}
+              setOneSelected={setOneSelected}
             />
           ))}
       </Slots>
