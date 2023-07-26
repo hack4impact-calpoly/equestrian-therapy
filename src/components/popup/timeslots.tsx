@@ -36,6 +36,7 @@ interface TimeslotsProps {
   bookedToday: number;
   checkedLst: string[];
   uncheckedLst: string[];
+  previousTimeslots: string[];
   setCheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
   setUncheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
   setBookedToday: React.Dispatch<React.SetStateAction<number>>;
@@ -47,6 +48,7 @@ export default function Timeslots({
   bookedToday,
   checkedLst,
   uncheckedLst,
+  previousTimeslots,
   setCheckedLst,
   setUncheckedLst,
   setBookedToday,
@@ -94,6 +96,7 @@ export default function Timeslots({
               bookedToday={bookedToday}
               checkedLst={checkedLst}
               uncheckedLst={uncheckedLst}
+              previousTimeslots={previousTimeslots}
               setBookedToday={setBookedToday}
               setCheckedLst={setCheckedLst}
               setUncheckedLst={setUncheckedLst}

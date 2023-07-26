@@ -62,6 +62,7 @@ interface TimeslotProps {
   checkedLst: string[];
   uncheckedLst: string[];
   oneSelected: string;
+  previousTimeslots: string[];
   setBookedToday: React.Dispatch<React.SetStateAction<number>>;
   setCheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
   setUncheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
@@ -78,6 +79,7 @@ export default function Timeslot({
   checkedLst,
   uncheckedLst,
   oneSelected,
+  previousTimeslots,
   setBookedToday,
   setCheckedLst,
   setUncheckedLst,
@@ -96,14 +98,20 @@ export default function Timeslot({
 
   const toggleChecked = () => {
     if (isChecked) {
-      if (oneSelected !== "") {
+      if (
+        oneSelected !== "" &&
+        previousTimeslots &&
+        previousTimeslots.includes(tsId)
+      ) {
         return;
       }
       setUncheckedLst(uncheckedLst.concat(tsId));
       setCheckedLst(uncheckedLst.filter((id) => id !== tsId));
       setIsChecked(!isChecked);
       setBookedToday(bookedToday - 1);
-      setOneSelected(tsId);
+      if (previousTimeslots && previousTimeslots.includes(tsId)) {
+        setOneSelected(tsId);
+      }
     } else {
       if (bookedToday >= 1 && userType === "Rider") {
         return;
