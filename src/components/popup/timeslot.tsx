@@ -61,11 +61,11 @@ interface TimeslotProps {
   bookedToday: number;
   checkedLst: string[];
   uncheckedLst: string[];
+  oneSelected: string;
   setBookedToday: React.Dispatch<React.SetStateAction<number>>;
   setCheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
   setUncheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
-  oneSelected: boolean;
-  setOneSelected: React.Dispatch<React.SetStateAction<boolean>>;
+  setOneSelected: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function Timeslot({
@@ -77,10 +77,10 @@ export default function Timeslot({
   bookedToday,
   checkedLst,
   uncheckedLst,
+  oneSelected,
   setBookedToday,
   setCheckedLst,
   setUncheckedLst,
-  oneSelected,
   setOneSelected,
 }: TimeslotProps) {
   const [isChecked, setIsChecked] = useState(checked);
@@ -96,14 +96,14 @@ export default function Timeslot({
 
   const toggleChecked = () => {
     if (isChecked) {
-      if (oneSelected) {
+      if (oneSelected !== "") {
         return;
       }
       setUncheckedLst(uncheckedLst.concat(tsId));
       setCheckedLst(uncheckedLst.filter((id) => id !== tsId));
       setIsChecked(!isChecked);
       setBookedToday(bookedToday - 1);
-      setOneSelected(true);
+      setOneSelected(tsId);
     } else {
       if (bookedToday >= 1 && userType === "Rider") {
         return;
@@ -112,6 +112,9 @@ export default function Timeslot({
       setUncheckedLst(uncheckedLst.filter((id) => id !== tsId));
       setIsChecked(!isChecked);
       setBookedToday(bookedToday + 1);
+      if (userType === "Rider" || tsId === oneSelected) {
+        setOneSelected("");
+      }
     }
   };
 

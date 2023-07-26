@@ -55,7 +55,7 @@ export default function Timeslots({
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   const { userType } = realUser;
-  const [oneSelected, setOneSelected] = useState(false);
+  const [oneSelected, setOneSelected] = useState("");
 
   function filterTimeSlots(ts: {
     startTime: Date;
