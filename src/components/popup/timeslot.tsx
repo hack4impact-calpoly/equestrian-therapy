@@ -92,7 +92,6 @@ export default function Timeslot({
   const { userType } = realUser;
 
   useEffect(() => {
-    // console.log("Bookable just updated", checked);
     setIsChecked(checked);
   }, [checked]);
 
@@ -105,21 +104,26 @@ export default function Timeslot({
       ) {
         return;
       }
-      setUncheckedLst(uncheckedLst.concat(tsId));
       setCheckedLst(uncheckedLst.filter((id) => id !== tsId));
       setIsChecked(!isChecked);
       setBookedToday(bookedToday - 1);
+      // if it was one of the previous selected timeslots
       if (previousTimeslots && previousTimeslots.includes(tsId)) {
-        setOneSelected(tsId);
+        setOneSelected(tsId); // set oneSelected to the current timeslot id so we know something has been unselected
+        setUncheckedLst(uncheckedLst.concat(tsId)); // Only add it to the unchecked list if it was previously booked
       }
     } else {
       if (bookedToday >= 1 && userType === "Rider") {
         return;
       }
-      setCheckedLst(checkedLst.concat(tsId));
+      // only add something to the checkedlist if it wasn't already booked, prevents double booking on same user
+      if (previousTimeslots && !previousTimeslots.includes(tsId)) {
+        setCheckedLst(checkedLst.concat(tsId));
+      }
       setUncheckedLst(uncheckedLst.filter((id) => id !== tsId));
       setIsChecked(!isChecked);
       setBookedToday(bookedToday + 1);
+      // reset the oneSelected if they're riders (can only have one booked anyways) or if its the one that was just unchecked
       if (userType === "Rider" || tsId === oneSelected) {
         setOneSelected("");
       }
