@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import UserContext from "../../userContext";
 import Timeslot from "./timeslot";
@@ -36,6 +36,7 @@ interface TimeslotsProps {
   bookedToday: number;
   checkedLst: string[];
   uncheckedLst: string[];
+  previousTimeslots: string[];
   setCheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
   setUncheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
   setBookedToday: React.Dispatch<React.SetStateAction<number>>;
@@ -47,6 +48,7 @@ export default function Timeslots({
   bookedToday,
   checkedLst,
   uncheckedLst,
+  previousTimeslots,
   setCheckedLst,
   setUncheckedLst,
   setBookedToday,
@@ -55,6 +57,7 @@ export default function Timeslots({
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   const { userType } = realUser;
+  const [oneSelected, setOneSelected] = useState("");
 
   function filterTimeSlots(ts: {
     startTime: Date;
@@ -93,9 +96,12 @@ export default function Timeslots({
               bookedToday={bookedToday}
               checkedLst={checkedLst}
               uncheckedLst={uncheckedLst}
+              previousTimeslots={previousTimeslots}
               setBookedToday={setBookedToday}
               setCheckedLst={setCheckedLst}
               setUncheckedLst={setUncheckedLst}
+              oneSelected={oneSelected}
+              setOneSelected={setOneSelected}
             />
           ))}
       </Slots>

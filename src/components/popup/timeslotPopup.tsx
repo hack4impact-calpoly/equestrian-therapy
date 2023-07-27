@@ -116,6 +116,7 @@ export default function Popup({
   const [checkedLst, setCheckedLst] = useState<string[]>([]);
   const [uncheckedLst, setUncheckedLst] = useState<string[]>([]);
   const [bookedToday, setBookedToday] = useState(1);
+  const [previousTimeslots, setPreviousTimeslots] = useState<string[]>([]);
 
   const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
@@ -197,6 +198,7 @@ export default function Popup({
     };
 
     const fetchBookable = async () => {
+      const selectedTimeslots = [];
       while (ts.length > 0) {
         ts.pop();
       }
@@ -206,7 +208,12 @@ export default function Popup({
           if (timeslot.startTime && timeslot.endTime) {
             if (userType === "Volunteer" || userType === "Rider") {
               // eslint-disable-next-line no-await-in-loop
-              countBookedToday += await fetchBookableRV(timeslot);
+              const count = await fetchBookableRV(timeslot);
+              countBookedToday += count;
+              if (count >= 1) {
+                // console.log("count = ", count);
+                selectedTimeslots.push(timeslot.id);
+              }
             } else {
               fetchBookableAdmin(timeslot);
             }
@@ -215,6 +222,9 @@ export default function Popup({
       }
       // console.log("Bookable = ", bookable);
       // console.log("TS about to be set = ", ts);
+      // console.log("Selected timeslots", selectedTimeslots);
+      // console.log("current previousTimeslots", previousTimeslots);
+      setPreviousTimeslots(selectedTimeslots);
       setBookable(ts);
       setBookedToday(countBookedToday);
     };
@@ -298,6 +308,7 @@ export default function Popup({
                   bookedToday={bookedToday}
                   checkedLst={checkedLst}
                   uncheckedLst={uncheckedLst}
+                  previousTimeslots={previousTimeslots}
                   setCheckedLst={setCheckedLst}
                   setUncheckedLst={setUncheckedLst}
                   setBookedToday={setBookedToday}
