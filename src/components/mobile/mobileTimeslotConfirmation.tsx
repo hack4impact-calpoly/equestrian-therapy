@@ -190,7 +190,9 @@ export default function MobileTimeSlotConfirmation({
         ])
       );
       bookings.forEach((booking) => {
-        DataStore.delete(booking);
+        if (booking.userID === id) {
+          DataStore.delete(booking);
+        }
       });
     } catch (error: unknown) {
       if (error instanceof Error) {

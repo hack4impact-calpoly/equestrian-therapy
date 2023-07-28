@@ -138,7 +138,26 @@ export default function MobileTimeslots({
         ))
     ) {
       backgroundColor = "#E0EFF1";
-      checked = true;
+      if (
+        userType !== "Admin" &&
+        bookings.some(
+          (booking) =>
+            booking.timeslotID === timeslot.id &&
+            date.getDate() ===
+              Number(
+                String(booking.date).substring(
+                  String(booking.date).length - 2,
+                  String(booking.date).length
+                )
+              ) &&
+            date.getMonth() + 1 ===
+              Number(String(booking.date).substring(5, 7)) &&
+            date.getFullYear() ===
+              Number(String(booking.date).substring(0, 4)) &&
+            booking.userID === currentUserId
+        )
+      )
+        checked = true;
     }
 
     if (

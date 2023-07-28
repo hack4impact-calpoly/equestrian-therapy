@@ -117,7 +117,6 @@ export default function TimeSlotConfirmation({
     userID: string,
     bookedDate: Date
   ) {
-    console.log(TimeslotIDs);
     try {
       const original = await DataStore.query(User, userID);
       if (original && original.userType === "Volunteer") {
@@ -174,7 +173,9 @@ export default function TimeSlotConfirmation({
           ])
         );
         bookings.forEach((booking) => {
-          DataStore.delete(booking);
+          if (booking.userID === id) {
+            DataStore.delete(booking);
+          }
         });
       });
     } catch (error: unknown) {
