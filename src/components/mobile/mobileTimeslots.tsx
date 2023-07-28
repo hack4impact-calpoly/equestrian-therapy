@@ -81,8 +81,6 @@ export default function MobileTimeslots({
     let backgroundColor = "#90BFCC";
     let enabled = true;
     let checked = false;
-    // console.log("toggleValue = ", toggleValue);
-    // console.log("usertype = ", userType);
     if (
       ((userType === "Rider" || toggleValue === "Riders") &&
         bookings.some(
@@ -201,6 +199,7 @@ export default function MobileTimeslots({
             tId={timeslot.timeslotId}
             checked={timeslot.checked}
             enabled={timeslot.enabled}
+            allBookings={bookings}
             setRequery={setRequery}
             toggleValue={toggleValue}
           />
