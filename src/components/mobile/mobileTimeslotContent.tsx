@@ -8,7 +8,7 @@ import MobileTimeSlotConfirmation from "./mobileTimeslotConfirmation";
 import TimeslotSuccess from "../popup/timeslotSuccess";
 import AppointmentInfo from "../appointmentInfo";
 import { LazyUser } from "../../models";
-// height 380px so that it stays that height (right now height changes based on rendering of components)
+
 const BoxMobile = styled.div`
   border: solid 0.5px #c4c4c4;
   display: flex;
@@ -59,6 +59,7 @@ type TimeslotMobileContentProps = {
   enabled: boolean;
   setRequery: (requery: boolean) => void;
   toggleValue: string;
+  setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function TimeslotMobileContent({
@@ -70,6 +71,7 @@ export default function TimeslotMobileContent({
   enabled,
   setRequery,
   toggleValue,
+  setIsDropdownOpen,
 }: TimeslotMobileContentProps) {
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
@@ -91,6 +93,7 @@ export default function TimeslotMobileContent({
   const handleCancelled = () => {
     setSuccessShown(false);
     setConfirmationShown(false);
+    setIsDropdownOpen(false);
   };
 
   return (
@@ -117,7 +120,7 @@ export default function TimeslotMobileContent({
           </BoxMobileContent>
         )}
         {confirmationShown && !successShown && (
-          <BoxMobileContent>
+          <WrapperMobile>
             <MobileTimeSlotConfirmation
               handleClicked={handleSuccessShown}
               handleCancelled={handleCancelled}
@@ -127,7 +130,7 @@ export default function TimeslotMobileContent({
               tId={tId}
               setRequery={setRequery}
             />
-          </BoxMobileContent>
+          </WrapperMobile>
         )}
         {confirmationShown && successShown && (
           <TimeslotSuccess handleCancelled={handleCancelled} />

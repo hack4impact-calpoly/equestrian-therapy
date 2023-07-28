@@ -148,6 +148,7 @@ export default function MobileTimeslot({
             enabled={enabled}
             setRequery={setRequery}
             toggleValue={toggleValue}
+            setIsDropdownOpen={setIsDropdownOpen}
           />
         )}
       </Dropdown>
