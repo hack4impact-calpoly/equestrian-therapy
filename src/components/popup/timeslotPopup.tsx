@@ -262,7 +262,7 @@ export default function Popup({
       if (!popup) {
         const timeslotsArray = await DataStore.query(Timeslot);
         setTs(timeslotsArray);
-        setBookable([]);
+        // setBookable([]);
       }
       if (selected) {
         const bookingsArray = await selected.bookings.toArray();
