@@ -107,9 +107,10 @@ const CalendarContainer = styled.div`
   }
   .react-calendar__tile:enabled:hover,
   .react-calendar__tile:enabled:focus {
-    background-color: #e6e6e6;
+    background: white;
+    box-shadow: 0px 0px 0px 1px #04b2d9 inset;
   }
-  .react-calendar__tile--now {
+  .react-calendar__tile--range {
     background: white;
     box-shadow: 0px 0px 0px 1px #04b2d9 inset;
   }
@@ -122,19 +123,24 @@ const CalendarContainer = styled.div`
   }
 `;
 
-export default function MonthlyView() {
-  const [date, setDate] = useState(new Date());
-  const onChange = () => {
-    setDate(date);
-  };
+interface MonthlyViewProps {
+  date: Date;
+  setDate: React.Dispatch<React.SetStateAction<Date>>;
+}
 
+export default function MonthlyView({ date, setDate }: MonthlyViewProps) {
+  const [selected, setSelected] = useState(date);
+  const onChange = (sel: Date) => {
+    setDate(sel);
+    setSelected(sel);
+  };
   const tileDisabled = (thedate: any) => thedate < new Date();
 
   return (
     <CalendarContainer>
       <Calendar
-        onChange={onChange}
-        value={date}
+        onClickDay={onChange}
+        value={selected}
         nextLabel=" > "
         prevLabel=" < "
         defaultView="month"

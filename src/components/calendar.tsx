@@ -280,7 +280,7 @@ function convertToYMD(date: Date) {
 }
 
 export default function Calendar({ timeslots, setTs }: CalendarProps) {
-  const [date, setDateProp] = useState(new Date());
+  const [date, setDate] = useState(new Date());
   const calRef = useRef<FullCalendarRef>(null);
   const [toggleValue, setToggleValue] = useState<string>("");
   const [popup, setPopup] = useState(false);
@@ -484,11 +484,11 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
               view="month"
               calendarType="US"
               onClickDay={(day) => {
-                setDateProp(day);
+                setDate(day);
                 calRef.current?.getApi()?.gotoDate(day);
               }}
               onClickMonth={(day) => {
-                setDateProp(day);
+                setDate(day);
                 calRef.current?.getApi()?.gotoDate(day);
               }}
             />
@@ -511,7 +511,7 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
               ref={calRef}
               dayHeaderFormat={{ weekday: "short", day: "numeric" }}
               datesSet={(dateInfo) => {
-                setDateProp(dateInfo.start);
+                setDate(dateInfo.start);
               }}
               eventClick={handleEventClick}
             />
@@ -523,6 +523,7 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
               handleSuccessOpen={handleSuccessOpen}
               onClose={handlePopupClose}
               date={popupDate}
+              setDate={setPopupDate}
               timeslots={timeslots}
               setTs={setTs}
               toggleValue={toggleValue}
