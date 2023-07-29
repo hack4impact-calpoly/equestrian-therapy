@@ -17,10 +17,10 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4%;
+  padding: 6%;
 `;
 
-const Box = styled.section`
+const Box = styled.div`
   border: solid 0.5px #c4c4c4;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   display: flex;
@@ -56,6 +56,14 @@ const BtnContainer = styled.div`
   align-items: center;
   padding-top: 40px;
   gap: 20px;
+`;
+
+const MobileCancelBtn = styled(CancelBtn)`
+  width: 50%;
+`;
+
+const MobileSaveBtn = styled(SaveBtn)`
+  width: 50%;
 `;
 
 function convertToYMD(date: Date) {
@@ -250,8 +258,10 @@ export default function MobileTimeSlotConfirmation({
               slots. Are you sure you want to do this?
             </CenteredDescription>
             <BtnContainer>
-              <CancelBtn onClick={handleCancel}>Cancel</CancelBtn>
-              <SaveBtn onClick={handleConfirmationAdmin}>Confirm</SaveBtn>
+              <MobileCancelBtn onClick={handleCancel}>Cancel</MobileCancelBtn>
+              <MobileSaveBtn onClick={handleConfirmationAdmin}>
+                Confirm
+              </MobileSaveBtn>
             </BtnContainer>
           </Box>
         </Wrapper>
@@ -265,11 +275,13 @@ export default function MobileTimeSlotConfirmation({
             <CenteredDescription>
               {`You are choosing to ${
                 booked ? "cancel" : "book"
-              } one or more time slots. Are you sure you want to do this?`}
+              } a time slot. Are you sure you want to do this?`}
             </CenteredDescription>
             <BtnContainer>
-              <CancelBtn onClick={handleCancel}>Cancel</CancelBtn>
-              <SaveBtn onClick={handleConfirmationRV}>Confirm</SaveBtn>
+              <MobileCancelBtn onClick={handleCancel}>Cancel</MobileCancelBtn>
+              <MobileSaveBtn onClick={handleConfirmationRV}>
+                Confirm
+              </MobileSaveBtn>
             </BtnContainer>
           </Box>
         </Wrapper>

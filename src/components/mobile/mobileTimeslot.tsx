@@ -152,6 +152,7 @@ export default function MobileTimeslot({
             allBookings={allBookings}
             setRequery={setRequery}
             toggleValue={toggleValue}
+            setIsDropdownOpen={setIsDropdownOpen}
           />
         )}
       </Dropdown>

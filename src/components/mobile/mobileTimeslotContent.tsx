@@ -59,6 +59,7 @@ type TimeslotMobileContentProps = {
   booked: boolean;
   enabled: boolean;
   toggleValue: string;
+  setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
   allBookings: Booking[];
   setRequery: (requery: boolean) => void;
 };
@@ -87,6 +88,7 @@ export default function TimeslotMobileContent({
   booked,
   enabled,
   toggleValue,
+  setIsDropdownOpen,
   allBookings,
   setRequery,
 }: TimeslotMobileContentProps) {
@@ -110,6 +112,7 @@ export default function TimeslotMobileContent({
   const handleCancelled = () => {
     setSuccessShown(false);
     setConfirmationShown(false);
+    setIsDropdownOpen(false);
   };
 
   return (
@@ -148,7 +151,7 @@ export default function TimeslotMobileContent({
           </BoxMobileContent>
         )}
         {confirmationShown && !successShown && (
-          <BoxMobileContent>
+          <WrapperMobile>
             <MobileTimeSlotConfirmation
               handleClicked={handleSuccessShown}
               handleCancelled={handleCancelled}
@@ -159,7 +162,7 @@ export default function TimeslotMobileContent({
               allBookings={allBookings}
               setRequery={setRequery}
             />
-          </BoxMobileContent>
+          </WrapperMobile>
         )}
         {confirmationShown && successShown && (
           <TimeslotSuccess handleCancelled={handleCancelled} />
