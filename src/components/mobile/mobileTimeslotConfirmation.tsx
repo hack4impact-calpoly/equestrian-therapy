@@ -258,8 +258,10 @@ export default function MobileTimeSlotConfirmation({
               slots. Are you sure you want to do this?
             </CenteredDescription>
             <BtnContainer>
-              <CancelBtn onClick={handleCancel}>Cancel</CancelBtn>
-              <SaveBtn onClick={handleConfirmationAdmin}>Confirm</SaveBtn>
+              <MobileCancelBtn onClick={handleCancel}>Cancel</MobileCancelBtn>
+              <MobileSaveBtn onClick={handleConfirmationAdmin}>
+                Confirm
+              </MobileSaveBtn>
             </BtnContainer>
           </Box>
         </Wrapper>
