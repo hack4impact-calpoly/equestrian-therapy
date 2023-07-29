@@ -278,7 +278,7 @@ export default function Popup({
     pullData();
     setCheckedLst([]);
     setUncheckedLst([]);
-  }, [popup, selected, date]);
+  }, [selected, date]);
 
   // useEffect(() => {
   //   console.log("Bookable just updated", bookable);
