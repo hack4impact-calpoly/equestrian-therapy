@@ -89,6 +89,7 @@ interface MobileTimeSlotConfirmationProps {
   enabled: boolean;
   date: Date;
   tId: string;
+  allBookings: Booking[];
   setRequery: (requery: boolean) => void;
 }
 
@@ -99,6 +100,7 @@ export default function MobileTimeSlotConfirmation({
   enabled,
   date,
   tId,
+  allBookings,
   setRequery,
 }: MobileTimeSlotConfirmationProps) {
   const currentUserFR = useContext(UserContext);
@@ -196,7 +198,9 @@ export default function MobileTimeSlotConfirmation({
         ])
       );
       bookings.forEach((booking) => {
-        DataStore.delete(booking);
+        if (booking.userID === id) {
+          DataStore.delete(booking);
+        }
       });
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -223,6 +227,15 @@ export default function MobileTimeSlotConfirmation({
       deleteRVBooking(tId);
       console.log("booked");
     } else {
+      if (
+        userType === "Rider" &&
+        allBookings.some(
+          (booking) =>
+            booking.date === convertToYMD(date) && booking.userID === id
+        )
+      ) {
+        return;
+      }
       addRVBooking(tId, id, date);
       console.log("unbooked");
     }

@@ -159,7 +159,9 @@ export default function Popup({
                 countBookings += 1;
                 return true;
               }
-              available = false;
+              if (booking.userType === "Rider" && userType === "Rider") {
+                available = false;
+              }
             }
             return false;
           }

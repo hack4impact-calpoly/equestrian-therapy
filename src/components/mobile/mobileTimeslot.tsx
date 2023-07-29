@@ -9,6 +9,7 @@ import {
   LazyUser,
   LazyBooking,
   LazyTimeslot,
+  Booking,
 } from "../../models";
 
 const Caret = styled.img`
@@ -55,6 +56,7 @@ interface TimeslotProps {
   checked: boolean;
   enabled: boolean;
   tId: string;
+  allBookings: Booking[];
   setRequery: (requery: boolean) => void;
   toggleValue: string;
 }
@@ -67,6 +69,7 @@ export default function MobileTimeslot({
   tId,
   checked,
   enabled,
+  allBookings,
   setRequery,
   toggleValue,
 }: TimeslotProps) {
@@ -146,6 +149,7 @@ export default function MobileTimeslot({
             volunteerBookings={volunteerBookings}
             booked={checked}
             enabled={enabled}
+            allBookings={allBookings}
             setRequery={setRequery}
             toggleValue={toggleValue}
             setIsDropdownOpen={setIsDropdownOpen}

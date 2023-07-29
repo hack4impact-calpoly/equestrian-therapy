@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import styled from "styled-components";
 import "@fontsource/roboto";
 import { useState, useContext } from "react";
@@ -7,8 +8,8 @@ import UserContext from "../../userContext";
 import MobileTimeSlotConfirmation from "./mobileTimeslotConfirmation";
 import TimeslotSuccess from "../popup/timeslotSuccess";
 import AppointmentInfo from "../appointmentInfo";
-import { LazyUser } from "../../models";
-
+import { Booking, LazyUser } from "../../models";
+// height 380px so that it stays that height (right now height changes based on rendering of components)
 const BoxMobile = styled.div`
   border: solid 0.5px #c4c4c4;
   display: flex;
@@ -57,10 +58,27 @@ type TimeslotMobileContentProps = {
   volunteerBookings: LazyUser[];
   booked: boolean;
   enabled: boolean;
-  setRequery: (requery: boolean) => void;
   toggleValue: string;
   setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  allBookings: Booking[];
+  setRequery: (requery: boolean) => void;
 };
+
+function convertToYMD(date: Date) {
+  const localString = date.toLocaleDateString();
+  const splitDate = localString.split("/");
+  let retString = `${localString.split("/")[2]}-`;
+
+  if (splitDate[0].length === 1) {
+    retString += `0`;
+  }
+  retString += `${localString.split("/")[0]}-`;
+  if (splitDate[1].length === 1) {
+    retString += `0`;
+  }
+  retString += `${localString.split("/")[1]}`;
+  return retString;
+}
 
 export default function TimeslotMobileContent({
   date,
@@ -69,9 +87,10 @@ export default function TimeslotMobileContent({
   volunteerBookings,
   booked,
   enabled,
-  setRequery,
   toggleValue,
   setIsDropdownOpen,
+  allBookings,
+  setRequery,
 }: TimeslotMobileContentProps) {
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
@@ -108,9 +127,21 @@ export default function TimeslotMobileContent({
               toggleValue={toggleValue}
             />
             {userType !== "Admin" ? (
-              <TimeslotButton onClick={handleConfirmationShown}>
-                {`${booked ? "Cancel" : "Book"} time slot`}
-              </TimeslotButton>
+              !(
+                userType === "Rider" &&
+                allBookings.some(
+                  (booking) =>
+                    booking.date === convertToYMD(date) &&
+                    booking.userID === realUser.id &&
+                    booking.timeslotID !== tId
+                )
+              ) ? (
+                <TimeslotButton onClick={handleConfirmationShown}>
+                  {`${booked ? "Cancel" : "Book"} time slot`}
+                </TimeslotButton>
+              ) : (
+                <div />
+              )
             ) : (
               <OnOffSlide
                 onClick={handleConfirmationShown}
@@ -128,6 +159,7 @@ export default function TimeslotMobileContent({
               enabled={onOff}
               date={date}
               tId={tId}
+              allBookings={allBookings}
               setRequery={setRequery}
             />
           </WrapperMobile>

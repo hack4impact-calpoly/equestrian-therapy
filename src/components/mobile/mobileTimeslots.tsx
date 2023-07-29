@@ -81,8 +81,6 @@ export default function MobileTimeslots({
     let backgroundColor = "#90BFCC";
     let enabled = true;
     let checked = false;
-    // console.log("toggleValue = ", toggleValue);
-    // console.log("usertype = ", userType);
     if (
       ((userType === "Rider" || toggleValue === "Riders") &&
         bookings.some(
@@ -140,7 +138,26 @@ export default function MobileTimeslots({
         ))
     ) {
       backgroundColor = "#E0EFF1";
-      checked = true;
+      if (
+        userType !== "Admin" &&
+        bookings.some(
+          (booking) =>
+            booking.timeslotID === timeslot.id &&
+            date.getDate() ===
+              Number(
+                String(booking.date).substring(
+                  String(booking.date).length - 2,
+                  String(booking.date).length
+                )
+              ) &&
+            date.getMonth() + 1 ===
+              Number(String(booking.date).substring(5, 7)) &&
+            date.getFullYear() ===
+              Number(String(booking.date).substring(0, 4)) &&
+            booking.userID === currentUserId
+        )
+      )
+        checked = true;
     }
 
     if (
@@ -201,6 +218,7 @@ export default function MobileTimeslots({
             tId={timeslot.timeslotId}
             checked={timeslot.checked}
             enabled={timeslot.enabled}
+            allBookings={bookings}
             setRequery={setRequery}
             toggleValue={toggleValue}
           />
