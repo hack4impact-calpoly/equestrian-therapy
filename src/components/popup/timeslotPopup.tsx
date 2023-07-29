@@ -65,6 +65,7 @@ interface PopupProps {
   handleSuccessOpen: () => void;
   onClose: () => void;
   date: Date;
+  setDate: React.Dispatch<React.SetStateAction<Date>>;
   timeslots: LazyTimeslot[];
   setTs: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
   toggleValue: string;
@@ -102,6 +103,7 @@ export default function Popup({
   handleSuccessOpen,
   onClose,
   date,
+  setDate,
   timeslots,
   setTs,
   toggleValue,
@@ -260,7 +262,7 @@ export default function Popup({
       if (!popup) {
         const timeslotsArray = await DataStore.query(Timeslot);
         setTs(timeslotsArray);
-        setBookable([]);
+        // setBookable([]);
       }
       if (selected) {
         const bookingsArray = await selected.bookings.toArray();
@@ -276,7 +278,7 @@ export default function Popup({
     pullData();
     setCheckedLst([]);
     setUncheckedLst([]);
-  }, [popup, selected]);
+  }, [selected, date]);
 
   // useEffect(() => {
   //   console.log("Bookable just updated", bookable);
@@ -295,7 +297,7 @@ export default function Popup({
           {!confirmPopup && (
             <Wrapper>
               <LeftColumn>
-                <Monthly />
+                <Monthly date={date} setDate={setDate} />
                 <AppointmentInfo
                   riderBookings={riderBookings}
                   volunteerBookings={volunteerBookings}
