@@ -107,6 +107,9 @@ export default function Timeslot({
       setCheckedLst(uncheckedLst.filter((id) => id !== tsId));
       setIsChecked(!isChecked);
       setBookedToday(bookedToday - 1);
+      if (userType === "Admin") {
+        setUncheckedLst(uncheckedLst.concat(tsId));
+      }
       // if it was one of the previous selected timeslots
       if (previousTimeslots && previousTimeslots.includes(tsId)) {
         setOneSelected(tsId); // set oneSelected to the current timeslot id so we know something has been unselected
