@@ -48,6 +48,14 @@ export const schema = {
                         ]
                     }
                 },
+                "availableSundays": {
+                    "name": "availableSundays",
+                    "isArray": true,
+                    "type": "AWSDate",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isArrayNullable": true
+                },
                 "createdAt": {
                     "name": "createdAt",
                     "isArray": false,
@@ -302,5 +310,5 @@ export const schema = {
     "enums": {},
     "nonModels": {},
     "codegenVersion": "3.4.3",
-    "version": "2edbade7bdaa86ff5761973cc7060e1c"
+    "version": "51c83ba6abcc6a48c2154f1ce1ae2406"
 };

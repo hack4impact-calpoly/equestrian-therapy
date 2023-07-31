@@ -16,6 +16,7 @@ type EagerTimeslot = {
   readonly endTime?: string | null;
   readonly unavailableDates?: (string | null)[] | null;
   readonly bookings?: (Booking | null)[] | null;
+  readonly availableSundays?: (string | null)[] | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -30,6 +31,7 @@ type LazyTimeslot = {
   readonly endTime?: string | null;
   readonly unavailableDates?: (string | null)[] | null;
   readonly bookings: AsyncCollection<Booking>;
+  readonly availableSundays?: (string | null)[] | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
