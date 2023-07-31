@@ -170,24 +170,46 @@ export default function Popup({
           return false;
         });
       }
-      if (
-        available &&
-        timeslot.unavailableDates &&
-        !timeslot.unavailableDates.includes(convertToYMD(date))
-      ) {
-        ts.push({
-          startTime: new Date(`July 4 1776 ${timeslot.startTime}`),
-          endTime: new Date(`July 4 1776 ${timeslot.endTime}`),
-          checked,
-          id: timeslot.id,
-        });
+
+      if (available) {
+        if (date.getDay() === 0) {
+          if (
+            timeslot.availableSundays &&
+            timeslot.availableSundays.includes(convertToYMD(date))
+          ) {
+            ts.push({
+              startTime: new Date(`July 4 1776 ${timeslot.startTime}`),
+              endTime: new Date(`July 4 1776 ${timeslot.endTime}`),
+              checked,
+              id: timeslot.id,
+            });
+          }
+        } else if (
+          timeslot.unavailableDates &&
+          !timeslot.unavailableDates.includes(convertToYMD(date))
+        ) {
+          ts.push({
+            startTime: new Date(`July 4 1776 ${timeslot.startTime}`),
+            endTime: new Date(`July 4 1776 ${timeslot.endTime}`),
+            checked,
+            id: timeslot.id,
+          });
+        }
       }
       return countBookings;
     };
 
     const fetchBookableAdmin = async (timeslot: LazyTimeslot) => {
       let checked = true;
-      if (
+      if (date.getDay() === 0) {
+        checked = true;
+        if (
+          timeslot.availableSundays &&
+          !timeslot.availableSundays.includes(convertToYMD(date))
+        ) {
+          checked = false;
+        }
+      } else if (
         timeslot.unavailableDates &&
         timeslot.unavailableDates.includes(convertToYMD(date))
       ) {
