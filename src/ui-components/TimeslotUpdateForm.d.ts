@@ -17,11 +17,13 @@ export declare type TimeslotUpdateFormInputValues = {
     startTime?: string;
     endTime?: string;
     unavailableDates?: string[];
+    availableSundays?: string[];
 };
 export declare type TimeslotUpdateFormValidationValues = {
     startTime?: ValidationFunction<string>;
     endTime?: ValidationFunction<string>;
     unavailableDates?: ValidationFunction<string>;
+    availableSundays?: ValidationFunction<string>;
 };
 export declare type PrimitiveOverrideProps<T> = Partial<T> & React.DOMAttributes<HTMLDivElement>;
 export declare type TimeslotUpdateFormOverridesProps = {
@@ -29,6 +31,7 @@ export declare type TimeslotUpdateFormOverridesProps = {
     startTime?: PrimitiveOverrideProps<TextFieldProps>;
     endTime?: PrimitiveOverrideProps<TextFieldProps>;
     unavailableDates?: PrimitiveOverrideProps<TextFieldProps>;
+    availableSundays?: PrimitiveOverrideProps<TextFieldProps>;
 } & EscapeHatchProps;
 export declare type TimeslotUpdateFormProps = React.PropsWithChildren<{
     overrides?: TimeslotUpdateFormOverridesProps | undefined | null;

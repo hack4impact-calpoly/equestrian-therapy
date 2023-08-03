@@ -81,6 +81,31 @@ export default function MobileTimeslots({
     let backgroundColor = "#90BFCC";
     let enabled = true;
     let checked = false;
+    // If date is a Sunday, check the availableSundays (Sundays disabled on default)
+    if (date.getDay() === 0) {
+      if (userType === "Admin") {
+        backgroundColor = "#C1C1C1";
+      }
+      enabled = false;
+      if (
+        timeslot.availableSundays &&
+        timeslot.availableSundays.includes(convertToYMD(date))
+      ) {
+        if (userType === "Admin") {
+          backgroundColor = "#90BFCC";
+        }
+        enabled = true;
+      } // Non-Sunday dates check unavailableDates
+    } else if (
+      timeslot.unavailableDates &&
+      timeslot.unavailableDates.includes(convertToYMD(date))
+    ) {
+      if (userType === "Admin") {
+        backgroundColor = "#C1C1C1";
+      } else {
+        enabled = false;
+      }
+    }
     if (
       ((userType === "Rider" || toggleValue === "Riders") &&
         bookings.some(
@@ -160,16 +185,15 @@ export default function MobileTimeslots({
         checked = true;
     }
 
-    if (
-      timeslot.unavailableDates &&
-      timeslot.unavailableDates.includes(convertToYMD(date))
-    ) {
-      if (userType === "Admin") {
-        backgroundColor = "#C1C1C1";
-      }
-      enabled = false;
-    }
-
+    // if (
+    //   timeslot.unavailableDates &&
+    //   timeslot.unavailableDates.includes(convertToYMD(date))
+    // ) {
+    //   if (userType === "Admin") {
+    //     backgroundColor = "#C1C1C1";
+    //   }
+    //   enabled = false;
+    // }
     return {
       startTime: String(timeslot.startTime),
       endTime: String(timeslot.endTime),
@@ -196,10 +220,14 @@ export default function MobileTimeslots({
       return (
         Number(timeslot.startTime.substring(0, 2)) >= 10 &&
         Number(timeslot.startTime.substring(0, 2)) < 14 &&
-        timeslot.enabled
+        timeslot.enabled &&
+        date.getDay() !== 0
       );
     }
-    return true;
+    if (userType === "Admin") {
+      return true;
+    }
+    return timeslot.enabled;
   }
 
   return (

@@ -360,7 +360,33 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
           timeslot.endTime
         }:00`
       );
-
+      // If date is a Sunday, check the availableSundays (Sundays disabled on default)
+      if (dateTest.getDay() === 0) {
+        if (userType === "Admin") {
+          backgroundColor = "#C1C1C1";
+        } else {
+          enabled = false;
+        }
+        if (
+          timeslot.availableSundays &&
+          timeslot.availableSundays.includes(convertToYMD(dateTest))
+        ) {
+          if (userType === "Admin") {
+            backgroundColor = "#90BFCC";
+          } else if (userType === "Volunteer") {
+            enabled = true;
+          }
+        } // Non-Sunday dates check unavailableDates
+      } else if (
+        timeslot.unavailableDates &&
+        timeslot.unavailableDates.includes(convertToYMD(dateTest))
+      ) {
+        if (userType === "Admin") {
+          backgroundColor = "#C1C1C1";
+        } else {
+          enabled = false;
+        }
+      }
       if (
         ((userType === "Rider" || toggleValue === "Riders") &&
           bookings.some(
@@ -415,17 +441,6 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
           ))
       ) {
         backgroundColor = "#E0EFF1";
-      }
-
-      if (
-        timeslot.unavailableDates &&
-        timeslot.unavailableDates.includes(convertToYMD(dateTest))
-      ) {
-        if (userType === "Admin") {
-          backgroundColor = "#C1C1C1";
-        } else {
-          enabled = false;
-        }
       }
 
       return {

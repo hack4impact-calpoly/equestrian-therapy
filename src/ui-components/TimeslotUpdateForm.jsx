@@ -196,11 +196,15 @@ export default function TimeslotUpdateForm(props) {
     startTime: "",
     endTime: "",
     unavailableDates: [],
+    availableSundays: [],
   };
   const [startTime, setStartTime] = React.useState(initialValues.startTime);
   const [endTime, setEndTime] = React.useState(initialValues.endTime);
   const [unavailableDates, setUnavailableDates] = React.useState(
     initialValues.unavailableDates
+  );
+  const [availableSundays, setAvailableSundays] = React.useState(
+    initialValues.availableSundays
   );
   const [errors, setErrors] = React.useState({});
   const resetStateValues = () => {
@@ -211,6 +215,8 @@ export default function TimeslotUpdateForm(props) {
     setEndTime(cleanValues.endTime);
     setUnavailableDates(cleanValues.unavailableDates ?? []);
     setCurrentUnavailableDatesValue("");
+    setAvailableSundays(cleanValues.availableSundays ?? []);
+    setCurrentAvailableSundaysValue("");
     setErrors({});
   };
   const [timeslotRecord, setTimeslotRecord] = React.useState(timeslotModelProp);
@@ -227,10 +233,14 @@ export default function TimeslotUpdateForm(props) {
   const [currentUnavailableDatesValue, setCurrentUnavailableDatesValue] =
     React.useState("");
   const unavailableDatesRef = React.createRef();
+  const [currentAvailableSundaysValue, setCurrentAvailableSundaysValue] =
+    React.useState("");
+  const availableSundaysRef = React.createRef();
   const validations = {
     startTime: [],
     endTime: [],
     unavailableDates: [],
+    availableSundays: [],
   };
   const runValidationTasks = async (
     fieldName,
@@ -261,6 +271,7 @@ export default function TimeslotUpdateForm(props) {
           startTime,
           endTime,
           unavailableDates,
+          availableSundays,
         };
         const validationResponses = await Promise.all(
           Object.keys(validations).reduce((promises, fieldName) => {
@@ -320,6 +331,7 @@ export default function TimeslotUpdateForm(props) {
               startTime: value,
               endTime,
               unavailableDates,
+              availableSundays,
             };
             const result = onChange(modelFields);
             value = result?.startTime ?? value;
@@ -347,6 +359,7 @@ export default function TimeslotUpdateForm(props) {
               startTime,
               endTime: value,
               unavailableDates,
+              availableSundays,
             };
             const result = onChange(modelFields);
             value = result?.endTime ?? value;
@@ -369,6 +382,7 @@ export default function TimeslotUpdateForm(props) {
               startTime,
               endTime,
               unavailableDates: values,
+              availableSundays,
             };
             const result = onChange(modelFields);
             values = result?.unavailableDates ?? values;
@@ -406,6 +420,54 @@ export default function TimeslotUpdateForm(props) {
           ref={unavailableDatesRef}
           labelHidden={true}
           {...getOverrideProps(overrides, "unavailableDates")}
+        ></TextField>
+      </ArrayField>
+      <ArrayField
+        onChange={async (items) => {
+          let values = items;
+          if (onChange) {
+            const modelFields = {
+              startTime,
+              endTime,
+              unavailableDates,
+              availableSundays: values,
+            };
+            const result = onChange(modelFields);
+            values = result?.availableSundays ?? values;
+          }
+          setAvailableSundays(values);
+          setCurrentAvailableSundaysValue("");
+        }}
+        currentFieldValue={currentAvailableSundaysValue}
+        label={"Available sundays"}
+        items={availableSundays}
+        hasError={errors?.availableSundays?.hasError}
+        errorMessage={errors?.availableSundays?.errorMessage}
+        setFieldValue={setCurrentAvailableSundaysValue}
+        inputFieldRef={availableSundaysRef}
+        defaultFieldValue={""}
+      >
+        <TextField
+          label="Available sundays"
+          isRequired={false}
+          isReadOnly={false}
+          type="date"
+          value={currentAvailableSundaysValue}
+          onChange={(e) => {
+            let { value } = e.target;
+            if (errors.availableSundays?.hasError) {
+              runValidationTasks("availableSundays", value);
+            }
+            setCurrentAvailableSundaysValue(value);
+          }}
+          onBlur={() =>
+            runValidationTasks("availableSundays", currentAvailableSundaysValue)
+          }
+          errorMessage={errors.availableSundays?.errorMessage}
+          hasError={errors.availableSundays?.hasError}
+          ref={availableSundaysRef}
+          labelHidden={true}
+          {...getOverrideProps(overrides, "availableSundays")}
         ></TextField>
       </ArrayField>
       <Flex

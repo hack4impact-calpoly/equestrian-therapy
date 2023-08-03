@@ -4,6 +4,7 @@ type Timeslot @model @auth(rules: [{allow: public}]) {
   endTime: AWSTime
   unavailableDates: [AWSDate]
   bookings: [Booking] @hasMany(indexName: "byTimeslot", fields: ["id"])
+  availableSundays: [AWSDate]
 }
 
 type Booking @model @auth(rules: [{allow: public}]) {
@@ -23,4 +24,5 @@ type User @model @auth(rules: [{allow: public}]) {
   lastName: String
   userType: String
   bookings: [Booking] @hasMany(indexName: "byUser", fields: ["id"])
-} 
+}
+ 

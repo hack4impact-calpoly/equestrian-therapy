@@ -111,17 +111,32 @@ export default function MobileTimeSlotConfirmation({
   async function addUnavailability(timeslotId: string, unavailableDate: Date) {
     try {
       const original = await DataStore.query(Timeslot, timeslotId);
-      if (original && Array.isArray(original.unavailableDates)) {
+      if (
+        original &&
+        Array.isArray(original.unavailableDates) &&
+        Array.isArray(original.availableSundays)
+      ) {
         const ymdDate = convertToYMD(new Date(unavailableDate));
-        const updatedList = new Set(original.unavailableDates);
-        if (!updatedList.has(ymdDate)) {
-          updatedList.add(ymdDate);
+        if (unavailableDate.getDay() === 0) {
+          const updatedList = original.availableSundays.filter(
+            (dateString) => ymdDate !== dateString
+          );
           await DataStore.save(
             Timeslot.copyOf(original, (updated) => {
-              // eslint-disable-next-line no-param-reassign
-              updated.unavailableDates = Array.from(updatedList);
+              updated.availableSundays = updatedList; // eslint-disable-line no-param-reassign
             })
           );
+        } else {
+          const updatedList = new Set(original.unavailableDates);
+          if (!updatedList.has(ymdDate)) {
+            updatedList.add(ymdDate);
+            await DataStore.save(
+              Timeslot.copyOf(original, (updated) => {
+                // eslint-disable-next-line no-param-reassign
+                updated.unavailableDates = Array.from(updatedList);
+              })
+            );
+          }
         }
       }
     } catch (error: unknown) {
@@ -134,16 +149,33 @@ export default function MobileTimeSlotConfirmation({
   async function deleteUnavailability(timeslotId: string, availableDate: Date) {
     try {
       const original = await DataStore.query(Timeslot, timeslotId);
-      if (original && Array.isArray(original.unavailableDates)) {
+      if (
+        original &&
+        Array.isArray(original.unavailableDates) &&
+        Array.isArray(original.availableSundays)
+      ) {
         const convertedDate = convertToYMD(new Date(availableDate));
-        const updatedList = original.unavailableDates.filter(
-          (dateString) => convertedDate !== dateString
-        );
-        await DataStore.save(
-          Timeslot.copyOf(original, (updated) => {
-            updated.unavailableDates = updatedList; // eslint-disable-line no-param-reassign
-          })
-        );
+        if (availableDate.getDay() === 0) {
+          const updatedList = new Set(original.availableSundays);
+          if (!updatedList.has(convertedDate)) {
+            updatedList.add(convertedDate);
+            await DataStore.save(
+              Timeslot.copyOf(original, (updated) => {
+                // eslint-disable-next-line no-param-reassign
+                updated.availableSundays = Array.from(updatedList);
+              })
+            );
+          }
+        } else {
+          const updatedList = original.unavailableDates.filter(
+            (dateString) => convertedDate !== dateString
+          );
+          await DataStore.save(
+            Timeslot.copyOf(original, (updated) => {
+              updated.unavailableDates = updatedList; // eslint-disable-line no-param-reassign
+            })
+          );
+        }
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
