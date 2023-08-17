@@ -56,7 +56,7 @@ export default function UserUpdateForm(props) {
   }, [idProp, userModelProp]);
   React.useEffect(resetStateValues, [userRecord]);
   const validations = {
-    userName: [],
+    userName: [{ type: "Email" }],
     firstName: [],
     lastName: [],
     userType: [],

@@ -41,7 +41,7 @@ export default function UserCreateForm(props) {
     setErrors({});
   };
   const validations = {
-    userName: [],
+    userName: [{ type: "Email" }],
     firstName: [],
     lastName: [],
     userType: [],

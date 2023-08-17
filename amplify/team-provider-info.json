@@ -17,6 +17,13 @@
       },
       "api": {
         "h4ipet": {}
+      },
+      "function": {
+        "emailUser": {
+          "sesEmail": "chocobora1@gmail.com",
+          "deploymentBucketName": "amplify-h4ipet-main-193144-deployment",
+          "s3Key": "amplify-builds/emailUser-4f452f41437766345671-build.zip"
+        }
       }
     }
   }

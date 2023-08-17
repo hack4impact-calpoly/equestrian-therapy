@@ -11,7 +11,8 @@
           ],
           "defaultAuthentication": {
             "apiKeyConfig": {
-              "apiKeyExpirationDays": 30,
+              "apiKeyExpirationDate": "2024-08-02T04:15:33.683Z",
+              "apiKeyExpirationDays": 365,
               "description": "api key description"
             },
             "authenticationType": "API_KEY"
@@ -56,6 +57,49 @@
       },
       "providerPlugin": "awscloudformation",
       "service": "Cognito"
+    }
+  },
+  "function": {
+    "emailUser": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "GraphQLAPIIdOutput",
+            "GraphQLAPIEndpointOutput"
+          ],
+          "category": "api",
+          "resourceName": "h4ipet"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_emailUser_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "emailUser"
+        }
+      ]
+    },
+    "AMPLIFY_function_emailUser_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "emailUser"
+        }
+      ]
+    },
+    "AMPLIFY_function_emailUser_sesEmail": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "emailUser"
+        }
+      ]
     }
   }
 }

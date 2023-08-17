@@ -223,7 +223,7 @@ export const schema = {
                 "userName": {
                     "name": "userName",
                     "isArray": false,
-                    "type": "String",
+                    "type": "AWSEmail",
                     "isRequired": false,
                     "attributes": []
                 },
@@ -310,5 +310,5 @@ export const schema = {
     "enums": {},
     "nonModels": {},
     "codegenVersion": "3.4.3",
-    "version": "51c83ba6abcc6a48c2154f1ce1ae2406"
+    "version": "2e26edf640ca5ee441286cd2cb328ebc"
 };
