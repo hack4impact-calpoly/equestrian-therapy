@@ -388,6 +388,16 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
         }
       }
       if (
+        timeslot.riderUnavailableDates &&
+        timeslot.riderUnavailableDates.includes(convertToYMD(dateTest))
+      ) {
+        if (userType === "Rider") {
+          enabled = false;
+        } else if (backgroundColor !== "#C1C1C1") {
+          backgroundColor = "#708BDB";
+        }
+      }
+      if (
         ((userType === "Rider" || toggleValue === "Riders") &&
           bookings.some(
             (booking) =>

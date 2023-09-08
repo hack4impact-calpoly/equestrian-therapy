@@ -209,9 +209,17 @@ export default function Popup({
         ) {
           checked = false;
         }
-      } else if (
+      }
+      if (
         timeslot.unavailableDates &&
         timeslot.unavailableDates.includes(convertToYMD(date))
+      ) {
+        checked = false;
+      }
+      if (
+        timeslot.riderUnavailableDates &&
+        timeslot.riderUnavailableDates.includes(convertToYMD(date)) &&
+        toggleValue === "Riders"
       ) {
         checked = false;
       }
@@ -353,6 +361,7 @@ export default function Popup({
               date={date}
               checkedLst={checkedLst}
               uncheckedLst={uncheckedLst}
+              toggleValue={toggleValue}
             />
           )}
           {confirmPopup && successPopup && (

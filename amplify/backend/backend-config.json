@@ -28,9 +28,7 @@
       "dependsOn": [],
       "frontendAuthConfig": {
         "mfaConfiguration": "OFF",
-        "mfaTypes": [
-          "SMS"
-        ],
+        "mfaTypes": ["SMS"],
         "passwordProtectionSettings": {
           "passwordPolicyCharacters": [
             "REQUIRES_LOWERCASE",
@@ -47,15 +45,51 @@
           "PHONE_NUMBER"
         ],
         "socialProviders": [],
-        "usernameAttributes": [
-          "EMAIL"
-        ],
-        "verificationMechanisms": [
-          "EMAIL"
-        ]
+        "usernameAttributes": ["EMAIL"],
+        "verificationMechanisms": ["EMAIL"]
       },
       "providerPlugin": "awscloudformation",
       "service": "Cognito"
+    }
+  },
+  "function": {
+    "emailUser": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": ["GraphQLAPIIdOutput", "GraphQLAPIEndpointOutput"],
+          "category": "api",
+          "resourceName": "h4ipet"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_emailUser_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "emailUser"
+        }
+      ]
+    },
+    "AMPLIFY_function_emailUser_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "emailUser"
+        }
+      ]
+    },
+    "AMPLIFY_function_emailUser_sesEmail": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "emailUser"
+        }
+      ]
     }
   }
 }
