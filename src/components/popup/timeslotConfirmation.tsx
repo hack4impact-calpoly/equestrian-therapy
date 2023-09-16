@@ -77,7 +77,10 @@ export default function TimeSlotConfirmation({
           Array.isArray(original.riderUnavailableDates)
         ) {
           const ymdDate = convertToYMD(new Date(unavailableDate));
-          if (unavailableDate.getDay() === 0 && toggleValue !== "Riders") {
+          if (
+            unavailableDate.getDay() === 0 &&
+            original.availableSundays.includes(ymdDate)
+          ) {
             const updatedList = original.availableSundays.filter(
               (dateString) => ymdDate !== dateString
             );
@@ -97,6 +100,19 @@ export default function TimeSlotConfirmation({
                 })
               );
             }
+          } else if (
+            original.riderUnavailableDates &&
+            original.riderUnavailableDates.includes(ymdDate)
+          ) {
+            console.log("HELLO???");
+            const updatedList = original.riderUnavailableDates.filter(
+              (dateString) => ymdDate !== dateString
+            );
+            await DataStore.save(
+              Timeslot.copyOf(original, (updated) => {
+                updated.riderUnavailableDates = updatedList; // eslint-disable-line no-param-reassign
+              })
+            );
           } else {
             const updatedList = new Set(original.unavailableDates);
             if (!updatedList.has(ymdDate)) {
@@ -127,9 +143,31 @@ export default function TimeSlotConfirmation({
         if (
           original &&
           Array.isArray(original.unavailableDates) &&
-          Array.isArray(original.availableSundays)
+          Array.isArray(original.availableSundays) &&
+          Array.isArray(original.riderUnavailableDates)
         ) {
-          if (
+          if (toggleValue === "Volunteers") {
+            const updatedRiderList = new Set(original.riderUnavailableDates);
+            if (!updatedRiderList.has(convertedDate)) {
+              updatedRiderList.add(convertedDate);
+              console.log("are you here?", updatedRiderList, original);
+              await DataStore.save(
+                Timeslot.copyOf(original, (updated) => {
+                  // eslint-disable-next-line no-param-reassign
+                  updated.riderUnavailableDates = Array.from(updatedRiderList);
+                })
+              );
+            } else if (updatedRiderList.has(convertedDate)) {
+              const updatedList = original.riderUnavailableDates.filter(
+                (dateString) => convertedDate !== dateString
+              );
+              await DataStore.save(
+                Timeslot.copyOf(original, (updated) => {
+                  updated.riderUnavailableDates = updatedList; // eslint-disable-line no-param-reassign
+                })
+              );
+            }
+          } else if (
             availableDate.getDay() === 0 &&
             (!Array.isArray(original.riderUnavailableDates) ||
               !original.riderUnavailableDates.includes(convertedDate))
@@ -145,32 +183,6 @@ export default function TimeSlotConfirmation({
               );
             }
             console.log(toggleValue);
-            if (toggleValue === "Volunteers") {
-              const updatedRiderList = new Set(original.riderUnavailableDates);
-              if (!updatedRiderList.has(convertedDate)) {
-                updatedRiderList.add(convertedDate);
-                console.log("are you here?", updatedRiderList, original);
-                await DataStore.save(
-                  Timeslot.copyOf(original, (updated) => {
-                    // eslint-disable-next-line no-param-reassign
-                    updated.riderUnavailableDates =
-                      Array.from(updatedRiderList);
-                  })
-                );
-              }
-            }
-          } else if (
-            original.riderUnavailableDates &&
-            original.riderUnavailableDates.includes(convertedDate)
-          ) {
-            const updatedList = original.riderUnavailableDates.filter(
-              (dateString) => convertedDate !== dateString
-            );
-            await DataStore.save(
-              Timeslot.copyOf(original, (updated) => {
-                updated.riderUnavailableDates = updatedList; // eslint-disable-line no-param-reassign
-              })
-            );
           } else {
             console.log("why are we here");
             const updatedList = original.unavailableDates.filter(

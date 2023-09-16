@@ -172,6 +172,18 @@ export default function Popup({
       }
 
       if (available) {
+        if (
+          timeslot.riderUnavailableDates &&
+          timeslot.riderUnavailableDates.includes(convertToYMD(date)) &&
+          userType !== "Rider"
+        ) {
+          ts.push({
+            startTime: new Date(`July 4 1776 ${timeslot.startTime}`),
+            endTime: new Date(`July 4 1776 ${timeslot.endTime}`),
+            checked,
+            id: timeslot.id,
+          });
+        }
         if (date.getDay() === 0) {
           if (
             timeslot.availableSundays &&
@@ -218,10 +230,9 @@ export default function Popup({
       }
       if (
         timeslot.riderUnavailableDates &&
-        timeslot.riderUnavailableDates.includes(convertToYMD(date)) &&
-        toggleValue === "Riders"
+        timeslot.riderUnavailableDates.includes(convertToYMD(date))
       ) {
-        checked = false;
+        checked = true;
       }
       ts.push({
         startTime: new Date(`July 4 1776 ${timeslot.startTime}`),

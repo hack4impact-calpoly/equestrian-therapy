@@ -387,14 +387,17 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
           enabled = false;
         }
       }
+      // console.log("YOYOYO", timeslot.riderUnavailableDates, dateTest);
       if (
         timeslot.riderUnavailableDates &&
         timeslot.riderUnavailableDates.includes(convertToYMD(dateTest))
       ) {
         if (userType === "Rider") {
           enabled = false;
-        } else if (backgroundColor !== "#C1C1C1") {
+        } else if (userType === "Admin") {
           backgroundColor = "#708BDB";
+        } else {
+          enabled = true;
         }
       }
       if (
