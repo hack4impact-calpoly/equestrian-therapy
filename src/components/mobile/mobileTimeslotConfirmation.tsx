@@ -86,9 +86,10 @@ interface MobileTimeSlotConfirmationProps {
   handleClicked: () => void;
   handleCancelled: () => void;
   booked: boolean;
-  enabled: boolean;
+  // enabled: boolean;
   date: Date;
   tId: string;
+  toggleValue: string;
   allBookings: Booking[];
   setRequery: (requery: boolean) => void;
 }
@@ -97,9 +98,10 @@ export default function MobileTimeSlotConfirmation({
   handleClicked,
   handleCancelled,
   booked,
-  enabled,
+  // enabled,
   date,
   tId,
+  toggleValue,
   allBookings,
   setRequery,
 }: MobileTimeSlotConfirmationProps) {
@@ -114,16 +116,44 @@ export default function MobileTimeSlotConfirmation({
       if (
         original &&
         Array.isArray(original.unavailableDates) &&
-        Array.isArray(original.availableSundays)
+        Array.isArray(original.availableSundays) &&
+        Array.isArray(original.riderUnavailableDates)
       ) {
         const ymdDate = convertToYMD(new Date(unavailableDate));
-        if (unavailableDate.getDay() === 0) {
+        if (
+          unavailableDate.getDay() === 0 &&
+          original.availableSundays.includes(ymdDate)
+        ) {
           const updatedList = original.availableSundays.filter(
             (dateString) => ymdDate !== dateString
           );
           await DataStore.save(
             Timeslot.copyOf(original, (updated) => {
               updated.availableSundays = updatedList; // eslint-disable-line no-param-reassign
+            })
+          );
+        } else if (toggleValue === "Riders") {
+          const updatedList = new Set(original.riderUnavailableDates);
+          if (!updatedList.has(ymdDate)) {
+            updatedList.add(ymdDate);
+            await DataStore.save(
+              Timeslot.copyOf(original, (updated) => {
+                // eslint-disable-next-line no-param-reassign
+                updated.riderUnavailableDates = Array.from(updatedList);
+              })
+            );
+          }
+        } else if (
+          original.riderUnavailableDates &&
+          original.riderUnavailableDates.includes(ymdDate)
+        ) {
+          console.log("HELLO???");
+          const updatedList = original.riderUnavailableDates.filter(
+            (dateString) => ymdDate !== dateString
+          );
+          await DataStore.save(
+            Timeslot.copyOf(original, (updated) => {
+              updated.riderUnavailableDates = updatedList; // eslint-disable-line no-param-reassign
             })
           );
         } else {
@@ -149,13 +179,39 @@ export default function MobileTimeSlotConfirmation({
   async function deleteUnavailability(timeslotId: string, availableDate: Date) {
     try {
       const original = await DataStore.query(Timeslot, timeslotId);
+      const convertedDate = convertToYMD(new Date(availableDate));
       if (
         original &&
         Array.isArray(original.unavailableDates) &&
-        Array.isArray(original.availableSundays)
+        Array.isArray(original.availableSundays) &&
+        Array.isArray(original.riderUnavailableDates)
       ) {
-        const convertedDate = convertToYMD(new Date(availableDate));
-        if (availableDate.getDay() === 0) {
+        if (toggleValue === "Volunteers") {
+          const updatedRiderList = new Set(original.riderUnavailableDates);
+          if (!updatedRiderList.has(convertedDate)) {
+            updatedRiderList.add(convertedDate);
+            console.log("are you here?", updatedRiderList, original);
+            await DataStore.save(
+              Timeslot.copyOf(original, (updated) => {
+                // eslint-disable-next-line no-param-reassign
+                updated.riderUnavailableDates = Array.from(updatedRiderList);
+              })
+            );
+          } else if (updatedRiderList.has(convertedDate)) {
+            const updatedList = original.riderUnavailableDates.filter(
+              (dateString) => convertedDate !== dateString
+            );
+            await DataStore.save(
+              Timeslot.copyOf(original, (updated) => {
+                updated.riderUnavailableDates = updatedList; // eslint-disable-line no-param-reassign
+              })
+            );
+          }
+        } else if (
+          availableDate.getDay() === 0 &&
+          (!Array.isArray(original.riderUnavailableDates) ||
+            !original.riderUnavailableDates.includes(convertedDate))
+        ) {
           const updatedList = new Set(original.availableSundays);
           if (!updatedList.has(convertedDate)) {
             updatedList.add(convertedDate);
@@ -243,7 +299,8 @@ export default function MobileTimeSlotConfirmation({
 
   const handleConfirmationAdmin = () => {
     handleClicked();
-    if (enabled) {
+    console.log("AYO", booked);
+    if (!booked) {
       deleteUnavailability(tId, date); // YYYY-MM-DD
       console.log("enabled");
     } else {

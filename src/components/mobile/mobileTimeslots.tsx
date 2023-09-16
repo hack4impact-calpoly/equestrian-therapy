@@ -93,6 +93,7 @@ export default function MobileTimeslots({
       ) {
         if (userType === "Admin") {
           backgroundColor = "#90BFCC";
+          checked = true;
         }
         enabled = true;
       } // Non-Sunday dates check unavailableDates
@@ -104,6 +105,19 @@ export default function MobileTimeslots({
         backgroundColor = "#C1C1C1";
       } else {
         enabled = false;
+      }
+    }
+    if (
+      timeslot.riderUnavailableDates &&
+      timeslot.riderUnavailableDates.includes(convertToYMD(date))
+    ) {
+      if (userType === "Rider") {
+        enabled = false;
+      } else if (userType === "Admin") {
+        backgroundColor = "#708BDB";
+        checked = true;
+      } else {
+        enabled = true;
       }
     }
     if (
@@ -185,15 +199,6 @@ export default function MobileTimeslots({
         checked = true;
     }
 
-    // if (
-    //   timeslot.unavailableDates &&
-    //   timeslot.unavailableDates.includes(convertToYMD(date))
-    // ) {
-    //   if (userType === "Admin") {
-    //     backgroundColor = "#C1C1C1";
-    //   }
-    //   enabled = false;
-    // }
     return {
       startTime: String(timeslot.startTime),
       endTime: String(timeslot.endTime),

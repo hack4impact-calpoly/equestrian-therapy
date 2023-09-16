@@ -136,7 +136,6 @@ export default function TimeSlotConfirmation({
 
   async function deleteUnavailability(ids: string[], availableDate: Date) {
     try {
-      console.log("HELLO??? ", toggleValue);
       ids.forEach(async (timeslotId) => {
         const original = await DataStore.query(Timeslot, timeslotId);
         const convertedDate = convertToYMD(new Date(availableDate));

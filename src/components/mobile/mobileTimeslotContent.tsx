@@ -96,7 +96,7 @@ export default function TimeslotMobileContent({
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   const { userType } = realUser;
-  const [onOff, setOnOff] = useState(enabled);
+  const [onOff, setOnOff] = useState(booked);
   const [confirmationShown, setConfirmationShown] = useState(false);
   const [successShown, setSuccessShown] = useState(false);
 
@@ -156,9 +156,10 @@ export default function TimeslotMobileContent({
               handleClicked={handleSuccessShown}
               handleCancelled={handleCancelled}
               booked={booked}
-              enabled={onOff}
+              // enabled={onOff}
               date={date}
               tId={tId}
+              toggleValue={toggleValue}
               allBookings={allBookings}
               setRequery={setRequery}
             />
