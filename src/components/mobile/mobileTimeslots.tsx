@@ -81,11 +81,16 @@ export default function MobileTimeslots({
     let backgroundColor = "#90BFCC";
     let enabled = true;
     let checked = false;
+    if (userType === "Admin") {
+      checked = true;
+    }
+    let riderDisabled = false;
     // If date is a Sunday, check the availableSundays (Sundays disabled on default)
     if (date.getDay() === 0) {
       if (userType === "Admin") {
         backgroundColor = "#C1C1C1";
       }
+      checked = false;
       enabled = false;
       if (
         timeslot.availableSundays &&
@@ -103,6 +108,7 @@ export default function MobileTimeslots({
     ) {
       if (userType === "Admin") {
         backgroundColor = "#C1C1C1";
+        checked = false;
       } else {
         enabled = false;
       }
@@ -111,6 +117,7 @@ export default function MobileTimeslots({
       timeslot.riderUnavailableDates &&
       timeslot.riderUnavailableDates.includes(convertToYMD(date))
     ) {
+      riderDisabled = true;
       if (userType === "Rider") {
         enabled = false;
       } else if (userType === "Admin") {
@@ -206,6 +213,7 @@ export default function MobileTimeslots({
       textColor: "black",
       checked,
       enabled,
+      riderDisabled,
       timeslotId: timeslot.id,
     };
   }
@@ -250,6 +258,7 @@ export default function MobileTimeslots({
             tId={timeslot.timeslotId}
             checked={timeslot.checked}
             enabled={timeslot.enabled}
+            riderDisabled={timeslot.riderDisabled}
             allBookings={bookings}
             setRequery={setRequery}
             toggleValue={toggleValue}

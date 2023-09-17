@@ -89,6 +89,7 @@ interface MobileTimeSlotConfirmationProps {
   // enabled: boolean;
   date: Date;
   tId: string;
+  riderDisabled: boolean;
   toggleValue: string;
   allBookings: Booking[];
   setRequery: (requery: boolean) => void;
@@ -101,6 +102,7 @@ export default function MobileTimeSlotConfirmation({
   // enabled,
   date,
   tId,
+  riderDisabled,
   toggleValue,
   allBookings,
   setRequery,
@@ -109,6 +111,17 @@ export default function MobileTimeSlotConfirmation({
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   const { userType, id } = realUser;
+
+  function tryThis() {
+    if (
+      userType === "Admin" &&
+      ((booked && toggleValue === "Riders") ||
+        (!booked && toggleValue === "Volunteers"))
+    ) {
+      return true;
+    }
+    return riderDisabled;
+  }
 
   async function addUnavailability(timeslotId: string, unavailableDate: Date) {
     try {
@@ -343,8 +356,16 @@ export default function MobileTimeSlotConfirmation({
             <Warning src={warning} />
             <CenteredHeader>Save changes?</CenteredHeader>
             <CenteredDescription>
-              You are choosing to edit the availability of one or more time
-              slots. Are you sure you want to do this?
+              <p style={{ padding: 0, margin: 0 }}>
+                You are choosing to edit
+                {tryThis() ? (
+                  <span style={{ fontWeight: "bold" }}> rider</span>
+                ) : (
+                  " the"
+                )}{" "}
+                availability of one or more time slots. Are you sure you want to
+                do this?
+              </p>
             </CenteredDescription>
             <BtnContainer>
               <MobileCancelBtn onClick={handleCancel}>Cancel</MobileCancelBtn>
