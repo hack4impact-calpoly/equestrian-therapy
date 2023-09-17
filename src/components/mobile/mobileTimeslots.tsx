@@ -225,8 +225,7 @@ export default function MobileTimeslots({
       return (
         Number(timeslot.startTime.substring(0, 2)) >= 10 &&
         Number(timeslot.startTime.substring(0, 2)) < 14 &&
-        timeslot.enabled &&
-        date.getDay() !== 0
+        timeslot.enabled
       );
     }
     if (userType === "Admin") {
