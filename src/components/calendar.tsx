@@ -63,6 +63,18 @@ const CalDiv = styled.div`
   }
 `;
 
+const Disclaimer = styled.p`
+  font-family: "Rubik";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  width: 350px;
+  max-width: 100%;
+  color: #000d26;
+  text-align: left;
+  margin: 0px;
+`;
+
 const Logo = styled.img`
   position: absolute;
   right: 2%;
@@ -79,7 +91,7 @@ const LeftColumn = styled.div`
   align-items: flex-start;
   justify-content: flex-start;
   padding: 0 50px 0 50px;
-  gap: 40px;
+  gap: 20px;
 `;
 const RightColumn = styled.div`
   padding-right: 50px;
@@ -521,6 +533,17 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
             />
           </CalendarContainer>
           <Toggle setToggleProp={setToggleValue} />
+          {userType === "Admin" ? (
+            <Disclaimer>
+              To disable a timeslot for{" "}
+              <span style={{ fontWeight: "bold" }}> riders only</span> you can
+              either: <br />- Disable a timeslot with the &quot;Rider only&quot;
+              toggle enabled or <br />- Enable a disabled timeslot with the
+              &quot;Volunteer only&quot; toggle enabled
+            </Disclaimer>
+          ) : (
+            <div />
+          )}
         </LeftColumn>
         <RightColumn>
           <CalDiv>
