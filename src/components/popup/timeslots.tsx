@@ -27,6 +27,7 @@ interface TsData {
   startTime: Date;
   endTime: Date;
   checked: boolean;
+  riderDisabled: boolean;
   id: string;
 }
 
@@ -37,6 +38,8 @@ interface TimeslotsProps {
   checkedLst: string[];
   uncheckedLst: string[];
   previousTimeslots: string[];
+  riderDisabledLst: string[];
+  setRiderDisabledLst: React.Dispatch<React.SetStateAction<string[]>>;
   setCheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
   setUncheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
   setBookedToday: React.Dispatch<React.SetStateAction<number>>;
@@ -49,6 +52,8 @@ export default function Timeslots({
   checkedLst,
   uncheckedLst,
   previousTimeslots,
+  riderDisabledLst,
+  setRiderDisabledLst,
   setCheckedLst,
   setUncheckedLst,
   setBookedToday,
@@ -87,6 +92,7 @@ export default function Timeslots({
               endTime={timeslot.endTime}
               tsId={timeslot.id}
               checked={timeslot.checked}
+              riderDisabled={timeslot.riderDisabled}
               border={
                 timeslot.startTime.getHours() === selectedDate.getHours() &&
                 timeslot.startTime.getMinutes() === selectedDate.getMinutes()
@@ -97,6 +103,8 @@ export default function Timeslots({
               checkedLst={checkedLst}
               uncheckedLst={uncheckedLst}
               previousTimeslots={previousTimeslots}
+              riderDisabledLst={riderDisabledLst}
+              setRiderDisabledLst={setRiderDisabledLst}
               setBookedToday={setBookedToday}
               setCheckedLst={setCheckedLst}
               setUncheckedLst={setUncheckedLst}

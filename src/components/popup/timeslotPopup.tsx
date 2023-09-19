@@ -77,6 +77,7 @@ interface TsData {
   startTime: Date;
   endTime: Date;
   checked: boolean;
+  riderDisabled: boolean;
   id: string;
 }
 
@@ -119,6 +120,7 @@ export default function Popup({
   const [uncheckedLst, setUncheckedLst] = useState<string[]>([]);
   const [bookedToday, setBookedToday] = useState(1);
   const [previousTimeslots, setPreviousTimeslots] = useState<string[]>([]);
+  const [riderDisabledLst, setRiderDisabledLst] = useState<string[]>([]);
 
   const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
@@ -181,6 +183,7 @@ export default function Popup({
             startTime: new Date(`July 4 1776 ${timeslot.startTime}`),
             endTime: new Date(`July 4 1776 ${timeslot.endTime}`),
             checked,
+            riderDisabled: false,
             id: timeslot.id,
           });
         }
@@ -193,6 +196,7 @@ export default function Popup({
               startTime: new Date(`July 4 1776 ${timeslot.startTime}`),
               endTime: new Date(`July 4 1776 ${timeslot.endTime}`),
               checked,
+              riderDisabled: false,
               id: timeslot.id,
             });
           }
@@ -204,6 +208,7 @@ export default function Popup({
             startTime: new Date(`July 4 1776 ${timeslot.startTime}`),
             endTime: new Date(`July 4 1776 ${timeslot.endTime}`),
             checked,
+            riderDisabled: false,
             id: timeslot.id,
           });
         }
@@ -213,6 +218,7 @@ export default function Popup({
 
     const fetchBookableAdmin = async (timeslot: LazyTimeslot) => {
       let checked = true;
+      let riderDisabled = false;
       if (date.getDay() === 0) {
         checked = true;
         if (
@@ -233,11 +239,13 @@ export default function Popup({
         timeslot.riderUnavailableDates.includes(convertToYMD(date))
       ) {
         checked = true;
+        riderDisabled = true;
       }
       ts.push({
         startTime: new Date(`July 4 1776 ${timeslot.startTime}`),
         endTime: new Date(`July 4 1776 ${timeslot.endTime}`),
         checked,
+        riderDisabled,
         id: timeslot.id,
       });
     };
@@ -354,6 +362,8 @@ export default function Popup({
                   checkedLst={checkedLst}
                   uncheckedLst={uncheckedLst}
                   previousTimeslots={previousTimeslots}
+                  riderDisabledLst={riderDisabledLst}
+                  setRiderDisabledLst={setRiderDisabledLst}
                   setCheckedLst={setCheckedLst}
                   setUncheckedLst={setUncheckedLst}
                   setBookedToday={setBookedToday}
@@ -372,6 +382,8 @@ export default function Popup({
               date={date}
               checkedLst={checkedLst}
               uncheckedLst={uncheckedLst}
+              riderDisabledLst={riderDisabledLst}
+              setRiderDisabledLst={setRiderDisabledLst}
               toggleValue={toggleValue}
             />
           )}

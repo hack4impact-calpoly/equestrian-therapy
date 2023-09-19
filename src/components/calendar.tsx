@@ -345,7 +345,6 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
     const tempSlots = timeslots.map((timeslot: LazyTimeslot) => {
       let backgroundColor = "#90BFCC";
       let enabled = true;
-
       const startingTime = new Date(
         `${
           months[dateTest.getMonth()]

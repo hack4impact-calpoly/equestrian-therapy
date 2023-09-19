@@ -13,6 +13,8 @@ export type TimeslotConfirmProps = {
   date: Date;
   checkedLst: string[];
   uncheckedLst: string[];
+  riderDisabledLst: string[];
+  setRiderDisabledLst: React.Dispatch<React.SetStateAction<string[]>>;
   toggleValue: string;
 };
 
@@ -59,6 +61,8 @@ export default function TimeSlotConfirmation({
   date,
   checkedLst,
   uncheckedLst,
+  riderDisabledLst,
+  setRiderDisabledLst,
   toggleValue,
 }: TimeslotConfirmProps) {
   const currentUserFR = useContext(UserContext);
@@ -66,8 +70,24 @@ export default function TimeSlotConfirmation({
   const [realUser] = currentUser;
   const { userType, id } = realUser;
 
+  function tryThis() {
+    console.log("ON EST ICI OU PAS?", riderDisabledLst);
+    if (
+      userType === "Admin" &&
+      ((uncheckedLst.length > 0 && toggleValue === "Riders") ||
+        (checkedLst.length > 0 && toggleValue === "Volunteers"))
+    ) {
+      return true;
+    }
+    if (riderDisabledLst.length > 0) {
+      return true;
+    }
+    return false;
+  }
+
   async function addUnavailability(ids: string[], unavailableDate: Date) {
     try {
+      setRiderDisabledLst([]);
       ids.forEach(async (timeslotId) => {
         const original = await DataStore.query(Timeslot, timeslotId);
         if (
@@ -136,6 +156,7 @@ export default function TimeSlotConfirmation({
 
   async function deleteUnavailability(ids: string[], availableDate: Date) {
     try {
+      setRiderDisabledLst([]);
       ids.forEach(async (timeslotId) => {
         const original = await DataStore.query(Timeslot, timeslotId);
         const convertedDate = convertToYMD(new Date(availableDate));
@@ -306,8 +327,16 @@ export default function TimeSlotConfirmation({
           <Warning src={warning} />
           <Header>Save changes?</Header>
           <Description>
-            You are choosing to edit the availability of one or more time slots.
-            Are you sure you want to do this?
+            <p style={{ padding: 0, margin: 0 }}>
+              You are choosing to edit
+              {tryThis() ? (
+                <span style={{ fontWeight: "bold" }}> rider</span>
+              ) : (
+                " the"
+              )}{" "}
+              availability of one or more time slots. Are you sure you want to
+              do this?
+            </p>
           </Description>
           <BtnContainer>
             <CancelBtn onClick={handleCancel}>Cancel</CancelBtn>

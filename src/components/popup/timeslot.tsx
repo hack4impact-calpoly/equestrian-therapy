@@ -63,6 +63,9 @@ interface TimeslotProps {
   uncheckedLst: string[];
   oneSelected: string;
   previousTimeslots: string[];
+  riderDisabledLst: string[];
+  riderDisabled: boolean;
+  setRiderDisabledLst: React.Dispatch<React.SetStateAction<string[]>>;
   setBookedToday: React.Dispatch<React.SetStateAction<number>>;
   setCheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
   setUncheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
@@ -80,6 +83,9 @@ export default function Timeslot({
   uncheckedLst,
   oneSelected,
   previousTimeslots,
+  riderDisabledLst,
+  riderDisabled,
+  setRiderDisabledLst,
   setBookedToday,
   setCheckedLst,
   setUncheckedLst,
@@ -109,6 +115,12 @@ export default function Timeslot({
       setBookedToday(bookedToday - 1);
       if (userType === "Admin") {
         setUncheckedLst(uncheckedLst.concat(tsId));
+        if (riderDisabled && riderDisabledLst.includes(tsId)) {
+          setRiderDisabledLst(riderDisabledLst.filter((id) => id !== tsId));
+        } else if (riderDisabled) {
+          console.log("WE IN HERE AYEEE");
+          setRiderDisabledLst(riderDisabledLst.concat(tsId));
+        }
       }
       // if it was one of the previous selected timeslots
       if (previousTimeslots && previousTimeslots.includes(tsId)) {
@@ -126,6 +138,10 @@ export default function Timeslot({
       setUncheckedLst(uncheckedLst.filter((id) => id !== tsId));
       setIsChecked(!isChecked);
       setBookedToday(bookedToday + 1);
+      if (userType === "Admin" && riderDisabled) {
+        console.log("WE IN HERE AYEEE");
+        setRiderDisabledLst(riderDisabledLst.concat(tsId));
+      }
       // reset the oneSelected if they're riders (can only have one booked anyways) or if its the one that was just unchecked
       if (userType === "Rider" || tsId === oneSelected) {
         setOneSelected("");
