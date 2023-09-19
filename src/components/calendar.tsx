@@ -533,17 +533,33 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
             />
           </CalendarContainer>
           <Toggle setToggleProp={setToggleValue} />
-          {userType === "Admin" ? (
+          {userType === "Admin" && toggleValue !== "Both" ? (
             <Disclaimer>
-              To disable a timeslot for{" "}
-              <span style={{ fontWeight: "bold" }}> riders only</span> you can
-              either: <br />- Disable a timeslot with the &quot;Rider only&quot;
-              toggle enabled or <br />- Enable a disabled timeslot with the
-              &quot;Volunteer only&quot; toggle enabled
+              {toggleValue === "Riders" ? (
+                <p>
+                  *** Disabling a timeslot with the &quot;Rider only&quot;
+                  toggle selected will disable it for
+                  <span style={{ fontWeight: "bold" }}> riders only</span>
+                </p>
+              ) : (
+                <p>
+                  *** Enabling a disabled timeslot with the &quot;Volunteer
+                  only&quot; toggle selected will enable it for
+                  <span style={{ fontWeight: "bold" }}> volunteers only</span>
+                </p>
+              )}
             </Disclaimer>
           ) : (
             <div />
           )}
+          {/* {toggleValue === "Volunteers" ? (
+            <Disclaimer>
+              *** Enabling a disabled timeslot with the &quot;Volunteer
+              only&quot; toggle enabled will only enable it for volunteers
+            </Disclaimer>
+          ) : (
+            <div />
+          )} */}
         </LeftColumn>
         <RightColumn>
           <CalDiv>
