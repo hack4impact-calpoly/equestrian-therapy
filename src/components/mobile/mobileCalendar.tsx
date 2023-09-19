@@ -25,6 +25,19 @@ const CurrentDate = styled.p`
   // padding-top: 10%;
 `;
 
+const Disclaimer = styled.p`
+  font-family: "Rubik";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  width 80%;
+  color: #000d26;
+  text-align: left;
+  margin-left: 12%;
+  margin-top: 0;
+  margin-bottom: 0;
+`;
+
 const Box = styled.section`
   border: solid 0.5px #c4c4c4;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -173,6 +186,27 @@ export default function CalendarMobile({ timeslots, setTs }: CalendarProps) {
             )}
           </Dropdown>
         </HorizontalFlex>
+
+        {userType === "Admin" &&
+        (toggleValue === "Riders" || toggleValue === "Volunteers") ? (
+          <Disclaimer>
+            {toggleValue === "Riders" ? (
+              <p>
+                *** Disabling a timeslot with the &quot;Rider only&quot; toggle
+                selected will disable it for
+                <span style={{ fontWeight: "bold" }}> riders only</span>
+              </p>
+            ) : (
+              <p>
+                *** Enabling a disabled timeslot with the &quot;Volunteer
+                only&quot; toggle selected will enable it for
+                <span style={{ fontWeight: "bold" }}> volunteers only</span>
+              </p>
+            )}
+          </Disclaimer>
+        ) : (
+          <div />
+        )}
 
         {/* the timeslots will change depending on the usertype */}
         <MobileTimeslots

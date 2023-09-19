@@ -11,7 +11,9 @@ const Slots = styled.section`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 7%;
+  padding-left: 7%;
+  padding-right: 7%;
+  padding-top: 2%;
   width: 100%;
   height: 400px;
 `;
