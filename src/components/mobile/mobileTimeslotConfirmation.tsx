@@ -308,13 +308,10 @@ export default function MobileTimeSlotConfirmation({
 
   const handleConfirmationAdmin = () => {
     handleClicked();
-    console.log("AYO", booked);
     if (!booked) {
       deleteUnavailability(tId, date); // YYYY-MM-DD
-      console.log("enabled");
     } else {
       addUnavailability(tId, date); // YYYY-MM-DD
-      console.log("disabled");
     }
     setRequery(true);
   };
@@ -323,7 +320,6 @@ export default function MobileTimeSlotConfirmation({
     handleClicked();
     if (booked) {
       deleteRVBooking(tId);
-      console.log("booked");
     } else {
       if (
         userType === "Rider" &&
@@ -335,7 +331,6 @@ export default function MobileTimeSlotConfirmation({
         return;
       }
       addRVBooking(tId, id, date);
-      console.log("unbooked");
     }
     setRequery(true);
   };
