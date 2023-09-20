@@ -122,7 +122,6 @@ export default function MobileTimeslot({
       //   setTs(timeslotsArray);
       // }
       if (selected) {
-        // console.log(selected);
         const volBookingsArray = await selected.bookings.toArray(); // turns out the volunteer and rider booking arrays
         // in our objects just return the same thing so there's not really a point to them
         const bookings = await getUsers(volBookingsArray);

@@ -99,7 +99,6 @@ export default function MobileTimeSlotConfirmation({
   handleClicked,
   handleCancelled,
   booked,
-  // enabled,
   date,
   tId,
   riderDisabled,
@@ -112,7 +111,7 @@ export default function MobileTimeSlotConfirmation({
   const [realUser] = currentUser;
   const { userType, id } = realUser;
 
-  function tryThis() {
+  function checkRiderDisabling() {
     if (
       userType === "Admin" &&
       ((booked && toggleValue === "Riders") ||
@@ -160,7 +159,6 @@ export default function MobileTimeSlotConfirmation({
           original.riderUnavailableDates &&
           original.riderUnavailableDates.includes(ymdDate)
         ) {
-          console.log("HELLO???");
           const updatedList = original.riderUnavailableDates.filter(
             (dateString) => ymdDate !== dateString
           );
@@ -203,7 +201,6 @@ export default function MobileTimeSlotConfirmation({
           const updatedRiderList = new Set(original.riderUnavailableDates);
           if (!updatedRiderList.has(convertedDate)) {
             updatedRiderList.add(convertedDate);
-            console.log("are you here?", updatedRiderList, original);
             await DataStore.save(
               Timeslot.copyOf(original, (updated) => {
                 // eslint-disable-next-line no-param-reassign
@@ -258,7 +255,6 @@ export default function MobileTimeSlotConfirmation({
     bookedDate: Date
   ) {
     try {
-      console.log("THE DATE SELECTED IS", bookedDate);
       const original = await DataStore.query(User, userID);
       if (
         original &&
@@ -358,7 +354,7 @@ export default function MobileTimeSlotConfirmation({
             <CenteredDescription>
               <p style={{ padding: 0, margin: 0 }}>
                 You are choosing to edit
-                {tryThis() ? (
+                {checkRiderDisabling() ? (
                   <span style={{ fontWeight: "bold" }}> rider</span>
                 ) : (
                   " the"

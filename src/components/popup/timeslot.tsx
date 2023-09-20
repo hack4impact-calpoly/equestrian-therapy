@@ -110,7 +110,7 @@ export default function Timeslot({
       ) {
         return;
       }
-      setCheckedLst(uncheckedLst.filter((id) => id !== tsId));
+      setCheckedLst(checkedLst.filter((id) => id !== tsId));
       setIsChecked(!isChecked);
       setBookedToday(bookedToday - 1);
       if (userType === "Admin") {
@@ -118,7 +118,6 @@ export default function Timeslot({
         if (riderDisabled && riderDisabledLst.includes(tsId)) {
           setRiderDisabledLst(riderDisabledLst.filter((id) => id !== tsId));
         } else if (riderDisabled) {
-          console.log("WE IN HERE AYEEE");
           setRiderDisabledLst(riderDisabledLst.concat(tsId));
         }
       }
@@ -139,7 +138,6 @@ export default function Timeslot({
       setIsChecked(!isChecked);
       setBookedToday(bookedToday + 1);
       if (userType === "Admin" && riderDisabled) {
-        console.log("WE IN HERE AYEEE");
         setRiderDisabledLst(riderDisabledLst.concat(tsId));
       }
       // reset the oneSelected if they're riders (can only have one booked anyways) or if its the one that was just unchecked

@@ -186,8 +186,7 @@ export default function Popup({
             riderDisabled: false,
             id: timeslot.id,
           });
-        }
-        if (date.getDay() === 0) {
+        } else if (date.getDay() === 0) {
           if (
             timeslot.availableSundays &&
             timeslot.availableSundays.includes(convertToYMD(date))
@@ -264,7 +263,6 @@ export default function Popup({
               const count = await fetchBookableRV(timeslot);
               countBookedToday += count;
               if (count >= 1) {
-                // console.log("count = ", count);
                 selectedTimeslots.push(timeslot.id);
               }
             } else {
@@ -273,10 +271,6 @@ export default function Popup({
           }
         }
       }
-      // console.log("Bookable = ", bookable);
-      // console.log("TS about to be set = ", ts);
-      // console.log("Selected timeslots", selectedTimeslots);
-      // console.log("current previousTimeslots", previousTimeslots);
       setPreviousTimeslots(selectedTimeslots);
       setBookable(ts);
       setBookedToday(countBookedToday);
@@ -311,7 +305,6 @@ export default function Popup({
       if (!popup) {
         const timeslotsArray = await DataStore.query(Timeslot);
         setTs(timeslotsArray);
-        // setBookable([]);
       }
       if (selected) {
         const bookingsArray = await selected.bookings.toArray();
@@ -328,10 +321,6 @@ export default function Popup({
     setCheckedLst([]);
     setUncheckedLst([]);
   }, [selected, date]);
-
-  // useEffect(() => {
-  //   console.log("Bookable just updated", bookable);
-  // }, [bookable]);
 
   return (
     <div>

@@ -552,14 +552,6 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
           ) : (
             <div />
           )}
-          {/* {toggleValue === "Volunteers" ? (
-            <Disclaimer>
-              *** Enabling a disabled timeslot with the &quot;Volunteer
-              only&quot; toggle enabled will only enable it for volunteers
-            </Disclaimer>
-          ) : (
-            <div />
-          )} */}
         </LeftColumn>
         <RightColumn>
           <CalDiv>

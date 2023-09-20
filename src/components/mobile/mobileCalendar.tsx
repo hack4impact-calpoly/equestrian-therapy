@@ -20,9 +20,6 @@ const CurrentDate = styled.p`
   color: #1b4c5a;
   display: flex;
   align-items: center;
-  // height: 30px;
-  // margin-top: 20%;
-  // padding-top: 10%;
 `;
 
 const Disclaimer = styled.p`
@@ -48,7 +45,6 @@ const Box = styled.section`
   font-family: "Rubik", sans-serif;
   background: white;
   width: 35%;
-  // padding: 3rem 5rem;
 
   @media (max-width: 500px) {
     border: none;
@@ -113,7 +109,6 @@ export default function CalendarMobile({ timeslots, setTs }: CalendarProps) {
       weekday: "short",
     })
   );
-  // const [ts, setTs] = useState<LazyTimeslot[]>([]);
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;

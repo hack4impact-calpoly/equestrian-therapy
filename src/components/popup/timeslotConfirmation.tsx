@@ -70,8 +70,7 @@ export default function TimeSlotConfirmation({
   const [realUser] = currentUser;
   const { userType, id } = realUser;
 
-  function tryThis() {
-    console.log("ON EST ICI OU PAS?", riderDisabledLst);
+  function checkRiderDisabling() {
     if (
       userType === "Admin" &&
       ((uncheckedLst.length > 0 && toggleValue === "Riders") ||
@@ -329,7 +328,7 @@ export default function TimeSlotConfirmation({
           <Description>
             <p style={{ padding: 0, margin: 0 }}>
               You are choosing to edit
-              {tryThis() ? (
+              {checkRiderDisabling() ? (
                 <span style={{ fontWeight: "bold" }}> rider</span>
               ) : (
                 " the"
