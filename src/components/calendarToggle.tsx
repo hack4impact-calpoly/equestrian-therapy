@@ -40,7 +40,7 @@ const ViewingText = styled.p`
   font-size: 20px;
   font-family: "Roboto";
   font-weight: 700;
-  padding-bottom: 10px;
+  // padding-bottom: 10px;
 `;
 
 const ViewingDescription = styled.p`

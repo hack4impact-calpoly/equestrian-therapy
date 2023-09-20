@@ -77,6 +77,7 @@ interface TsData {
   startTime: Date;
   endTime: Date;
   checked: boolean;
+  riderDisabled: boolean;
   id: string;
 }
 
@@ -119,6 +120,7 @@ export default function Popup({
   const [uncheckedLst, setUncheckedLst] = useState<string[]>([]);
   const [bookedToday, setBookedToday] = useState(1);
   const [previousTimeslots, setPreviousTimeslots] = useState<string[]>([]);
+  const [riderDisabledLst, setRiderDisabledLst] = useState<string[]>([]);
 
   const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
@@ -172,7 +174,19 @@ export default function Popup({
       }
 
       if (available) {
-        if (date.getDay() === 0) {
+        if (
+          timeslot.riderUnavailableDates &&
+          timeslot.riderUnavailableDates.includes(convertToYMD(date)) &&
+          userType !== "Rider"
+        ) {
+          ts.push({
+            startTime: new Date(`July 4 1776 ${timeslot.startTime}`),
+            endTime: new Date(`July 4 1776 ${timeslot.endTime}`),
+            checked,
+            riderDisabled: false,
+            id: timeslot.id,
+          });
+        } else if (date.getDay() === 0) {
           if (
             timeslot.availableSundays &&
             timeslot.availableSundays.includes(convertToYMD(date))
@@ -181,6 +195,7 @@ export default function Popup({
               startTime: new Date(`July 4 1776 ${timeslot.startTime}`),
               endTime: new Date(`July 4 1776 ${timeslot.endTime}`),
               checked,
+              riderDisabled: false,
               id: timeslot.id,
             });
           }
@@ -192,6 +207,7 @@ export default function Popup({
             startTime: new Date(`July 4 1776 ${timeslot.startTime}`),
             endTime: new Date(`July 4 1776 ${timeslot.endTime}`),
             checked,
+            riderDisabled: false,
             id: timeslot.id,
           });
         }
@@ -201,6 +217,7 @@ export default function Popup({
 
     const fetchBookableAdmin = async (timeslot: LazyTimeslot) => {
       let checked = true;
+      let riderDisabled = false;
       if (date.getDay() === 0) {
         checked = true;
         if (
@@ -209,16 +226,25 @@ export default function Popup({
         ) {
           checked = false;
         }
-      } else if (
+      }
+      if (
         timeslot.unavailableDates &&
         timeslot.unavailableDates.includes(convertToYMD(date))
       ) {
         checked = false;
       }
+      if (
+        timeslot.riderUnavailableDates &&
+        timeslot.riderUnavailableDates.includes(convertToYMD(date))
+      ) {
+        checked = true;
+        riderDisabled = true;
+      }
       ts.push({
         startTime: new Date(`July 4 1776 ${timeslot.startTime}`),
         endTime: new Date(`July 4 1776 ${timeslot.endTime}`),
         checked,
+        riderDisabled,
         id: timeslot.id,
       });
     };
@@ -237,7 +263,6 @@ export default function Popup({
               const count = await fetchBookableRV(timeslot);
               countBookedToday += count;
               if (count >= 1) {
-                // console.log("count = ", count);
                 selectedTimeslots.push(timeslot.id);
               }
             } else {
@@ -246,10 +271,6 @@ export default function Popup({
           }
         }
       }
-      // console.log("Bookable = ", bookable);
-      // console.log("TS about to be set = ", ts);
-      // console.log("Selected timeslots", selectedTimeslots);
-      // console.log("current previousTimeslots", previousTimeslots);
       setPreviousTimeslots(selectedTimeslots);
       setBookable(ts);
       setBookedToday(countBookedToday);
@@ -284,7 +305,6 @@ export default function Popup({
       if (!popup) {
         const timeslotsArray = await DataStore.query(Timeslot);
         setTs(timeslotsArray);
-        // setBookable([]);
       }
       if (selected) {
         const bookingsArray = await selected.bookings.toArray();
@@ -301,10 +321,6 @@ export default function Popup({
     setCheckedLst([]);
     setUncheckedLst([]);
   }, [selected, date]);
-
-  // useEffect(() => {
-  //   console.log("Bookable just updated", bookable);
-  // }, [bookable]);
 
   return (
     <div>
@@ -335,6 +351,8 @@ export default function Popup({
                   checkedLst={checkedLst}
                   uncheckedLst={uncheckedLst}
                   previousTimeslots={previousTimeslots}
+                  riderDisabledLst={riderDisabledLst}
+                  setRiderDisabledLst={setRiderDisabledLst}
                   setCheckedLst={setCheckedLst}
                   setUncheckedLst={setUncheckedLst}
                   setBookedToday={setBookedToday}
@@ -353,6 +371,9 @@ export default function Popup({
               date={date}
               checkedLst={checkedLst}
               uncheckedLst={uncheckedLst}
+              riderDisabledLst={riderDisabledLst}
+              setRiderDisabledLst={setRiderDisabledLst}
+              toggleValue={toggleValue}
             />
           )}
           {confirmPopup && successPopup && (

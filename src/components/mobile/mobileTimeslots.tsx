@@ -11,7 +11,9 @@ const Slots = styled.section`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 7%;
+  padding-left: 7%;
+  padding-right: 7%;
+  padding-top: 2%;
   width: 100%;
   height: 400px;
 `;
@@ -81,11 +83,16 @@ export default function MobileTimeslots({
     let backgroundColor = "#90BFCC";
     let enabled = true;
     let checked = false;
+    if (userType === "Admin") {
+      checked = true;
+    }
+    let riderDisabled = false;
     // If date is a Sunday, check the availableSundays (Sundays disabled on default)
     if (date.getDay() === 0) {
       if (userType === "Admin") {
         backgroundColor = "#C1C1C1";
       }
+      checked = false;
       enabled = false;
       if (
         timeslot.availableSundays &&
@@ -93,6 +100,7 @@ export default function MobileTimeslots({
       ) {
         if (userType === "Admin") {
           backgroundColor = "#90BFCC";
+          checked = true;
         }
         enabled = true;
       } // Non-Sunday dates check unavailableDates
@@ -102,8 +110,23 @@ export default function MobileTimeslots({
     ) {
       if (userType === "Admin") {
         backgroundColor = "#C1C1C1";
+        checked = false;
       } else {
         enabled = false;
+      }
+    }
+    if (
+      timeslot.riderUnavailableDates &&
+      timeslot.riderUnavailableDates.includes(convertToYMD(date))
+    ) {
+      riderDisabled = true;
+      if (userType === "Rider") {
+        enabled = false;
+      } else if (userType === "Admin") {
+        backgroundColor = "#708BDB";
+        checked = true;
+      } else {
+        enabled = true;
       }
     }
     if (
@@ -185,15 +208,6 @@ export default function MobileTimeslots({
         checked = true;
     }
 
-    // if (
-    //   timeslot.unavailableDates &&
-    //   timeslot.unavailableDates.includes(convertToYMD(date))
-    // ) {
-    //   if (userType === "Admin") {
-    //     backgroundColor = "#C1C1C1";
-    //   }
-    //   enabled = false;
-    // }
     return {
       startTime: String(timeslot.startTime),
       endTime: String(timeslot.endTime),
@@ -201,6 +215,7 @@ export default function MobileTimeslots({
       textColor: "black",
       checked,
       enabled,
+      riderDisabled,
       timeslotId: timeslot.id,
     };
   }
@@ -220,8 +235,7 @@ export default function MobileTimeslots({
       return (
         Number(timeslot.startTime.substring(0, 2)) >= 10 &&
         Number(timeslot.startTime.substring(0, 2)) < 14 &&
-        timeslot.enabled &&
-        date.getDay() !== 0
+        timeslot.enabled
       );
     }
     if (userType === "Admin") {
@@ -246,6 +260,7 @@ export default function MobileTimeslots({
             tId={timeslot.timeslotId}
             checked={timeslot.checked}
             enabled={timeslot.enabled}
+            riderDisabled={timeslot.riderDisabled}
             allBookings={bookings}
             setRequery={setRequery}
             toggleValue={toggleValue}

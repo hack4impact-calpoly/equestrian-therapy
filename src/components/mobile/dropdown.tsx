@@ -38,16 +38,6 @@ export const StyledLabel = styled.label`
   // width: 41%;
 `;
 
-// export const StyledButton = styled.input`
-//   max-width: 50%;
-//   height: 100%;
-//   display: flex;
-//   justify-content: center;
-//   border: solid 2px blue;
-//   padding: 0.5rem;
-//   border-radius: 1rem;
-// `;
-
 export function Dropdown(props: {
   action?: any;
   onChange?: any;
@@ -58,7 +48,6 @@ export function Dropdown(props: {
     <DropdownWrapper action={props.action} onChange={props.onChange}>
       <StyledLabel htmlFor="services">{props.formLabel}</StyledLabel>
       <StyledSelect>{props.children}</StyledSelect>
-      {/* <StyledButton type="submit" value={props.buttonText} /> */}
     </DropdownWrapper>
   );
 }

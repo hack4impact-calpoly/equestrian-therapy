@@ -27,15 +27,11 @@ type EmailProps = {
 
 export default function ResetPassword({ email }: EmailProps) {
   const navigate = useNavigate();
-  // useState variables
   const [input, setInput] = useState({
     password: "",
     confirmPassword: "",
-    // showPassword: false,
-    // showPassword2: false,
     code: "",
   });
-  // const [showPassword, setShowPassword] = useState(false);
   const [passwordShown, setPasswordShown] = useState(true);
   // Password toggle handler
   const togglePassword = () => {
@@ -64,7 +60,6 @@ export default function ResetPassword({ email }: EmailProps) {
 
   // changes windows to different pages
   const handleClick = async () => {
-    // console.log(email);
     setErrorReal("");
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
