@@ -123,7 +123,6 @@ export default function TimeSlotConfirmation({
             original.riderUnavailableDates &&
             original.riderUnavailableDates.includes(ymdDate)
           ) {
-            console.log("HELLO???");
             const updatedList = original.riderUnavailableDates.filter(
               (dateString) => ymdDate !== dateString
             );
@@ -169,7 +168,6 @@ export default function TimeSlotConfirmation({
             const updatedRiderList = new Set(original.riderUnavailableDates);
             if (!updatedRiderList.has(convertedDate)) {
               updatedRiderList.add(convertedDate);
-              console.log("are you here?", updatedRiderList, original);
               await DataStore.save(
                 Timeslot.copyOf(original, (updated) => {
                   // eslint-disable-next-line no-param-reassign
@@ -201,9 +199,7 @@ export default function TimeSlotConfirmation({
                 })
               );
             }
-            console.log(toggleValue);
           } else {
-            console.log("why are we here");
             const updatedList = original.unavailableDates.filter(
               (dateString) => convertedDate !== dateString
             );
