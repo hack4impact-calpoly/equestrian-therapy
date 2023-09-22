@@ -35,6 +35,7 @@ interface TimeslotsProps {
   bookable: TsData[];
   selectedDate: Date;
   bookedToday: number;
+  toggleValue: string;
   checkedLst: string[];
   uncheckedLst: string[];
   previousTimeslots: string[];
@@ -49,6 +50,7 @@ export default function Timeslots({
   bookable,
   selectedDate,
   bookedToday,
+  toggleValue,
   checkedLst,
   uncheckedLst,
   previousTimeslots,
@@ -69,14 +71,13 @@ export default function Timeslots({
     endTime: Date;
     checked: boolean;
   }) {
-    switch (userType) {
-      case "Volunteer":
-        return ts.startTime.getHours() >= 9 && ts.startTime.getHours() < 17;
-      case "Rider":
-        return ts.startTime.getHours() >= 10 && ts.startTime.getHours() < 14;
-      default:
-        return ts;
+    if (userType === "Volunteer") {
+      return ts.startTime.getHours() >= 9 && ts.startTime.getHours() < 17;
     }
+    if (userType === "Rider" || toggleValue === "Riders") {
+      return ts.startTime.getHours() >= 10 && ts.startTime.getHours() < 14;
+    }
+    return ts;
   }
 
   return (

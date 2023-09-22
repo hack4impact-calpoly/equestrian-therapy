@@ -348,6 +348,7 @@ export default function Popup({
                   bookable={bookable}
                   selectedDate={date}
                   bookedToday={bookedToday}
+                  toggleValue={toggleValue}
                   checkedLst={checkedLst}
                   uncheckedLst={uncheckedLst}
                   previousTimeslots={previousTimeslots}
