@@ -63,6 +63,18 @@ const CalDiv = styled.div`
   }
 `;
 
+const Disclaimer = styled.p`
+  font-family: "Rubik";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  width: 350px;
+  max-width: 100%;
+  color: #000d26;
+  text-align: left;
+  margin: 0px;
+`;
+
 const Logo = styled.img`
   position: absolute;
   right: 2%;
@@ -79,7 +91,7 @@ const LeftColumn = styled.div`
   align-items: flex-start;
   justify-content: flex-start;
   padding: 0 50px 0 50px;
-  gap: 40px;
+  gap: 20px;
 `;
 const RightColumn = styled.div`
   padding-right: 50px;
@@ -345,7 +357,6 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
     const tempSlots = timeslots.map((timeslot: LazyTimeslot) => {
       let backgroundColor = "#90BFCC";
       let enabled = true;
-
       const startingTime = new Date(
         `${
           months[dateTest.getMonth()]
@@ -385,6 +396,19 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
           backgroundColor = "#C1C1C1";
         } else {
           enabled = false;
+        }
+      }
+      // console.log("YOYOYO", timeslot.riderUnavailableDates, dateTest);
+      if (
+        timeslot.riderUnavailableDates &&
+        timeslot.riderUnavailableDates.includes(convertToYMD(dateTest))
+      ) {
+        if (userType === "Rider") {
+          enabled = false;
+        } else if (userType === "Admin") {
+          backgroundColor = "#708BDB";
+        } else {
+          enabled = true;
         }
       }
       if (
@@ -509,6 +533,25 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
             />
           </CalendarContainer>
           <Toggle setToggleProp={setToggleValue} />
+          {userType === "Admin" && toggleValue !== "Both" ? (
+            <Disclaimer>
+              {toggleValue === "Riders" ? (
+                <p>
+                  *** Disabling a timeslot with the &quot;Rider only&quot;
+                  toggle selected will disable it for
+                  <span style={{ fontWeight: "bold" }}> riders only</span>
+                </p>
+              ) : (
+                <p>
+                  *** Enabling a disabled timeslot with the &quot;Volunteer
+                  only&quot; toggle selected will enable it for
+                  <span style={{ fontWeight: "bold" }}> volunteers only</span>
+                </p>
+              )}
+            </Disclaimer>
+          ) : (
+            <div />
+          )}
         </LeftColumn>
         <RightColumn>
           <CalDiv>

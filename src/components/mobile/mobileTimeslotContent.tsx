@@ -58,6 +58,7 @@ type TimeslotMobileContentProps = {
   volunteerBookings: LazyUser[];
   booked: boolean;
   enabled: boolean;
+  riderDisabled: boolean;
   toggleValue: string;
   setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
   allBookings: Booking[];
@@ -87,6 +88,7 @@ export default function TimeslotMobileContent({
   volunteerBookings,
   booked,
   enabled,
+  riderDisabled,
   toggleValue,
   setIsDropdownOpen,
   allBookings,
@@ -96,7 +98,7 @@ export default function TimeslotMobileContent({
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   const { userType } = realUser;
-  const [onOff, setOnOff] = useState(enabled);
+  const [onOff, setOnOff] = useState(booked);
   const [confirmationShown, setConfirmationShown] = useState(false);
   const [successShown, setSuccessShown] = useState(false);
 
@@ -137,7 +139,7 @@ export default function TimeslotMobileContent({
                 )
               ) ? (
                 <TimeslotButton onClick={handleConfirmationShown}>
-                  {`${booked ? "Cancel" : "Book"} time slot`}
+                  {`${onOff ? "Cancel" : "Book"} time slot`}
                 </TimeslotButton>
               ) : (
                 <div />
@@ -145,7 +147,7 @@ export default function TimeslotMobileContent({
             ) : (
               <OnOffSlide
                 onClick={handleConfirmationShown}
-                src={onOff ? OnSlide : OffSlide}
+                src={booked ? OnSlide : OffSlide}
               />
             )}
           </BoxMobileContent>
@@ -156,9 +158,11 @@ export default function TimeslotMobileContent({
               handleClicked={handleSuccessShown}
               handleCancelled={handleCancelled}
               booked={booked}
-              enabled={onOff}
+              // enabled={onOff}
               date={date}
               tId={tId}
+              riderDisabled={riderDisabled}
+              toggleValue={toggleValue}
               allBookings={allBookings}
               setRequery={setRequery}
             />

@@ -27,6 +27,7 @@ interface TsData {
   startTime: Date;
   endTime: Date;
   checked: boolean;
+  riderDisabled: boolean;
   id: string;
 }
 
@@ -34,9 +35,12 @@ interface TimeslotsProps {
   bookable: TsData[];
   selectedDate: Date;
   bookedToday: number;
+  toggleValue: string;
   checkedLst: string[];
   uncheckedLst: string[];
   previousTimeslots: string[];
+  riderDisabledLst: string[];
+  setRiderDisabledLst: React.Dispatch<React.SetStateAction<string[]>>;
   setCheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
   setUncheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
   setBookedToday: React.Dispatch<React.SetStateAction<number>>;
@@ -46,9 +50,12 @@ export default function Timeslots({
   bookable,
   selectedDate,
   bookedToday,
+  toggleValue,
   checkedLst,
   uncheckedLst,
   previousTimeslots,
+  riderDisabledLst,
+  setRiderDisabledLst,
   setCheckedLst,
   setUncheckedLst,
   setBookedToday,
@@ -64,14 +71,13 @@ export default function Timeslots({
     endTime: Date;
     checked: boolean;
   }) {
-    switch (userType) {
-      case "Volunteer":
-        return ts.startTime.getHours() >= 9 && ts.startTime.getHours() < 17;
-      case "Rider":
-        return ts.startTime.getHours() >= 10 && ts.startTime.getHours() < 14;
-      default:
-        return ts;
+    if (userType === "Volunteer") {
+      return ts.startTime.getHours() >= 9 && ts.startTime.getHours() < 17;
     }
+    if (userType === "Rider" || toggleValue === "Riders") {
+      return ts.startTime.getHours() >= 10 && ts.startTime.getHours() < 14;
+    }
+    return ts;
   }
 
   return (
@@ -87,6 +93,7 @@ export default function Timeslots({
               endTime={timeslot.endTime}
               tsId={timeslot.id}
               checked={timeslot.checked}
+              riderDisabled={timeslot.riderDisabled}
               border={
                 timeslot.startTime.getHours() === selectedDate.getHours() &&
                 timeslot.startTime.getMinutes() === selectedDate.getMinutes()
@@ -97,6 +104,8 @@ export default function Timeslots({
               checkedLst={checkedLst}
               uncheckedLst={uncheckedLst}
               previousTimeslots={previousTimeslots}
+              riderDisabledLst={riderDisabledLst}
+              setRiderDisabledLst={setRiderDisabledLst}
               setBookedToday={setBookedToday}
               setCheckedLst={setCheckedLst}
               setUncheckedLst={setUncheckedLst}

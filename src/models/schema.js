@@ -56,6 +56,14 @@ export const schema = {
                     "attributes": [],
                     "isArrayNullable": true
                 },
+                "riderUnavailableDates": {
+                    "name": "riderUnavailableDates",
+                    "isArray": true,
+                    "type": "AWSDate",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isArrayNullable": true
+                },
                 "createdAt": {
                     "name": "createdAt",
                     "isArray": false,
@@ -309,6 +317,6 @@ export const schema = {
     },
     "enums": {},
     "nonModels": {},
-    "codegenVersion": "3.4.3",
-    "version": "2e26edf640ca5ee441286cd2cb328ebc"
+    "codegenVersion": "3.4.4",
+    "version": "f5f829f0b2781674c4d53fd4c9f77dba"
 };
