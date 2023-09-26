@@ -5,14 +5,14 @@ import { Auth } from "aws-amplify";
 import lock from "../../images/lock.svg";
 import arrow from "../../images/backArrow.png";
 import {
-  Wrapper,
+  BackArrow,
   Box,
   Button,
-  BackArrow,
-  Input,
+  CenteredHeader,
   Description,
   ErrorMessage,
-  CenteredHeader,
+  Input,
+  Wrapper,
 } from "../styledComponents";
 
 const Lock = styled.img`
@@ -41,17 +41,23 @@ const Resend = styled.button`
 `;
 
 export default function EnterCode() {
-  const navigate = useNavigate();
-  const username = localStorage.getItem("username") || "";
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
+  const username = localStorage.getItem("username") || "";
+  const navigate = useNavigate();
 
+  /**
+   * This function is run when the user clicks the Verify button, it will call the Auth function with the user's
+   * email and verification code to confirm their signup in the AWS userpool. Once complete it will clear the
+   * localstorage and navigate to the success page. If the auth function fails it will console log the error.
+   */
   async function confirmSignUp() {
     try {
       await Auth.confirmSignUp(username, code);
       localStorage.clear();
       navigate("/success/:id=signUp", { replace: true });
     } catch (errore) {
+      // eslint-disable-next-line no-console
       console.log("error confirming sign up", errore);
       if (errore instanceof Error) {
         setError(errore.message);
@@ -61,20 +67,28 @@ export default function EnterCode() {
     }
   }
 
-  async function resendConfirmationCode() {
-    try {
-      await Auth.resendSignUp(username);
-    } catch (err) {
-      console.log("error resending code: ", err);
-    }
-  }
-
+  // This function is run when the user clicks the Verify button and calls confirmSignup
   const codeVerification = () => {
     confirmSignUp();
   };
 
-  // temporary alert (later resend code to email)
+  /**
+   * This function is run when the user clicks the Resend Code button, it will call the Auth function with the
+   * user's email to resend the signup code so the user can recieve the code they need to confirm their account
+   * signup. It will console log an error message if the auth call doesn't work.
+   */
+  async function resendConfirmationCode() {
+    try {
+      await Auth.resendSignUp(username);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.log("error resending code: ", err);
+    }
+  }
+
+  // This function is run when the user clicks the Resend Code button and calls resendConfirmationCode
   const resendCode = () => {
+    // eslint-disable-next-line no-alert
     alert("Resent Code");
     resendConfirmationCode();
   };
