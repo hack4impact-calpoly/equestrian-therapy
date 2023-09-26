@@ -73,18 +73,24 @@ export default function CreateAccount() {
   const [phoneNumber, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [passwordShown, setPasswordShown] = useState(false);
-  // Password toggle handler
-  const togglePassword = () => {
-    // When the handler is invoked
-    // inverse the boolean state of passwordShown
-    setPasswordShown(!passwordShown);
-  };
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  // Password toggle handler
+  const togglePassword = () => {
+    // When the handler is invoked inverse the boolean state of passwordShown
+    setPasswordShown(!passwordShown);
+  };
+
+  /**
+   * This function both signs the user up to the amplify userpool and saves a new user object in the Datastore.
+   * Additionally, the email is saved to localstorage so it can be used again on the enter-code page to
+   * confirm signup and finally the user is navigated to that enter-code page
+   */
   async function signUp() {
     try {
-      const { user } = await Auth.signUp({
+      // registers a new user in the amplify userpool with the entered information
+      await Auth.signUp({
         username: email,
         password,
         attributes: {
@@ -108,8 +114,7 @@ export default function CreateAccount() {
           userType: role,
         })
       );
-      // eslint-disable-next-line no-console
-      console.log(user);
+
       localStorage.setItem("username", email);
       navigate("/enter-code", { replace: true });
     } catch (errore) {
@@ -122,9 +127,17 @@ export default function CreateAccount() {
       }
     }
   }
+
+  /**
+   * This function is run when the user clicks the submit button, it will validate all of the input fields to
+   * make sure the user had entered everything they needed to and in the correct format. If something doesn't
+   * pass the check then the function will return early without doing more. After everything is validated then
+   * the signup function will be run.
+   */
   const handleSubmit = () => {
     setError("");
 
+    // If all the fields aren't filled out then set the error message to indicate that and return early
     if (
       !firstName ||
       !lastName ||
@@ -137,6 +150,7 @@ export default function CreateAccount() {
       return;
     }
 
+    // Uses a standard email regex to check if the entered email is valid, if not set the error and return early
     const emailRegex =
       /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
     if (!emailRegex.test(email)) {
@@ -144,12 +158,15 @@ export default function CreateAccount() {
       return;
     }
 
+    // Uses a phone regex to check if the entered email is valid, if not set the error and return early
     const phoneRegex = /^[0-9]{10}$/;
     if (!phoneRegex.test(phoneNumber)) {
       setError("Invalid phone number");
       return;
     }
 
+    // Uses a password regex that checks it is at least 8 characters long, has one uppercase, lowercase, number,
+    // and special character
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     if (!passwordRegex.test(password)) {
@@ -158,8 +175,8 @@ export default function CreateAccount() {
       );
       return;
     }
-    // Call the API to create an account with email and password
-    // if response is ok then navigate
+
+    // Call the signup function described above
     signUp();
   };
 

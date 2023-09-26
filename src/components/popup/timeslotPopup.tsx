@@ -69,8 +69,6 @@ interface PopupProps {
   timeslots: LazyTimeslot[];
   setTs: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
   toggleValue: string;
-  // bookable: TsData[];
-  // setBookable: React.Dispatch<React.SetStateAction<TsData[]>>;
 }
 
 interface TsData {
