@@ -51,7 +51,7 @@ export default function EnterCode() {
    * email and verification code to confirm their signup in the AWS userpool. Once complete it will clear the
    * localstorage and navigate to the success page. If the auth function fails it will console log the error.
    */
-  async function confirmSignUp() {
+  const confirmSignUp = async () => {
     try {
       await Auth.confirmSignUp(username, code);
       localStorage.clear();
@@ -65,11 +65,6 @@ export default function EnterCode() {
         setError(String(errore));
       }
     }
-  }
-
-  // This function is run when the user clicks the Verify button and calls confirmSignup
-  const codeVerification = () => {
-    confirmSignUp();
   };
 
   /**
@@ -77,20 +72,15 @@ export default function EnterCode() {
    * user's email to resend the signup code so the user can recieve the code they need to confirm their account
    * signup. It will console log an error message if the auth call doesn't work.
    */
-  async function resendConfirmationCode() {
+  const resendConfirmationCode = async () => {
     try {
+      // eslint-disable-next-line no-alert
+      alert("Resent Code");
       await Auth.resendSignUp(username);
     } catch (err) {
       // eslint-disable-next-line no-console
       console.log("error resending code: ", err);
     }
-  }
-
-  // This function is run when the user clicks the Resend Code button and calls resendConfirmationCode
-  const resendCode = () => {
-    // eslint-disable-next-line no-alert
-    alert("Resent Code");
-    resendConfirmationCode();
   };
 
   return (
@@ -109,8 +99,8 @@ export default function EnterCode() {
             setCode(e.target.value)
           }
         />
-        <Resend onClick={resendCode}>Resend code</Resend>
-        <Button onClick={codeVerification}>Verify</Button>
+        <Resend onClick={resendConfirmationCode}>Resend code</Resend>
+        <Button onClick={confirmSignUp}>Verify</Button>
       </Box>
     </Wrapper>
   );

@@ -5,7 +5,6 @@ import { Auth } from "aws-amplify";
 import eyeSlash from "../../images/eyeSlash.svg";
 import eye from "../../images/eye.svg";
 import backArrow from "../../images/backArrow.png";
-
 import {
   Wrapper,
   Box,
