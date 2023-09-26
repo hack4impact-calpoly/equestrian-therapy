@@ -3,11 +3,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import logo from "../../images/horseRider.svg";
 import {
-  Wrapper,
   Box,
   Button,
   CenteredDescription,
   CenteredHeader,
+  Wrapper,
 } from "../styledComponents";
 
 const Logo = styled.img`
@@ -18,9 +18,10 @@ const Logo = styled.img`
 `;
 
 export default function Success() {
-  const navigate = useNavigate();
   const { id } = useParams();
+  const navigate = useNavigate();
 
+  // Navigates the user back to the login page
   const handleClick = () => {
     navigate("/login");
   };
