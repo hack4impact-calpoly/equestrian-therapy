@@ -8,42 +8,19 @@ import eyeSlash from "../../images/eyeSlash.svg";
 import eye from "../../images/eye.svg";
 import backArrow from "../../images/backArrow.png";
 import {
-  Box,
   BackArrow,
+  Box,
   Button,
+  ErrorMessage,
+  EyeSlash,
   Header,
   Input,
   Label,
-  EyeSlash,
   PasswordContainer,
   Question,
   TextLink,
-  ErrorMessage,
   Wrapper,
 } from "../styledComponents";
-
-const Select = styled.select`
-  box-sizing: border-box;
-  border: 1px solid rgba(143, 143, 143, 0.6);
-  width: 100%;
-  display: flex;
-  height: 3rem;
-  color: gray;
-  font-size: 15px;
-  @media (max-width: 500px) {
-    height: 2rem;
-  }
-`;
-
-const NameFields = styled.section`
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  @media (max-width: 500px) {
-    flex-direction: column;
-    margin-bottom: 0%;
-  }
-`;
 
 const FirstName = styled.section`
   display: flex;
@@ -62,6 +39,29 @@ const LastName = styled.section`
   margin-left: 5%;
   @media (max-width: 500px) {
     margin-left: 0%;
+  }
+`;
+
+const NameFields = styled.section`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  @media (max-width: 500px) {
+    flex-direction: column;
+    margin-bottom: 0%;
+  }
+`;
+
+const Select = styled.select`
+  box-sizing: border-box;
+  border: 1px solid rgba(143, 143, 143, 0.6);
+  width: 100%;
+  display: flex;
+  height: 3rem;
+  color: gray;
+  font-size: 15px;
+  @media (max-width: 500px) {
+    height: 2rem;
   }
 `;
 
