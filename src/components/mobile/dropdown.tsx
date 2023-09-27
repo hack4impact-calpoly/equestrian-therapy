@@ -11,6 +11,11 @@ export const DropdownWrapper = styled.form`
   padding-right: 2rem;
 `;
 
+export const StyledOption = styled.option`
+  color: ${(props) => (props.selected ? "lightgrey" : "black")};
+  // width: 41%;
+`;
+
 export const StyledSelect = styled.select`
   // max-width: 50%;
   width: 130px;
@@ -26,11 +31,6 @@ export const StyledSelect = styled.select`
   font-size: 16px;
   // margin-left: 50%;
   color: #1b4c5a;
-`;
-
-export const StyledOption = styled.option`
-  color: ${(props) => (props.selected ? "lightgrey" : "black")};
-  // width: 41%;
 `;
 
 export const StyledLabel = styled.label`

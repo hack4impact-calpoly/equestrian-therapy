@@ -10,6 +10,27 @@ import { Dropdown, Option } from "./dropdown";
 import signoutarrow from "../../images/signOutArrow.png";
 import { Wrapper } from "../styledComponents";
 
+const Box = styled.section`
+  border: solid 0.5px #c4c4c4;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  justify-items: center;
+  font-family: "Rubik", sans-serif;
+  background: white;
+  width: 35%;
+
+  @media (max-width: 500px) {
+    border: none;
+    box-shadow: none;
+    display: flex;
+    margin-top: 10%;
+    padding: 0;
+    width: 100%;
+  }
+`;
+
 const CurrentDate = styled.p`
   font-family: "Rubik";
   font-style: normal;
@@ -35,27 +56,6 @@ const Disclaimer = styled.p`
   margin-bottom: 0;
 `;
 
-const Box = styled.section`
-  border: solid 0.5px #c4c4c4;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  justify-items: center;
-  font-family: "Rubik", sans-serif;
-  background: white;
-  width: 35%;
-
-  @media (max-width: 500px) {
-    border: none;
-    box-shadow: none;
-    display: flex;
-    margin-top: 10%;
-    padding: 0;
-    width: 100%;
-  }
-`;
-
 const Header1 = styled.text`
   display: none;
   @media (max-width: 500px) {
@@ -66,12 +66,6 @@ const Header1 = styled.text`
     padding-bottom: 8%;
     color: #1b4c5a;
   }
-`;
-
-const StyledButton = styled(Link)`
-  width: 80px;
-  height: 80px;
-  transform: scale(0.5);
 `;
 
 const HorizontalFlex = styled.div`
@@ -85,6 +79,12 @@ const InvisibleButton = styled(Link)`
   visibility: hidden;
 `;
 
+const StyledButton = styled(Link)`
+  width: 80px;
+  height: 80px;
+  transform: scale(0.5);
+`;
+
 const StyledImage = styled.img`
   width: 100%;
 `;
@@ -96,6 +96,7 @@ interface CalendarProps {
 
 export default function CalendarMobile({ timeslots, setTs }: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [toggleValue, setToggleValue] = useState("");
   const [day, setDayProp] = useState<string>(String(currentDate.getDate()));
   const [month, setMonthProp] = useState<string>(
     String(
@@ -113,7 +114,6 @@ export default function CalendarMobile({ timeslots, setTs }: CalendarProps) {
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   const { userType } = realUser;
-  const [toggleValue, setToggleValue] = useState("");
 
   // this is to create the current selected date string
   const currentTimeString: string[] = [];
