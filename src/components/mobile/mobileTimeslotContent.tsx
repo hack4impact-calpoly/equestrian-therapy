@@ -56,7 +56,7 @@ type TimeslotMobileContentProps = {
   tId: string;
   riderBookings: LazyUser[];
   volunteerBookings: LazyUser[];
-  booked: boolean;
+  checked: boolean;
   enabled: boolean;
   riderDisabled: boolean;
   toggleValue: string;
@@ -86,7 +86,7 @@ export default function TimeslotMobileContent({
   tId,
   riderBookings,
   volunteerBookings,
-  booked,
+  checked,
   enabled,
   riderDisabled,
   toggleValue,
@@ -98,7 +98,7 @@ export default function TimeslotMobileContent({
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   const { userType } = realUser;
-  const [onOff, setOnOff] = useState(booked);
+  const [onOff, setOnOff] = useState(checked);
   const [confirmationShown, setConfirmationShown] = useState(false);
   const [successShown, setSuccessShown] = useState(false);
 
@@ -125,7 +125,7 @@ export default function TimeslotMobileContent({
             <AppointmentInfo
               riderBookings={riderBookings}
               volunteerBookings={volunteerBookings}
-              booked={booked}
+              booked={checked}
               toggleValue={toggleValue}
             />
             {userType !== "Admin" ? (
@@ -147,7 +147,7 @@ export default function TimeslotMobileContent({
             ) : (
               <OnOffSlide
                 onClick={handleConfirmationShown}
-                src={booked ? OnSlide : OffSlide}
+                src={checked ? OnSlide : OffSlide}
               />
             )}
           </BoxMobileContent>
@@ -157,7 +157,7 @@ export default function TimeslotMobileContent({
             <MobileTimeSlotConfirmation
               handleClicked={handleSuccessShown}
               handleCancelled={handleCancelled}
-              booked={booked}
+              checked={checked}
               // enabled={onOff}
               date={date}
               tId={tId}

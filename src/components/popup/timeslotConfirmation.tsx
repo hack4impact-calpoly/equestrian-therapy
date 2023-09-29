@@ -96,6 +96,8 @@ export default function TimeSlotConfirmation({
           Array.isArray(original.riderUnavailableDates)
         ) {
           const ymdDate = convertToYMD(new Date(unavailableDate));
+          // If the date is Sunday then the slot is only enabled if it's in the availableSundays
+          // array so remove the date from that
           if (
             unavailableDate.getDay() === 0 &&
             original.availableSundays.includes(ymdDate)
@@ -108,7 +110,9 @@ export default function TimeSlotConfirmation({
                 updated.availableSundays = updatedList; // eslint-disable-line no-param-reassign
               })
             );
-          } else if (toggleValue === "Riders") {
+          }
+          // If the toggleValue is set to Riders then disable the slot for riders only
+          else if (toggleValue === "Riders") {
             const updatedList = new Set(original.riderUnavailableDates);
             if (!updatedList.has(ymdDate)) {
               updatedList.add(ymdDate);
@@ -119,19 +123,9 @@ export default function TimeSlotConfirmation({
                 })
               );
             }
-          } else if (
-            original.riderUnavailableDates &&
-            original.riderUnavailableDates.includes(ymdDate)
-          ) {
-            const updatedList = original.riderUnavailableDates.filter(
-              (dateString) => ymdDate !== dateString
-            );
-            await DataStore.save(
-              Timeslot.copyOf(original, (updated) => {
-                updated.riderUnavailableDates = updatedList; // eslint-disable-line no-param-reassign
-              })
-            );
-          } else {
+          }
+          // If none of the other conditions were met then disable the slot normally
+          else {
             const updatedList = new Set(original.unavailableDates);
             if (!updatedList.has(ymdDate)) {
               updatedList.add(ymdDate);
@@ -164,27 +158,34 @@ export default function TimeSlotConfirmation({
           Array.isArray(original.availableSundays) &&
           Array.isArray(original.riderUnavailableDates)
         ) {
-          if (toggleValue === "Volunteers") {
-            const updatedRiderList = new Set(original.riderUnavailableDates);
-            if (!updatedRiderList.has(convertedDate)) {
-              updatedRiderList.add(convertedDate);
-              await DataStore.save(
-                Timeslot.copyOf(original, (updated) => {
-                  // eslint-disable-next-line no-param-reassign
-                  updated.riderUnavailableDates = Array.from(updatedRiderList);
-                })
-              );
-            } else if (updatedRiderList.has(convertedDate)) {
-              const updatedList = original.riderUnavailableDates.filter(
-                (dateString) => convertedDate !== dateString
-              );
-              await DataStore.save(
-                Timeslot.copyOf(original, (updated) => {
-                  updated.riderUnavailableDates = updatedList; // eslint-disable-line no-param-reassign
-                })
-              );
-            }
-          } else if (
+          const updatedRiderList = new Set(original.riderUnavailableDates);
+          // If the slot is not riderDisabled (meaning its disabled for everyone) and toggleValue =
+          // Volunteers then only enable it for volunteers (rider disable the date).
+          if (
+            !updatedRiderList.has(convertedDate) &&
+            toggleValue === "Volunteers"
+          ) {
+            updatedRiderList.add(convertedDate);
+            await DataStore.save(
+              Timeslot.copyOf(original, (updated) => {
+                // eslint-disable-next-line no-param-reassign
+                updated.riderUnavailableDates = Array.from(updatedRiderList);
+              })
+            );
+          }
+          // If the date is in the timeslot's riderUnavailableDates array then remove it
+          else if (updatedRiderList.has(convertedDate)) {
+            const updatedList = original.riderUnavailableDates.filter(
+              (dateString) => convertedDate !== dateString
+            );
+            await DataStore.save(
+              Timeslot.copyOf(original, (updated) => {
+                updated.riderUnavailableDates = updatedList; // eslint-disable-line no-param-reassign
+              })
+            );
+          }
+          // If it's a sunday then add the date to the availableSundays array to enable it
+          else if (
             availableDate.getDay() === 0 &&
             (!Array.isArray(original.riderUnavailableDates) ||
               !original.riderUnavailableDates.includes(convertedDate))
@@ -199,7 +200,9 @@ export default function TimeSlotConfirmation({
                 })
               );
             }
-          } else {
+          }
+          // If none of the other conditions are met then remove the date from the unavailableDates array
+          else {
             const updatedList = original.unavailableDates.filter(
               (dateString) => convertedDate !== dateString
             );

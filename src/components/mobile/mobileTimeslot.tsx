@@ -175,7 +175,7 @@ export default function MobileTimeslot({
             tId={tId}
             riderBookings={riderBookings}
             volunteerBookings={volunteerBookings}
-            booked={checked}
+            checked={checked}
             enabled={enabled}
             riderDisabled={riderDisabled}
             allBookings={allBookings}

@@ -94,6 +94,7 @@ function convertToYMD(date: Date) {
   retString += `${localString.split("/")[1]}`;
   return retString;
 }
+
 export default function Popup({
   popup,
   confirmPopup,
@@ -235,7 +236,7 @@ export default function Popup({
         timeslot.riderUnavailableDates &&
         timeslot.riderUnavailableDates.includes(convertToYMD(date))
       ) {
-        checked = true;
+        checked = false;
         riderDisabled = true;
       }
       ts.push({

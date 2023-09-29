@@ -124,7 +124,7 @@ export default function MobileTimeslots({
         enabled = false;
       } else if (userType === "Admin") {
         backgroundColor = "#708BDB";
-        checked = true;
+        checked = false;
       } else {
         enabled = true;
       }
