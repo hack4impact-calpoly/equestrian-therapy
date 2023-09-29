@@ -171,17 +171,17 @@ export default function MobileTimeslot({
       <Dropdown>
         {isDropdownOpen && (
           <MobileTimeslotContent
-            date={date}
-            tId={tId}
-            riderBookings={riderBookings}
-            volunteerBookings={volunteerBookings}
-            checked={checked}
-            enabled={enabled}
-            riderDisabled={riderDisabled}
             allBookings={allBookings}
-            setRequery={setRequery}
+            checked={checked}
+            date={date}
+            enabled={enabled}
+            riderBookings={riderBookings}
+            riderDisabled={riderDisabled}
+            tId={tId}
             toggleValue={toggleValue}
+            volunteerBookings={volunteerBookings}
             setIsDropdownOpen={setIsDropdownOpen}
+            setRequery={setRequery}
           />
         )}
       </Dropdown>
