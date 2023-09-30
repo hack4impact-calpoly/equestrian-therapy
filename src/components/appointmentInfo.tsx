@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
 import styled from "styled-components";
-import Horse from "../images/horseRider.svg";
-import Dude from "../images/person.svg";
-import Bookmark from "../images/bookmark.svg";
+import Horse from "../images/horseRiderIcon.svg";
+import Dude from "../images/personIcon.svg";
+import Bookmark from "../images/bookmarkIcon.svg";
 import { LazyUser } from "../models";
 import UserContext from "../userContext";
 import "@fontsource/roboto";

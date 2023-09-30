@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Auth } from "aws-amplify";
-import lock from "../../images/lock.svg";
+import lock from "../../images/lockIcon.svg";
 import arrow from "../../images/backArrowIcon.png";
 import {
   Wrapper,

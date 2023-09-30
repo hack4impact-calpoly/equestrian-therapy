@@ -4,8 +4,8 @@ import { Auth } from "aws-amplify";
 import { DataStore } from "@aws-amplify/datastore";
 import styled from "styled-components";
 import { User } from "../../models";
-import eyeSlash from "../../images/eyeSlash.svg";
-import eye from "../../images/eye.svg";
+import eyeSlash from "../../images/eyeSlashIcon.svg";
+import eye from "../../images/eyeIcon.svg";
 import backArrow from "../../images/backArrowIcon.png";
 import {
   Box,

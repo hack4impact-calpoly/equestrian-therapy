@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
-import logo from "../../images/horseRider.svg";
+import logo from "../../images/horseRiderIcon.svg";
 import {
   Wrapper,
   Box,

@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import logo from "../../images/horseRider.svg";
+import logo from "../../images/horseRiderIcon.svg";
 import {
   Button,
   CenteredDescription,

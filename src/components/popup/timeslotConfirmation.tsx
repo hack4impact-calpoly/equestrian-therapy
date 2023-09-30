@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { DataStore } from "aws-amplify";
 import UserContext from "../../userContext";
 import { Timeslot, User, Booking } from "../../models";
-import warning from "../../images/warning.svg";
+import warning from "../../images/warningIcon.svg";
 import { CancelBtn, SaveBtn, Description, Header } from "../styledComponents";
 
 export type TimeslotConfirmProps = {
