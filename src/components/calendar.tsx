@@ -16,7 +16,7 @@ import logo from "../images/petLogo.svg";
 import Toggle from "./calendarToggle";
 import Popup from "./popup/timeslotPopup";
 // import FullCalendar from "@fullcalendar/react";
-import signout from "../images/signOut.png";
+import signout from "../images/signOutFull.png";
 import LogoutPopup from "./popup/logoutPopup";
 import { Booking } from "../models";
 
