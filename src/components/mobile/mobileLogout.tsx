@@ -12,7 +12,7 @@ import {
   Button,
   Row,
 } from "../styledComponents";
-import backArrow from "../../images/backArrow.png";
+import backArrow from "../../images/backArrowIcon.png";
 import UserContext from "../../userContext";
 
 const Warning = styled.img`

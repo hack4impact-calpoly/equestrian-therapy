@@ -6,7 +6,7 @@ import styled from "styled-components";
 import { User } from "../../models";
 import eyeSlash from "../../images/eyeSlash.svg";
 import eye from "../../images/eye.svg";
-import backArrow from "../../images/backArrow.png";
+import backArrow from "../../images/backArrowIcon.png";
 import {
   Box,
   BackArrow,

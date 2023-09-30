@@ -2,8 +2,8 @@
 import styled from "styled-components";
 import "@fontsource/roboto";
 import { useState, useContext } from "react";
-import OnSlide from "../../images/onSlider.png";
-import OffSlide from "../../images/offSlider.png";
+import OnSlide from "../../images/onSliderIcon.png";
+import OffSlide from "../../images/offSliderIcon.png";
 import UserContext from "../../userContext";
 import MobileTimeSlotConfirmation from "./mobileTimeslotConfirmation";
 import TimeslotSuccess from "../popup/timeslotSuccess";

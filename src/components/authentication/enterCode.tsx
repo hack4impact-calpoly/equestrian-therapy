@@ -3,7 +3,7 @@ import { ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Auth } from "aws-amplify";
 import lock from "../../images/lock.svg";
-import arrow from "../../images/backArrow.png";
+import arrow from "../../images/backArrowIcon.png";
 import {
   Wrapper,
   Box,
