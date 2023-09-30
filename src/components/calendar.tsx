@@ -12,11 +12,11 @@ import interactionPlugin from "@fullcalendar/interaction";
 import UserContext from "../userContext";
 import { LazyTimeslot } from "../models";
 // import Monthly from "./monthlyView";
-import logo from "../images/PETlogo2.svg";
+import logo from "../images/petLogo2.svg";
 import Toggle from "./calendarToggle";
 import Popup from "./popup/timeslotPopup";
 // import FullCalendar from "@fullcalendar/react";
-import signout from "../images/SignOut.png";
+import signout from "../images/signOut.png";
 import LogoutPopup from "./popup/logoutPopup";
 import { Booking } from "../models";
 
@@ -63,6 +63,18 @@ const CalDiv = styled.div`
   }
 `;
 
+const Disclaimer = styled.p`
+  font-family: "Rubik";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  width: 350px;
+  max-width: 100%;
+  color: #000d26;
+  text-align: left;
+  margin: 0px;
+`;
+
 const Logo = styled.img`
   position: absolute;
   right: 2%;
@@ -79,7 +91,7 @@ const LeftColumn = styled.div`
   align-items: flex-start;
   justify-content: flex-start;
   padding: 0 50px 0 50px;
-  gap: 40px;
+  gap: 20px;
 `;
 const RightColumn = styled.div`
   padding-right: 50px;
@@ -256,6 +268,13 @@ interface Timeslot {
   timeslotId: string;
 }
 
+// interface TsData {
+//   startTime: Date;
+//   endTime: Date;
+//   checked: boolean;
+//   id: string;
+// }
+
 function convertToYMD(date: Date) {
   const localString = date.toLocaleDateString();
   const splitDate = localString.split("/");
@@ -273,14 +292,15 @@ function convertToYMD(date: Date) {
 }
 
 export default function Calendar({ timeslots, setTs }: CalendarProps) {
-  const [date, setDateProp] = useState(new Date());
+  const [date, setDate] = useState(new Date());
   const calRef = useRef<FullCalendarRef>(null);
-  const [toggles, setToggle] = useState<string>("");
+  const [toggleValue, setToggleValue] = useState<string>("");
   const [popup, setPopup] = useState(false);
   const [confirmPopup, setConfirmPopup] = useState(false);
   const [successPopup, setSuccessPopup] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
   const [popupDate, setPopupDate] = useState<Date>(new Date());
+  // const [bookable, setBookable] = useState<TsData[]>([]);
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
@@ -292,7 +312,6 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
     const fetchBookings = async () => {
       try {
         const bookingModels = await DataStore.query(Booking);
-        // console.log("BOOKINGS ---------", bookingModels);
         setBookings(bookingModels);
       } catch (error) {
         console.error("Error fetching bookings:", error);
@@ -300,10 +319,6 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
     };
     fetchBookings();
   }, [popup]);
-
-  // console.log("setdate: ", date);
-  // const tileDisabled = (thedate: any) => thedate < new Date();
-  // console.log(`userType ${userType}`);
 
   const handleEventClick = async (eventClickInfo: any) => {
     setPopupDate(eventClickInfo.event.start);
@@ -316,6 +331,7 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
     setPopup(false);
     setConfirmPopup(false);
     setSuccessPopup(false);
+    // setBookable([]);
   };
 
   const handleConfirmOpen = () => {
@@ -341,7 +357,6 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
     const tempSlots = timeslots.map((timeslot: LazyTimeslot) => {
       let backgroundColor = "#90BFCC";
       let enabled = true;
-
       const startingTime = new Date(
         `${
           months[dateTest.getMonth()]
@@ -356,29 +371,24 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
           timeslot.endTime
         }:00`
       );
-      // const string = "2023-06-25";
-
-      // console.log("DATE TEST WOOOOOOOOOOOOOOOOOOOO", string.substring(5, 7));
-
-      if (
-        bookings.some(
-          (booking) =>
-            booking.timeslotID === timeslot.id &&
-            dateTest.getDate() ===
-              Number(
-                String(booking.date).substring(
-                  String(booking.date).length - 2,
-                  String(booking.date).length
-                )
-              ) &&
-            dateTest.getMonth() + 1 ===
-              Number(String(booking.date).substring(5, 7))
-        )
-      ) {
-        backgroundColor = "#E0EFF1";
-      }
-
-      if (
+      // If date is a Sunday, check the availableSundays (Sundays disabled on default)
+      if (dateTest.getDay() === 0) {
+        if (userType === "Admin") {
+          backgroundColor = "#C1C1C1";
+        } else {
+          enabled = false;
+        }
+        if (
+          timeslot.availableSundays &&
+          timeslot.availableSundays.includes(convertToYMD(dateTest))
+        ) {
+          if (userType === "Admin") {
+            backgroundColor = "#90BFCC";
+          } else if (userType === "Volunteer") {
+            enabled = true;
+          }
+        } // Non-Sunday dates check unavailableDates
+      } else if (
         timeslot.unavailableDates &&
         timeslot.unavailableDates.includes(convertToYMD(dateTest))
       ) {
@@ -387,6 +397,74 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
         } else {
           enabled = false;
         }
+      }
+      // console.log("YOYOYO", timeslot.riderUnavailableDates, dateTest);
+      if (
+        timeslot.riderUnavailableDates &&
+        timeslot.riderUnavailableDates.includes(convertToYMD(dateTest))
+      ) {
+        if (userType === "Rider") {
+          enabled = false;
+        } else if (userType === "Admin") {
+          backgroundColor = "#708BDB";
+        } else {
+          enabled = true;
+        }
+      }
+      if (
+        ((userType === "Rider" || toggleValue === "Riders") &&
+          bookings.some(
+            (booking) =>
+              booking.timeslotID === timeslot.id &&
+              dateTest.getDate() ===
+                Number(
+                  String(booking.date).substring(
+                    String(booking.date).length - 2,
+                    String(booking.date).length
+                  )
+                ) &&
+              dateTest.getMonth() + 1 ===
+                Number(String(booking.date).substring(5, 7)) &&
+              dateTest.getFullYear() ===
+                Number(String(booking.date).substring(0, 4)) &&
+              booking.userType === "Rider"
+          )) ||
+        ((toggleValue === "Both" || userType === "Volunteer") &&
+          bookings.some(
+            (booking) =>
+              booking.timeslotID === timeslot.id &&
+              dateTest.getDate() ===
+                Number(
+                  String(booking.date).substring(
+                    String(booking.date).length - 2,
+                    String(booking.date).length
+                  )
+                ) &&
+              dateTest.getMonth() + 1 ===
+                Number(String(booking.date).substring(5, 7)) &&
+              dateTest.getFullYear() ===
+                Number(String(booking.date).substring(0, 4))
+          )) ||
+        (userType === "Admin" &&
+          toggleValue === "Volunteers" &&
+          bookings.some(
+            (booking) =>
+              booking.timeslotID === timeslot.id &&
+              dateTest.getDate() ===
+                Number(
+                  String(booking.date).substring(
+                    String(booking.date).length - 2,
+                    String(booking.date).length
+                  )
+                ) &&
+              dateTest.getMonth() + 1 ===
+                Number(String(booking.date).substring(5, 7)) &&
+              dateTest.getFullYear() ===
+                Number(String(booking.date).substring(0, 4)) &&
+              booking.userType === "Volunteer"
+          ))
+      ) {
+        backgroundColor = "#E0EFF1";
       }
 
       return {
@@ -403,13 +481,13 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
 
   slots = slots.filter((timeslot) => timeslot.enabled);
 
-  if (toggles === "riders" || userType === "Rider") {
+  if (toggleValue === "Riders" || userType === "Rider") {
     slots = slots.filter(
       (timeslot) =>
-        timeslot.start.getHours() >= 10 && timeslot.end.getHours() <= 14
+        timeslot.start.getHours() >= 10 && timeslot.start.getHours() < 14
     );
   }
-  if (toggles === "slots") {
+  if (toggleValue === "slots") {
     slots = slots.filter((timeslot) =>
       bookings.some(
         (booking) =>
@@ -442,20 +520,38 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
               nextLabel=" > "
               prevLabel=" < "
               defaultView="month"
-              // tileDisabled={tileDisabled}
               view="month"
               calendarType="US"
               onClickDay={(day) => {
-                setDateProp(day);
+                setDate(day);
                 calRef.current?.getApi()?.gotoDate(day);
               }}
               onClickMonth={(day) => {
-                setDateProp(day);
+                setDate(day);
                 calRef.current?.getApi()?.gotoDate(day);
               }}
             />
           </CalendarContainer>
-          <Toggle setToggleProp={setToggle} />
+          <Toggle setToggleProp={setToggleValue} />
+          {userType === "Admin" && toggleValue !== "Both" ? (
+            <Disclaimer>
+              {toggleValue === "Riders" ? (
+                <p>
+                  *** Disabling a timeslot with the &quot;Rider only&quot;
+                  toggle selected will disable it for
+                  <span style={{ fontWeight: "bold" }}> riders only</span>
+                </p>
+              ) : (
+                <p>
+                  *** Enabling a disabled timeslot with the &quot;Volunteer
+                  only&quot; toggle selected will enable it for
+                  <span style={{ fontWeight: "bold" }}> volunteers only</span>
+                </p>
+              )}
+            </Disclaimer>
+          ) : (
+            <div />
+          )}
         </LeftColumn>
         <RightColumn>
           <CalDiv>
@@ -473,7 +569,7 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
               ref={calRef}
               dayHeaderFormat={{ weekday: "short", day: "numeric" }}
               datesSet={(dateInfo) => {
-                setDateProp(dateInfo.start);
+                setDate(dateInfo.start);
               }}
               eventClick={handleEventClick}
             />
@@ -485,8 +581,12 @@ export default function Calendar({ timeslots, setTs }: CalendarProps) {
               handleSuccessOpen={handleSuccessOpen}
               onClose={handlePopupClose}
               date={popupDate}
+              setDate={setPopupDate}
               timeslots={timeslots}
               setTs={setTs}
+              toggleValue={toggleValue}
+              // bookable={bookable}
+              // setBookable={setBookable}
             />
           </CalDiv>
         </RightColumn>

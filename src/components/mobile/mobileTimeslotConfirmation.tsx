@@ -3,8 +3,7 @@ import { useContext } from "react";
 import styled from "styled-components";
 import { DataStore } from "aws-amplify";
 import UserContext from "../../userContext";
-// import { checkedLst, uncheckedLst } from "./timeslot";
-import { User, Booking } from "../../models";
+import { User, Booking, Timeslot } from "../../models";
 import warning from "../../images/warning.svg";
 import {
   CancelBtn,
@@ -18,10 +17,10 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4%;
+  padding: 6%;
 `;
 
-const Box = styled.section`
+const Box = styled.div`
   border: solid 0.5px #c4c4c4;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   display: flex;
@@ -59,63 +58,14 @@ const BtnContainer = styled.div`
   gap: 20px;
 `;
 
-// async function addUnavailability(ids: string[], unavailableDate: Date) {
-//   try {
-//     ids.forEach(async (id) => {
-//       const original = await DataStore.query(Timeslot, id);
-//       if (
-//         original !== null &&
-//         original !== undefined &&
-//         Array.isArray(original.unavailableDates)
-//       ) {
-//         const isoDate = new Date(unavailableDate).toISOString().split("T")[0];
-//         const updatedList = new Set(original.unavailableDates);
-//         if (!updatedList.has(isoDate)) {
-//           updatedList.add(isoDate);
-//           await DataStore.save(
-//             Timeslot.copyOf(original, (updated) => {
-//               // eslint-disable-next-line no-param-reassign
-//               updated.unavailableDates = Array.from(updatedList);
-//             })
-//           );
-//         }
-//       }
-//     });
-//   } catch (error: unknown) {
-//     if (error instanceof Error) {
-//       console.log("An error occurred: ", error.message); // eslint-disable-line no-console
-//     }
-//   }
-// }
+const MobileCancelBtn = styled(CancelBtn)`
+  width: 50%;
+`;
 
-// async function deleteUnavailability(ids: string[], availableDate: Date) {
-//   try {
-//     ids.forEach(async (id) => {
-//       const original = await DataStore.query(Timeslot, id);
-//       if (original && Array.isArray(original.unavailableDates)) {
-//         const date = new Date(availableDate).toISOString().split("T")[0];
+const MobileSaveBtn = styled(SaveBtn)`
+  width: 50%;
+`;
 
-//         const updatedList = original.unavailableDates.filter((dateString) => {
-//           if (dateString !== null) {
-//             const isoDate = new Date(dateString).toISOString().split("T")[0];
-//             return date !== isoDate;
-//           }
-//           return false;
-//         });
-
-//         await DataStore.save(
-//           Timeslot.copyOf(original, (updated) => {
-//             updated.unavailableDates = updatedList; // eslint-disable-line no-param-reassign
-//           })
-//         );
-//       }
-//     });
-//   } catch (error: unknown) {
-//     if (error instanceof Error) {
-//       console.log("An error occurred: ", error.message); // eslint-disable-line no-console
-//     }
-//   }
-// }
 function convertToYMD(date: Date) {
   const localString = date.toLocaleDateString();
   const splitDate = localString.split("/");
@@ -132,80 +82,28 @@ function convertToYMD(date: Date) {
   return retString;
 }
 
-async function addRVBooking(
-  TimeslotID: string,
-  userID: string,
-  bookedDate: Date
-) {
-  try {
-    console.log("THE DATE SELECTED IS", bookedDate);
-    const original = await DataStore.query(User, userID);
-    if (
-      original !== null &&
-      original !== undefined &&
-      (original.userType === "Volunteer" || original.userType === "Rider")
-    ) {
-      const tempDate = new Date(bookedDate);
-      const formattedDate = convertToYMD(tempDate);
-      const descriptionStr: string = `User: ${userID} Booked Time: ${formattedDate}`;
-      const booking = new Booking({
-        title: `New Booking -- ${original.userType}`,
-        date: formattedDate,
-        description: descriptionStr,
-        timeslotID: TimeslotID,
-        userID,
-      });
-      await DataStore.save(booking);
-    }
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.log("An error occurred: ", error.message); // eslint-disable-line no-console
-    }
-  }
-}
-
-// async function deleteRVBooking(
-//   TimeslotIDs: string[], // which time they want to cancel
-//   userID: string
-// ) {
-//   console.log(TimeslotIDs);
-//   console.log(userID);
-// }
-//   /*
-//   go through entire booking table, find the booking id that matches
-//   the timeslotid, and the date
-//    */
-//   try {
-//     const BookingTable = await DataStore.query(Booking);
-//     TimeslotIDs.forEach((TimeslotID) => {
-//       BookingTable.forEach((booking) => {
-//         if (booking.userID === userID && booking.timeslotID === TimeslotID) {
-//           DataStore.delete(booking);
-//         }
-//       });
-//     });
-//   } catch (error: unknown) {
-//     if (error instanceof Error) {
-//       console.log("An error occurred: ", error.message); // eslint-disable-line no-console
-//     }
-//   }
-// }
-
 interface MobileTimeSlotConfirmationProps {
   handleClicked: () => void;
   handleCancelled: () => void;
-  status: String;
+  booked: boolean;
+  // enabled: boolean;
   date: Date;
   tId: string;
+  riderDisabled: boolean;
+  toggleValue: string;
+  allBookings: Booking[];
   setRequery: (requery: boolean) => void;
 }
 
 export default function MobileTimeSlotConfirmation({
   handleClicked,
   handleCancelled,
-  status = "",
+  booked,
   date,
   tId,
+  riderDisabled,
+  toggleValue,
+  allBookings,
   setRequery,
 }: MobileTimeSlotConfirmationProps) {
   const currentUserFR = useContext(UserContext);
@@ -213,15 +111,227 @@ export default function MobileTimeSlotConfirmation({
   const [realUser] = currentUser;
   const { userType, id } = realUser;
 
+  function checkRiderDisabling() {
+    if (
+      userType === "Admin" &&
+      ((booked && toggleValue === "Riders") ||
+        (!booked && toggleValue === "Volunteers"))
+    ) {
+      return true;
+    }
+    return riderDisabled;
+  }
+
+  async function addUnavailability(timeslotId: string, unavailableDate: Date) {
+    try {
+      const original = await DataStore.query(Timeslot, timeslotId);
+      if (
+        original &&
+        Array.isArray(original.unavailableDates) &&
+        Array.isArray(original.availableSundays) &&
+        Array.isArray(original.riderUnavailableDates)
+      ) {
+        const ymdDate = convertToYMD(new Date(unavailableDate));
+        if (
+          unavailableDate.getDay() === 0 &&
+          original.availableSundays.includes(ymdDate)
+        ) {
+          const updatedList = original.availableSundays.filter(
+            (dateString) => ymdDate !== dateString
+          );
+          await DataStore.save(
+            Timeslot.copyOf(original, (updated) => {
+              updated.availableSundays = updatedList; // eslint-disable-line no-param-reassign
+            })
+          );
+        } else if (toggleValue === "Riders") {
+          const updatedList = new Set(original.riderUnavailableDates);
+          if (!updatedList.has(ymdDate)) {
+            updatedList.add(ymdDate);
+            await DataStore.save(
+              Timeslot.copyOf(original, (updated) => {
+                // eslint-disable-next-line no-param-reassign
+                updated.riderUnavailableDates = Array.from(updatedList);
+              })
+            );
+          }
+        } else if (
+          original.riderUnavailableDates &&
+          original.riderUnavailableDates.includes(ymdDate)
+        ) {
+          const updatedList = original.riderUnavailableDates.filter(
+            (dateString) => ymdDate !== dateString
+          );
+          await DataStore.save(
+            Timeslot.copyOf(original, (updated) => {
+              updated.riderUnavailableDates = updatedList; // eslint-disable-line no-param-reassign
+            })
+          );
+        } else {
+          const updatedList = new Set(original.unavailableDates);
+          if (!updatedList.has(ymdDate)) {
+            updatedList.add(ymdDate);
+            await DataStore.save(
+              Timeslot.copyOf(original, (updated) => {
+                // eslint-disable-next-line no-param-reassign
+                updated.unavailableDates = Array.from(updatedList);
+              })
+            );
+          }
+        }
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log("An error occurred: ", error.message); // eslint-disable-line no-console
+      }
+    }
+  }
+
+  async function deleteUnavailability(timeslotId: string, availableDate: Date) {
+    try {
+      const original = await DataStore.query(Timeslot, timeslotId);
+      const convertedDate = convertToYMD(new Date(availableDate));
+      if (
+        original &&
+        Array.isArray(original.unavailableDates) &&
+        Array.isArray(original.availableSundays) &&
+        Array.isArray(original.riderUnavailableDates)
+      ) {
+        if (toggleValue === "Volunteers") {
+          const updatedRiderList = new Set(original.riderUnavailableDates);
+          if (!updatedRiderList.has(convertedDate)) {
+            updatedRiderList.add(convertedDate);
+            await DataStore.save(
+              Timeslot.copyOf(original, (updated) => {
+                // eslint-disable-next-line no-param-reassign
+                updated.riderUnavailableDates = Array.from(updatedRiderList);
+              })
+            );
+          } else if (updatedRiderList.has(convertedDate)) {
+            const updatedList = original.riderUnavailableDates.filter(
+              (dateString) => convertedDate !== dateString
+            );
+            await DataStore.save(
+              Timeslot.copyOf(original, (updated) => {
+                updated.riderUnavailableDates = updatedList; // eslint-disable-line no-param-reassign
+              })
+            );
+          }
+        } else if (
+          availableDate.getDay() === 0 &&
+          (!Array.isArray(original.riderUnavailableDates) ||
+            !original.riderUnavailableDates.includes(convertedDate))
+        ) {
+          const updatedList = new Set(original.availableSundays);
+          if (!updatedList.has(convertedDate)) {
+            updatedList.add(convertedDate);
+            await DataStore.save(
+              Timeslot.copyOf(original, (updated) => {
+                // eslint-disable-next-line no-param-reassign
+                updated.availableSundays = Array.from(updatedList);
+              })
+            );
+          }
+        } else {
+          const updatedList = original.unavailableDates.filter(
+            (dateString) => convertedDate !== dateString
+          );
+          await DataStore.save(
+            Timeslot.copyOf(original, (updated) => {
+              updated.unavailableDates = updatedList; // eslint-disable-line no-param-reassign
+            })
+          );
+        }
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log("An error occurred: ", error.message); // eslint-disable-line no-console
+      }
+    }
+  }
+  async function addRVBooking(
+    TimeslotID: string,
+    userID: string,
+    bookedDate: Date
+  ) {
+    try {
+      const original = await DataStore.query(User, userID);
+      if (
+        original &&
+        (original.userType === "Volunteer" || original.userType === "Rider")
+      ) {
+        const tempDate = new Date(bookedDate);
+        const formattedDate = convertToYMD(tempDate);
+        const descriptionStr: string = `User: ${userID} Booked Time: ${formattedDate}`;
+        const booking = new Booking({
+          title: `New Booking -- ${original.userType}`,
+          date: formattedDate,
+          description: descriptionStr,
+          timeslotID: TimeslotID,
+          userID,
+          userType,
+        });
+        await DataStore.save(booking);
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log("An error occurred: ", error.message); // eslint-disable-line no-console
+      }
+    }
+  }
+
+  async function deleteRVBooking(
+    TimeslotID: string // which time they want to cancel
+  ) {
+    /*
+    go through entire booking table, find the booking id that matches
+    the timeslotid, and the date
+     */
+    try {
+      const bookings = await DataStore.query(Booking, (book) =>
+        book.and((b) => [
+          b.timeslotID.eq(TimeslotID),
+          b.date.eq(convertToYMD(date)),
+        ])
+      );
+      bookings.forEach((booking) => {
+        if (booking.userID === id) {
+          DataStore.delete(booking);
+        }
+      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log("An error occurred: ", error.message); // eslint-disable-line no-console
+      }
+    }
+  }
+
   const handleConfirmationAdmin = () => {
     handleClicked();
-    // addUnavailability(uncheckedLst, date); // YYYY-MM-DD
-    // deleteUnavailability(checkedLst, date); // YYYY-MM-DD
+    if (!booked) {
+      deleteUnavailability(tId, date); // YYYY-MM-DD
+    } else {
+      addUnavailability(tId, date); // YYYY-MM-DD
+    }
+    setRequery(true);
   };
 
   const handleConfirmationRV = () => {
     handleClicked();
-    addRVBooking(tId, id, date);
+    if (booked) {
+      deleteRVBooking(tId);
+    } else {
+      if (
+        userType === "Rider" &&
+        allBookings.some(
+          (booking) =>
+            booking.date === convertToYMD(date) && booking.userID === id
+        )
+      ) {
+        return;
+      }
+      addRVBooking(tId, id, date);
+    }
     setRequery(true);
   };
 
@@ -229,56 +339,50 @@ export default function MobileTimeSlotConfirmation({
     handleCancelled();
   };
 
-  const handleBookingCancel = () => {
-    // deleteRVBooking(uncheckedLst, id);
-  };
-
   return (
     <div>
-      {userType === "admin" && (
+      {userType === "Admin" ? (
         <Wrapper>
           <Box>
             <Warning src={warning} />
             <CenteredHeader>Save changes?</CenteredHeader>
             <CenteredDescription>
-              You are choosing to edit the availability of one or more time
-              slots. Are you sure you want to do this?
+              <p style={{ padding: 0, margin: 0 }}>
+                You are choosing to edit
+                {checkRiderDisabling() ? (
+                  <span style={{ fontWeight: "bold" }}> rider</span>
+                ) : (
+                  " the"
+                )}{" "}
+                availability of one or more time slots. Are you sure you want to
+                do this?
+              </p>
             </CenteredDescription>
             <BtnContainer>
-              <CancelBtn onClick={handleCancel}>Cancel</CancelBtn>
-              <SaveBtn onClick={handleConfirmationAdmin}>Confirm</SaveBtn>
+              <MobileCancelBtn onClick={handleCancel}>Cancel</MobileCancelBtn>
+              <MobileSaveBtn onClick={handleConfirmationAdmin}>
+                Confirm
+              </MobileSaveBtn>
             </BtnContainer>
           </Box>
         </Wrapper>
-      )}
-      {userType !== "Admin" && status === "cancel" && (
+      ) : (
         <Wrapper>
           <Box>
             <Warning src={warning} />
-            <CenteredHeader>Confirm cancellation?</CenteredHeader>
+            <CenteredHeader>
+              {`Confirm ${booked ? "cancellation" : "booking"}?`}
+            </CenteredHeader>
             <CenteredDescription>
-              You are choosing to cancel one or more time slots. Are you sure
-              you want to do this?
+              {`You are choosing to ${
+                booked ? "cancel" : "book"
+              } a time slot. Are you sure you want to do this?`}
             </CenteredDescription>
             <BtnContainer>
-              <CancelBtn onClick={handleCancel}>Cancel</CancelBtn>
-              <SaveBtn onClick={handleBookingCancel}>Confirm</SaveBtn>
-            </BtnContainer>
-          </Box>
-        </Wrapper>
-      )}
-      {userType !== "admin" && tId && (
-        <Wrapper>
-          <Box>
-            <Warning src={warning} />
-            <CenteredHeader>Confirm booking?</CenteredHeader>
-            <CenteredDescription>
-              You are choosing to book this timeslot. Are you sure you want to
-              do this?
-            </CenteredDescription>
-            <BtnContainer>
-              <CancelBtn onClick={handleCancel}>Cancel</CancelBtn>
-              <SaveBtn onClick={handleConfirmationRV}>Book</SaveBtn>
+              <MobileCancelBtn onClick={handleCancel}>Cancel</MobileCancelBtn>
+              <MobileSaveBtn onClick={handleConfirmationRV}>
+                Confirm
+              </MobileSaveBtn>
             </BtnContainer>
           </Box>
         </Wrapper>

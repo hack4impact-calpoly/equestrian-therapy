@@ -1,9 +1,9 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import styled from "styled-components";
-import Checked from "../../images/Checked.png";
-import Unchecked from "../../images/Unchecked.png";
-import On from "../../images/OnSlider.png";
-import Off from "../../images/OffSlider.png";
+import Checked from "../../images/checked.png";
+import Unchecked from "../../images/unchecked.png";
+import On from "../../images/onSlider.png";
+import Off from "../../images/offSlider.png";
 import UserContext from "../../userContext";
 
 const ButtonToggle = styled.button`
@@ -58,10 +58,18 @@ interface TimeslotProps {
   tsId: string;
   checked: boolean;
   border: string;
+  bookedToday: number;
   checkedLst: string[];
   uncheckedLst: string[];
+  oneSelected: string;
+  previousTimeslots: string[];
+  riderDisabledLst: string[];
+  riderDisabled: boolean;
+  setRiderDisabledLst: React.Dispatch<React.SetStateAction<string[]>>;
+  setBookedToday: React.Dispatch<React.SetStateAction<number>>;
   setCheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
   setUncheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
+  setOneSelected: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function Timeslot({
@@ -70,10 +78,18 @@ export default function Timeslot({
   tsId,
   checked,
   border,
+  bookedToday,
   checkedLst,
   uncheckedLst,
+  oneSelected,
+  previousTimeslots,
+  riderDisabledLst,
+  riderDisabled,
+  setRiderDisabledLst,
+  setBookedToday,
   setCheckedLst,
   setUncheckedLst,
+  setOneSelected,
 }: TimeslotProps) {
   const [isChecked, setIsChecked] = useState(checked);
   const currentUserFR = useContext(UserContext);
@@ -81,19 +97,56 @@ export default function Timeslot({
   const [realUser] = currentUser;
   const { userType } = realUser;
 
-  // console.log("The timeslot is: ", startTime, "THE BORDER IS: ", border);
+  useEffect(() => {
+    setIsChecked(checked);
+  }, [checked]);
 
   const toggleChecked = () => {
     if (isChecked) {
-      setUncheckedLst(uncheckedLst.concat(tsId));
-      setCheckedLst(uncheckedLst.filter((id) => id !== tsId));
+      if (
+        oneSelected !== "" &&
+        previousTimeslots &&
+        previousTimeslots.includes(tsId)
+      ) {
+        return;
+      }
+      setCheckedLst(checkedLst.filter((id) => id !== tsId));
       setIsChecked(!isChecked);
+      setBookedToday(bookedToday - 1);
+      if (userType === "Admin") {
+        setUncheckedLst(uncheckedLst.concat(tsId));
+        if (riderDisabled && riderDisabledLst.includes(tsId)) {
+          setRiderDisabledLst(riderDisabledLst.filter((id) => id !== tsId));
+        } else if (riderDisabled) {
+          setRiderDisabledLst(riderDisabledLst.concat(tsId));
+        }
+      }
+      // if it was one of the previous selected timeslots
+      if (previousTimeslots && previousTimeslots.includes(tsId)) {
+        setOneSelected(tsId); // set oneSelected to the current timeslot id so we know something has been unselected
+        setUncheckedLst(uncheckedLst.concat(tsId)); // Only add it to the unchecked list if it was previously booked
+      }
     } else {
-      setCheckedLst(checkedLst.concat(tsId));
+      if (bookedToday >= 1 && userType === "Rider") {
+        return;
+      }
+      // only add something to the checkedlist if it wasn't already booked, prevents double booking on same user
+      if (previousTimeslots && !previousTimeslots.includes(tsId)) {
+        setCheckedLst(checkedLst.concat(tsId));
+      }
       setUncheckedLst(uncheckedLst.filter((id) => id !== tsId));
       setIsChecked(!isChecked);
+      setBookedToday(bookedToday + 1);
+      if (userType === "Admin" && riderDisabled) {
+        setRiderDisabledLst(riderDisabledLst.concat(tsId));
+      }
+      // reset the oneSelected if they're riders (can only have one booked anyways) or if its the one that was just unchecked
+      if (userType === "Rider" || tsId === oneSelected) {
+        setOneSelected("");
+      }
     }
   };
+
   const formatTime = (time: Date) =>
     time.toLocaleTimeString([], {
       hour: "numeric",
@@ -105,7 +158,7 @@ export default function Timeslot({
       <TimeslotText>
         {`${formatTime(startTime)} to ${formatTime(endTime)}`}
       </TimeslotText>
-      {userType === "Volunteer" ? (
+      {userType !== "Admin" ? (
         <ButtonToggle onClick={toggleChecked}>
           {isChecked ? (
             <CheckedImg src={Checked} alt="Checked Img" />

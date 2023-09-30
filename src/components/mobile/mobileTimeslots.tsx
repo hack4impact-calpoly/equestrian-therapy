@@ -11,7 +11,9 @@ const Slots = styled.section`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 7%;
+  padding-left: 7%;
+  padding-right: 7%;
+  padding-top: 2%;
   width: 100%;
   height: 400px;
 `;
@@ -80,32 +82,130 @@ export default function MobileTimeslots({
   function mapTimeslotColors(timeslot: LazyTimeslot) {
     let backgroundColor = "#90BFCC";
     let enabled = true;
-
-    if (
-      bookings.some(
-        (booking) =>
-          booking.timeslotID === timeslot.id &&
-          date.getDate() ===
-            Number(
-              String(booking.date).substring(
-                String(booking.date).length - 2,
-                String(booking.date).length
-              )
-            )
-      )
-    ) {
-      backgroundColor = "#E0EFF1";
+    let checked = false;
+    if (userType === "Admin") {
+      checked = true;
     }
-
-    if (
+    let riderDisabled = false;
+    // If date is a Sunday, check the availableSundays (Sundays disabled on default)
+    if (date.getDay() === 0) {
+      if (userType === "Admin") {
+        backgroundColor = "#C1C1C1";
+      }
+      checked = false;
+      enabled = false;
+      if (
+        timeslot.availableSundays &&
+        timeslot.availableSundays.includes(convertToYMD(date))
+      ) {
+        if (userType === "Admin") {
+          backgroundColor = "#90BFCC";
+          checked = true;
+        }
+        enabled = true;
+      } // Non-Sunday dates check unavailableDates
+    } else if (
       timeslot.unavailableDates &&
       timeslot.unavailableDates.includes(convertToYMD(date))
     ) {
       if (userType === "Admin") {
         backgroundColor = "#C1C1C1";
+        checked = false;
       } else {
         enabled = false;
       }
+    }
+    if (
+      timeslot.riderUnavailableDates &&
+      timeslot.riderUnavailableDates.includes(convertToYMD(date))
+    ) {
+      riderDisabled = true;
+      if (userType === "Rider") {
+        enabled = false;
+      } else if (userType === "Admin") {
+        backgroundColor = "#708BDB";
+        checked = true;
+      } else {
+        enabled = true;
+      }
+    }
+    if (
+      ((userType === "Rider" || toggleValue === "Riders") &&
+        bookings.some(
+          (booking) =>
+            booking.timeslotID === timeslot.id &&
+            date.getDate() ===
+              Number(
+                String(booking.date).substring(
+                  String(booking.date).length - 2,
+                  String(booking.date).length
+                )
+              ) &&
+            date.getMonth() + 1 ===
+              Number(String(booking.date).substring(5, 7)) &&
+            date.getFullYear() ===
+              Number(String(booking.date).substring(0, 4)) &&
+            booking.userType === "Rider"
+        )) ||
+      ((toggleValue === "Both" ||
+        (userType === "Admin" &&
+          toggleValue !== "Riders" &&
+          toggleValue !== "Volunteers") ||
+        userType === "Volunteer") &&
+        bookings.some(
+          (booking) =>
+            booking.timeslotID === timeslot.id &&
+            date.getDate() ===
+              Number(
+                String(booking.date).substring(
+                  String(booking.date).length - 2,
+                  String(booking.date).length
+                )
+              ) &&
+            date.getMonth() + 1 ===
+              Number(String(booking.date).substring(5, 7)) &&
+            date.getFullYear() === Number(String(booking.date).substring(0, 4))
+        )) ||
+      (userType === "Admin" &&
+        toggleValue === "Volunteers" &&
+        bookings.some(
+          (booking) =>
+            booking.timeslotID === timeslot.id &&
+            date.getDate() ===
+              Number(
+                String(booking.date).substring(
+                  String(booking.date).length - 2,
+                  String(booking.date).length
+                )
+              ) &&
+            date.getMonth() + 1 ===
+              Number(String(booking.date).substring(5, 7)) &&
+            date.getFullYear() ===
+              Number(String(booking.date).substring(0, 4)) &&
+            booking.userType === "Volunteer"
+        ))
+    ) {
+      backgroundColor = "#E0EFF1";
+      if (
+        userType !== "Admin" &&
+        bookings.some(
+          (booking) =>
+            booking.timeslotID === timeslot.id &&
+            date.getDate() ===
+              Number(
+                String(booking.date).substring(
+                  String(booking.date).length - 2,
+                  String(booking.date).length
+                )
+              ) &&
+            date.getMonth() + 1 ===
+              Number(String(booking.date).substring(5, 7)) &&
+            date.getFullYear() ===
+              Number(String(booking.date).substring(0, 4)) &&
+            booking.userID === currentUserId
+        )
+      )
+        checked = true;
     }
 
     return {
@@ -113,20 +213,14 @@ export default function MobileTimeslots({
       endTime: String(timeslot.endTime),
       backgroundColor,
       textColor: "black",
-      checked: false,
+      checked,
       enabled,
+      riderDisabled,
       timeslotId: timeslot.id,
     };
   }
 
   function filterTimeSlots(timeslot: TempTimeslot) {
-    if (toggleValue === "Riders" || userType === "Rider") {
-      return (
-        Number(timeslot.startTime.substring(0, 2)) >= 10 &&
-        Number(timeslot.startTime.substring(0, 2)) < 14 &&
-        timeslot.enabled
-      );
-    }
     if (toggleValue === "My Slots") {
       return (
         bookings.some(
@@ -136,6 +230,16 @@ export default function MobileTimeslots({
             booking.date === convertToYMD(date)
         ) && timeslot.enabled
       );
+    }
+    if (toggleValue === "Riders" || userType === "Rider") {
+      return (
+        Number(timeslot.startTime.substring(0, 2)) >= 10 &&
+        Number(timeslot.startTime.substring(0, 2)) < 14 &&
+        timeslot.enabled
+      );
+    }
+    if (userType === "Admin") {
+      return true;
     }
     return timeslot.enabled;
   }
@@ -154,7 +258,12 @@ export default function MobileTimeslots({
             date={date}
             backgroundColor={timeslot.backgroundColor}
             tId={timeslot.timeslotId}
+            checked={timeslot.checked}
+            enabled={timeslot.enabled}
+            riderDisabled={timeslot.riderDisabled}
+            allBookings={bookings}
             setRequery={setRequery}
+            toggleValue={toggleValue}
           />
         ))}
     </Slots>

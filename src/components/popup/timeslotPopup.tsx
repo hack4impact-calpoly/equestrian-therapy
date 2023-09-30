@@ -1,10 +1,10 @@
-import React, { useState, useLayoutEffect, useContext, useMemo } from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
 import styled from "styled-components";
 import { DataStore } from "@aws-amplify/datastore";
-import x from "../../images/X.svg";
+import x from "../../images/x.svg";
 import { PopupDiv, PopupBox, X, CancelBtn, SaveBtn } from "../styledComponents";
 import Monthly from "../monthlyView";
-import AptInfo from "../appointmentInfo";
+import AppointmentInfo from "../appointmentInfo";
 import Timeslots from "./timeslots";
 import {
   User,
@@ -65,16 +65,22 @@ interface PopupProps {
   handleSuccessOpen: () => void;
   onClose: () => void;
   date: Date;
+  setDate: React.Dispatch<React.SetStateAction<Date>>;
   timeslots: LazyTimeslot[];
   setTs: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
+  toggleValue: string;
+  // bookable: TsData[];
+  // setBookable: React.Dispatch<React.SetStateAction<TsData[]>>;
 }
 
 interface TsData {
   startTime: Date;
   endTime: Date;
   checked: boolean;
+  riderDisabled: boolean;
   id: string;
 }
+
 function convertToYMD(date: Date) {
   const localString = date.toLocaleDateString();
   const splitDate = localString.split("/");
@@ -98,8 +104,10 @@ export default function Popup({
   handleSuccessOpen,
   onClose,
   date,
+  setDate,
   timeslots,
   setTs,
+  toggleValue,
 }: PopupProps) {
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
@@ -110,6 +118,9 @@ export default function Popup({
   const [riderBookings, setRidBookings] = useState<LazyUser[]>([]);
   const [checkedLst, setCheckedLst] = useState<string[]>([]);
   const [uncheckedLst, setUncheckedLst] = useState<string[]>([]);
+  const [bookedToday, setBookedToday] = useState(1);
+  const [previousTimeslots, setPreviousTimeslots] = useState<string[]>([]);
+  const [riderDisabledLst, setRiderDisabledLst] = useState<string[]>([]);
 
   const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
@@ -134,17 +145,14 @@ export default function Popup({
   };
   const selected = useMemo(() => getSelected(), [popup]);
 
-  useLayoutEffect(() => {
-    const ts: TsData[] = [];
+  useEffect(() => {
+    const ts: TsData[] = [...bookable];
+    let countBookedToday = 0;
     const fetchBookableRV = async (timeslot: LazyTimeslot) => {
       // available bookings are unbooked bookings, bookings booked by current user, and
       // bookings that are not in the unavailable dates set by admin
-      let bookings;
-      if (userType === "Volunteer") {
-        bookings = await timeslot.volunteerBookings.toArray();
-      } else {
-        bookings = await timeslot.riderBookings.toArray();
-      }
+      let countBookings = 0;
+      const bookings = await timeslot.bookings.toArray();
       let checked = false;
       let available = true;
       if (bookings) {
@@ -152,58 +160,120 @@ export default function Popup({
           if (booking.date) {
             if (booking.date === convertToYMD(date)) {
               if (booking.userID === id) {
+                countBookings += 1;
                 return true;
               }
-              available = false;
+              if (booking.userType === "Rider" && userType === "Rider") {
+                available = false;
+              }
             }
             return false;
           }
           return false;
         });
       }
-      if (
-        available &&
-        timeslot.unavailableDates &&
-        !timeslot.unavailableDates.includes(convertToYMD(date))
-      ) {
-        ts.push({
-          startTime: new Date(`July 4 1776 ${timeslot.startTime}`),
-          endTime: new Date(`July 4 1776 ${timeslot.endTime}`),
-          checked,
-          id: timeslot.id,
-        });
+
+      if (available) {
+        if (
+          timeslot.riderUnavailableDates &&
+          timeslot.riderUnavailableDates.includes(convertToYMD(date)) &&
+          userType !== "Rider"
+        ) {
+          ts.push({
+            startTime: new Date(`July 4 1776 ${timeslot.startTime}`),
+            endTime: new Date(`July 4 1776 ${timeslot.endTime}`),
+            checked,
+            riderDisabled: false,
+            id: timeslot.id,
+          });
+        } else if (date.getDay() === 0) {
+          if (
+            timeslot.availableSundays &&
+            timeslot.availableSundays.includes(convertToYMD(date))
+          ) {
+            ts.push({
+              startTime: new Date(`July 4 1776 ${timeslot.startTime}`),
+              endTime: new Date(`July 4 1776 ${timeslot.endTime}`),
+              checked,
+              riderDisabled: false,
+              id: timeslot.id,
+            });
+          }
+        } else if (
+          timeslot.unavailableDates &&
+          !timeslot.unavailableDates.includes(convertToYMD(date))
+        ) {
+          ts.push({
+            startTime: new Date(`July 4 1776 ${timeslot.startTime}`),
+            endTime: new Date(`July 4 1776 ${timeslot.endTime}`),
+            checked,
+            riderDisabled: false,
+            id: timeslot.id,
+          });
+        }
       }
+      return countBookings;
     };
 
     const fetchBookableAdmin = async (timeslot: LazyTimeslot) => {
       let checked = true;
+      let riderDisabled = false;
+      if (date.getDay() === 0) {
+        checked = true;
+        if (
+          timeslot.availableSundays &&
+          !timeslot.availableSundays.includes(convertToYMD(date))
+        ) {
+          checked = false;
+        }
+      }
       if (
         timeslot.unavailableDates &&
         timeslot.unavailableDates.includes(convertToYMD(date))
       ) {
         checked = false;
       }
+      if (
+        timeslot.riderUnavailableDates &&
+        timeslot.riderUnavailableDates.includes(convertToYMD(date))
+      ) {
+        checked = true;
+        riderDisabled = true;
+      }
       ts.push({
         startTime: new Date(`July 4 1776 ${timeslot.startTime}`),
         endTime: new Date(`July 4 1776 ${timeslot.endTime}`),
         checked,
+        riderDisabled,
         id: timeslot.id,
       });
     };
 
     const fetchBookable = async () => {
+      const selectedTimeslots = [];
+      while (ts.length > 0) {
+        ts.pop();
+      }
       if (timeslots.length > 0) {
-        timeslots.forEach(async (timeslot) => {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const timeslot of timeslots) {
           if (timeslot.startTime && timeslot.endTime) {
             if (userType === "Volunteer" || userType === "Rider") {
-              fetchBookableRV(timeslot);
+              // eslint-disable-next-line no-await-in-loop
+              const count = await fetchBookableRV(timeslot);
+              countBookedToday += count;
+              if (count >= 1) {
+                selectedTimeslots.push(timeslot.id);
+              }
             } else {
               fetchBookableAdmin(timeslot);
             }
           }
-        });
+        }
       }
+      setPreviousTimeslots(selectedTimeslots);
       setBookable(ts);
+      setBookedToday(countBookedToday);
     };
     const getUsers = async (bookings: LazyBooking[]) => {
       const volUsers: User[] = [];
@@ -237,9 +307,8 @@ export default function Popup({
         setTs(timeslotsArray);
       }
       if (selected) {
-        const volBookingsArray = await selected.volunteerBookings.toArray(); // turns out the volunteer and rider booking arrays
-        // in our objects just return the same thing so there's not really a point to them
-        const bookings = await getUsers(volBookingsArray);
+        const bookingsArray = await selected.bookings.toArray();
+        const bookings = await getUsers(bookingsArray);
         setVolBookings(bookings.volUsers);
         setRidBookings(bookings.ridUsers);
       } else {
@@ -251,7 +320,7 @@ export default function Popup({
     pullData();
     setCheckedLst([]);
     setUncheckedLst([]);
-  }, [popup, selected]);
+  }, [selected, date]);
 
   return (
     <div>
@@ -266,10 +335,11 @@ export default function Popup({
           {!confirmPopup && (
             <Wrapper>
               <LeftColumn>
-                <Monthly />
-                <AptInfo
+                <Monthly date={date} setDate={setDate} />
+                <AppointmentInfo
                   riderBookings={riderBookings}
                   volunteerBookings={volunteerBookings}
+                  toggleValue={toggleValue}
                 />
               </LeftColumn>
               <RightColumn>
@@ -277,10 +347,16 @@ export default function Popup({
                 <Timeslots
                   bookable={bookable}
                   selectedDate={date}
+                  bookedToday={bookedToday}
+                  toggleValue={toggleValue}
                   checkedLst={checkedLst}
                   uncheckedLst={uncheckedLst}
+                  previousTimeslots={previousTimeslots}
+                  riderDisabledLst={riderDisabledLst}
+                  setRiderDisabledLst={setRiderDisabledLst}
                   setCheckedLst={setCheckedLst}
                   setUncheckedLst={setUncheckedLst}
+                  setBookedToday={setBookedToday}
                 />
                 <BtnContainer>
                   <CancelBtn onClick={onClose}>Cancel</CancelBtn>
@@ -296,6 +372,9 @@ export default function Popup({
               date={date}
               checkedLst={checkedLst}
               uncheckedLst={uncheckedLst}
+              riderDisabledLst={riderDisabledLst}
+              setRiderDisabledLst={setRiderDisabledLst}
+              toggleValue={toggleValue}
             />
           )}
           {confirmPopup && successPopup && (

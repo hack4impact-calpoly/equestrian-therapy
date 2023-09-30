@@ -32,8 +32,8 @@ export const schema = {
           attributes: [],
           isArrayNullable: true,
         },
-        volunteerBookings: {
-          name: "volunteerBookings",
+        bookings: {
+          name: "bookings",
           isArray: true,
           type: {
             model: "Booking",
@@ -46,19 +46,21 @@ export const schema = {
             associatedWith: ["timeslotID"],
           },
         },
-        riderBookings: {
-          name: "riderBookings",
+        availableSundays: {
+          name: "availableSundays",
           isArray: true,
-          type: {
-            model: "Booking",
-          },
+          type: "AWSDate",
           isRequired: false,
           attributes: [],
           isArrayNullable: true,
-          association: {
-            connectionType: "HAS_MANY",
-            associatedWith: ["timeslotID"],
-          },
+        },
+        riderUnavailableDates: {
+          name: "riderUnavailableDates",
+          isArray: true,
+          type: "AWSDate",
+          isRequired: false,
+          attributes: [],
+          isArrayNullable: true,
         },
         createdAt: {
           name: "createdAt",
@@ -142,6 +144,13 @@ export const schema = {
           isRequired: true,
           attributes: [],
         },
+        userType: {
+          name: "userType",
+          isArray: false,
+          type: "String",
+          isRequired: false,
+          attributes: [],
+        },
         createdAt: {
           name: "createdAt",
           isArray: false,
@@ -206,7 +215,7 @@ export const schema = {
         userName: {
           name: "userName",
           isArray: false,
-          type: "String",
+          type: "AWSEmail",
           isRequired: false,
           attributes: [],
         },
@@ -285,6 +294,6 @@ export const schema = {
   },
   enums: {},
   nonModels: {},
-  codegenVersion: "3.4.3",
-  version: "824e4e9880749aeeb66ba127ed2c001a",
+  codegenVersion: "3.4.4",
+  version: "f5f829f0b2781674c4d53fd4c9f77dba",
 };

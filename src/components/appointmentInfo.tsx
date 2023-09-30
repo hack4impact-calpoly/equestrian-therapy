@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "styled-components";
 import Horse from "../images/horseRider.svg";
 import Dude from "../images/person.svg";
+import Bookmark from "../images/bookmark.svg";
 import { LazyUser } from "../models";
+import UserContext from "../userContext";
 import "@fontsource/roboto";
 
 const Wrapper = styled.div`
@@ -49,48 +51,73 @@ const AptHeader = styled.h1`
 type PopupProps = {
   riderBookings: LazyUser[];
   volunteerBookings: LazyUser[];
+  toggleValue: string;
+  booked?: boolean;
 };
 
 export default function AppointmentInfo({
   riderBookings,
   volunteerBookings,
+  booked = false,
+  toggleValue,
 }: PopupProps) {
+  const currentUserFR = useContext(UserContext);
+  const { currentUser } = currentUserFR;
+  const [realUser] = currentUser;
+  const { userType } = realUser;
+
   return (
     <Wrapper>
       <AptHeader>Appointment Info</AptHeader>
-      <RiderInfo>
-        <Logo src={Horse} />
-        {riderBookings.length > 0 && (
-          <RiderContent>
-            Riders:
-            {riderBookings
-              .map((booking) => {
-                if (booking.firstName && booking.lastName) {
-                  return " ".concat(booking.firstName, " ", booking.lastName);
-                }
-                return "";
-              })
-              .join()}
-          </RiderContent>
-        )}
-      </RiderInfo>
+      {toggleValue !== "Volunteers" && (
+        <RiderInfo>
+          <Logo src={Horse} />
+          {riderBookings.length > 0 && (
+            <RiderContent>
+              Riders:
+              {riderBookings
+                .map((booking) => {
+                  if (booking.firstName && booking.lastName) {
+                    return " ".concat(booking.firstName, " ", booking.lastName);
+                  }
+                  return "";
+                })
+                .join()}
+            </RiderContent>
+          )}
+        </RiderInfo>
+      )}
 
-      <RiderInfo>
-        <Logo src={Dude} />
-        {volunteerBookings.length > 0 && (
+      {toggleValue !== "Riders" && (
+        <RiderInfo>
+          <Logo src={Dude} />
+          {volunteerBookings.length > 0 && (
+            <RiderContent>
+              Volunteers:
+              {volunteerBookings
+                .map((booking) => {
+                  if (booking.firstName && booking.lastName) {
+                    return " ".concat(booking.firstName, " ", booking.lastName);
+                  }
+                  return "";
+                })
+                .join()}
+            </RiderContent>
+          )}
+        </RiderInfo>
+      )}
+      {userType !== "Admin" && window.outerWidth <= 500 && (
+        <RiderInfo>
+          <Logo src={Bookmark} />
           <RiderContent>
-            Volunteers:
-            {volunteerBookings
-              .map((booking) => {
-                if (booking.firstName && booking.lastName) {
-                  return " ".concat(booking.firstName, " ", booking.lastName);
-                }
-                return "";
-              })
-              .join()}
+            {`Status: ${booked ? "Booked" : "Unbooked"}`}
           </RiderContent>
-        )}
-      </RiderInfo>
+        </RiderInfo>
+      )}
     </Wrapper>
   );
 }
+
+AppointmentInfo.defaultProps = {
+  booked: false,
+};

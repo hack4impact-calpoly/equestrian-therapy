@@ -1,27 +1,28 @@
-type Timeslot @model @auth(rules: [{allow: public}]) {
+type Timeslot @model @auth(rules: [{ allow: public }]) {
   id: ID!
   startTime: AWSTime
   endTime: AWSTime
   unavailableDates: [AWSDate]
-  volunteerBookings: [Booking] @hasMany(indexName: "byTimeslot", fields: ["id"])
-  riderBookings: [Booking] @hasMany(indexName: "byTimeslot", fields: ["id"])
+  bookings: [Booking] @hasMany(indexName: "byTimeslot", fields: ["id"])
+  availableSundays: [AWSDate]
+  riderUnavailableDates: [AWSDate]
 }
 
-type Booking @model @auth(rules: [{allow: public}]) {
+type Booking @model @auth(rules: [{ allow: public }]) {
   id: ID!
   title: String
   date: AWSDate
   description: String
   timeslotID: ID! @index(name: "byTimeslot")
   userID: ID! @index(name: "byUser")
+  userType: String
 }
 
-type User @model @auth(rules: [{allow: public}]) {
+type User @model @auth(rules: [{ allow: public }]) {
   id: ID!
-  userName: String
+  userName: AWSEmail
   firstName: String
   lastName: String
   userType: String
   bookings: [Booking] @hasMany(indexName: "byUser", fields: ["id"])
 }
- 

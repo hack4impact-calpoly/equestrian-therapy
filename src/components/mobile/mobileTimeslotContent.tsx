@@ -1,38 +1,14 @@
+/* eslint-disable no-nested-ternary */
 import styled from "styled-components";
 import "@fontsource/roboto";
 import { useState, useContext } from "react";
-import Horse from "../../images/horseRider.svg";
-import Dude from "../../images/person.svg";
-import Bookmark from "../../images/bookmark.svg";
-import OnSlide from "../../images/OnSlider.png";
-import OffSlide from "../../images/OffSlider.png";
+import OnSlide from "../../images/onSlider.png";
+import OffSlide from "../../images/offSlider.png";
 import UserContext from "../../userContext";
 import MobileTimeSlotConfirmation from "./mobileTimeslotConfirmation";
 import TimeslotSuccess from "../popup/timeslotSuccess";
-
-const RiderInfo = styled.div`
-  display: flex;
-  font-family: "Roboto";
-  font-style: normal;
-  font-weight: 700;
-  font-size: 90%;
-  line-height: 19px;
-  color: black;
-  background: white;
-  margin-bottom: 25px;
-  margin-left: 2%;
-`;
-
-const LogoRider = styled.img`
-  width: 30px;
-`;
-const LogoDude = styled.img`
-  width: 30px;
-`;
-const LogoBookmark = styled.img`
-  width: 30px;
-`;
-
+import AppointmentInfo from "../appointmentInfo";
+import { Booking, LazyUser } from "../../models";
 // height 380px so that it stays that height (right now height changes based on rendering of components)
 const BoxMobile = styled.div`
   border: solid 0.5px #c4c4c4;
@@ -41,17 +17,6 @@ const BoxMobile = styled.div`
   background: white;
   width: 80%;
   margin-left: -12%;
-`;
-
-const HeaderMobile = styled.h1`
-  color: #1b4c5a;
-  font-family: "Rubik";
-  font-style: normal;
-  font-weight: 700;
-  font-size: 18px;
-  line-height: 21px;
-  margin-bottom: 13%;
-  margin-left: 2%;
 `;
 
 const WrapperMobile = styled.div`
@@ -68,13 +33,6 @@ const BoxMobileContent = styled.div`
   width: 300px;
 `;
 
-const RiderContent = styled.text`
-  flex-direction: row;
-  width: 100%;
-  margin-left: 10px;
-  font-size: 16px;
-  font-weight: 700;
-`;
 const TimeslotButton = styled.button`
   color: #1b4c5a;
   border: none;
@@ -94,35 +52,59 @@ const OnOffSlide = styled.img`
 `;
 
 type TimeslotMobileContentProps = {
-  bookingsfake: number;
   date: Date;
   tId: string;
+  riderBookings: LazyUser[];
+  volunteerBookings: LazyUser[];
+  booked: boolean;
+  enabled: boolean;
+  riderDisabled: boolean;
+  toggleValue: string;
+  setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  allBookings: Booking[];
   setRequery: (requery: boolean) => void;
 };
 
+function convertToYMD(date: Date) {
+  const localString = date.toLocaleDateString();
+  const splitDate = localString.split("/");
+  let retString = `${localString.split("/")[2]}-`;
+
+  if (splitDate[0].length === 1) {
+    retString += `0`;
+  }
+  retString += `${localString.split("/")[0]}-`;
+  if (splitDate[1].length === 1) {
+    retString += `0`;
+  }
+  retString += `${localString.split("/")[1]}`;
+  return retString;
+}
+
 export default function TimeslotMobileContent({
-  bookingsfake,
   date,
   tId,
+  riderBookings,
+  volunteerBookings,
+  booked,
+  enabled,
+  riderDisabled,
+  toggleValue,
+  setIsDropdownOpen,
+  allBookings,
   setRequery,
 }: TimeslotMobileContentProps) {
-  const [booked, setBooked] = useState(true);
-  const [onOff, setOnOff] = useState(true);
-  const [confirmationShown, setConfirmationShown] = useState(false);
-  const [successShown, setSuccessShown] = useState(false);
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   const { userType } = realUser;
-
-  // eslint-disable-next-line no-param-reassign
-  // bookings = 0;
-  const handleSlide = () => {
-    setOnOff(!onOff);
-  };
+  const [onOff, setOnOff] = useState(booked);
+  const [confirmationShown, setConfirmationShown] = useState(false);
+  const [successShown, setSuccessShown] = useState(false);
 
   const handleConfirmationShown = () => {
     setConfirmationShown(true);
+    setOnOff(!enabled);
   };
 
   const handleSuccessShown = () => {
@@ -132,133 +114,59 @@ export default function TimeslotMobileContent({
   const handleCancelled = () => {
     setSuccessShown(false);
     setConfirmationShown(false);
-  };
-
-  const handleClick = () => {
-    // Keeping track of the bookings for the user type because rider can't book
-    // more than one sesh
-    if (booked === false) {
-      // add one from bookings if they add their booking
-      // eslint-disable-next-line no-param-reassign
-      bookingsfake += 1;
-      setBooked(!booked);
-    } else if (userType === "Rider" && bookingsfake === 1) {
-      // if they're a rider and already have a booking don't add more
-      // eslint-disable-next-line no-param-reassign
-      bookingsfake = 1;
-    } else {
-      // minus one from bookings if they cancel
-      // eslint-disable-next-line no-param-reassign
-      bookingsfake -= 1;
-      setBooked(!booked);
-    }
-    // eslint-disable-next-line no-console
-    // console.log(bookings);
+    setIsDropdownOpen(false);
   };
 
   return (
     <WrapperMobile>
-      <BoxMobile style={{ display: "block" }}>
+      <BoxMobile>
         {!confirmationShown && (
           <BoxMobileContent>
-            <HeaderMobile>Appointment Info</HeaderMobile>
-            <RiderInfo
-              style={{
-                display:
-                  (userType === "Admin" && onOff === true) ||
-                  userType === "Rider" ||
-                  userType === "Volunteer"
-                    ? "block"
-                    : "none",
-              }}
-            >
-              <LogoRider src={Horse} />{" "}
-              <RiderContent> Riders: Jane Doe, John Smith</RiderContent>
-            </RiderInfo>
-
-            <RiderInfo
-              style={{
-                display:
-                  userType === "Rider" ||
-                  (userType === "Admin" && onOff === false)
-                    ? "none"
-                    : "block",
-              }}
-            >
-              <LogoDude src={Dude} />{" "}
-              <RiderContent>Volunteers: Jane Doe, John Smith</RiderContent>
-            </RiderInfo>
-            {booked === false ? (
-              <RiderInfo
-                style={{ display: userType === "Admin" ? "none" : "block" }}
-              >
-                <LogoBookmark src={Bookmark} />{" "}
-                <RiderContent>Status: Booked</RiderContent>
-              </RiderInfo>
+            <AppointmentInfo
+              riderBookings={riderBookings}
+              volunteerBookings={volunteerBookings}
+              booked={booked}
+              toggleValue={toggleValue}
+            />
+            {userType !== "Admin" ? (
+              !(
+                userType === "Rider" &&
+                allBookings.some(
+                  (booking) =>
+                    booking.date === convertToYMD(date) &&
+                    booking.userID === realUser.id &&
+                    booking.timeslotID !== tId
+                )
+              ) ? (
+                <TimeslotButton onClick={handleConfirmationShown}>
+                  {`${onOff ? "Cancel" : "Book"} time slot`}
+                </TimeslotButton>
+              ) : (
+                <div />
+              )
             ) : (
-              <RiderInfo
-                style={{ display: userType === "Admin" ? "none" : "block" }}
-              >
-                <LogoBookmark src={Bookmark} />{" "}
-                <RiderContent>Status: Unbooked</RiderContent>
-              </RiderInfo>
-            )}
-            {/* don't have a way of counting number of bookings for people across multiple sessions yet 
-              because I am only making the appt pop up. Will probably have to add more functionality
-              when implementing the pop up in the calendar */}
-            {booked === true ? (
-              <TimeslotButton
-                style={{
-                  display:
-                    userType === "Admin" ||
-                    (userType === "Rider" && bookingsfake === 1)
-                      ? "none"
-                      : "block",
-                }}
+              <OnOffSlide
                 onClick={handleConfirmationShown}
-              >
-                Book time slot
-              </TimeslotButton>
-            ) : (
-              <TimeslotButton
-                style={{
-                  display:
-                    userType === "Admin" ||
-                    (userType === "Rider" && bookingsfake === 1)
-                      ? "none"
-                      : "block",
-                }}
-                onClick={handleClick}
-              >
-                Cancel time slot
-              </TimeslotButton>
-            )}
-            {onOff === true ? (
-              <OnOffSlide
-                style={{ display: userType === "Admin" ? "block" : "none" }}
-                onClick={handleSlide}
-                src={OnSlide}
-              />
-            ) : (
-              <OnOffSlide
-                style={{ display: userType === "Admin" ? "block" : "none" }}
-                onClick={handleSlide}
-                src={OffSlide}
+                src={booked ? OnSlide : OffSlide}
               />
             )}
           </BoxMobileContent>
         )}
         {confirmationShown && !successShown && (
-          <BoxMobileContent>
+          <WrapperMobile>
             <MobileTimeSlotConfirmation
               handleClicked={handleSuccessShown}
               handleCancelled={handleCancelled}
-              status="book"
+              booked={booked}
+              // enabled={onOff}
               date={date}
               tId={tId}
+              riderDisabled={riderDisabled}
+              toggleValue={toggleValue}
+              allBookings={allBookings}
               setRequery={setRequery}
             />
-          </BoxMobileContent>
+          </WrapperMobile>
         )}
         {confirmationShown && successShown && (
           <TimeslotSuccess handleCancelled={handleCancelled} />

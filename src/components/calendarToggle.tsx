@@ -40,7 +40,7 @@ const ViewingText = styled.p`
   font-size: 20px;
   font-family: "Roboto";
   font-weight: 700;
-  padding-bottom: 10px;
+  // padding-bottom: 10px;
 `;
 
 const ViewingDescription = styled.p`
@@ -92,15 +92,15 @@ export default function CalendarToggle({ setToggleProp }: ToggleProps) {
   };
   useEffect(() => {
     if (showBoth && userType === "Admin") {
-      setToggleProp("both");
+      setToggleProp("Both");
     } else if (showAvailability && userType !== "Admin") {
       setToggleProp("availability");
     } else if (!showAvailability && userType !== "Admin") {
       setToggleProp("slots");
     } else if (showRiders) {
-      setToggleProp("riders");
+      setToggleProp("Riders");
     } else if (showVolunteers) {
-      setToggleProp("volunteers");
+      setToggleProp("Volunteers");
     } else {
       setToggleProp("none");
     }

@@ -4,3 +4,9 @@ src/models
 amplify-codegen-temp/models
 
 src\models
+
+amplify-codegen-temp\models
+
+amplify/backend
+
+.eslintcache

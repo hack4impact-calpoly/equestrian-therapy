@@ -1,8 +1,8 @@
-/***************************************************************************
+/** *************************************************************************
  * The contents of this file were generated with Amplify Studio.           *
  * Please refrain from making any modifications to this file.              *
  * Any changes to this file will be overwritten when running amplify pull. *
- **************************************************************************/
+ ************************************************************************* */
 
 /* eslint-disable */
 import * as React from "react";
@@ -42,7 +42,7 @@ export default function UserCreateForm(props) {
     setErrors({});
   };
   const validations = {
-    userName: [],
+    userName: [{ type: "Email" }],
     firstName: [],
     lastName: [],
     userType: [],
@@ -93,6 +93,11 @@ export default function UserCreateForm(props) {
           modelFields = onSubmit(modelFields);
         }
         try {
+          Object.entries(modelFields).forEach(([key, value]) => {
+            if (typeof value === "string" && value === "") {
+              modelFields[key] = null;
+            }
+          });
           await DataStore.save(new User(modelFields));
           if (onSuccess) {
             onSuccess(modelFields);

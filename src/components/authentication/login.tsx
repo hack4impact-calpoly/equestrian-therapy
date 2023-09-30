@@ -2,7 +2,7 @@ import React, { ChangeEvent, useContext, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { Auth, DataStore } from "aws-amplify";
-import logoPic from "../../images/PETlogo.jpg";
+import logoPic from "../../images/petLogo.jpg";
 import eyeSlash from "../../images/eyeSlash.svg";
 import eye from "../../images/eye.svg";
 import UserContext from "../../userContext";
@@ -21,8 +21,6 @@ import {
 } from "../styledComponents";
 import { User } from "../../models";
 
-// import { Users } from "../../types";
-
 const Logo = styled.img`
   display: flex;
   margin: auto;
@@ -33,15 +31,11 @@ const Logo = styled.img`
 export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
-  // const [verifiedEmail, setVerifiedEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const { setUser } = useContext(UserContext);
-  // const [users, setUserModels] = useState<User[]>([]);
   // Initialize a boolean state
   const [passwordShown, setPasswordShown] = useState(false);
-  // const [currentUser, setCurrentUser] = useState<User[]>([]);
-  // const [userName] = useContext(email);
   // Password toggle handler
   const togglePassword = () => {
     // When the handler is invoked
