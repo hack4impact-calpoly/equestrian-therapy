@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { DataStore } from "@aws-amplify/datastore";
 import styled from "styled-components";
-import caretDown from "../../images/caretDown.svg";
+import caretDown from "../../images/caretDownIcon.svg";
 import MobileTimeslotContent from "./mobileTimeslotContent";
 import {
   Timeslot,
