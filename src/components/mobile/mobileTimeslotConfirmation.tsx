@@ -88,7 +88,7 @@ function convertToYMD(date: Date) {
 }
 
 type MobileTimeSlotConfirmationProps = {
-  tId: string;
+  timeslotId: string;
   allBookings: Booking[];
   checked: boolean;
   date: Date;
@@ -100,7 +100,7 @@ type MobileTimeSlotConfirmationProps = {
 };
 
 export default function MobileTimeSlotConfirmation({
-  tId,
+  timeslotId,
   allBookings,
   checked,
   date,
@@ -153,9 +153,12 @@ export default function MobileTimeSlotConfirmation({
    *  - unavailableDate: Date - the date that the timeslot is being disabled for
    * Output: none
    */
-  async function addUnavailability(timeslotId: string, unavailableDate: Date) {
+  async function addUnavailability(
+    addTimeslotId: string,
+    unavailableDate: Date
+  ) {
     try {
-      const original = await DataStore.query(Timeslot, timeslotId);
+      const original = await DataStore.query(Timeslot, addTimeslotId);
       if (
         original &&
         Array.isArray(original.unavailableDates) &&
@@ -228,9 +231,12 @@ export default function MobileTimeSlotConfirmation({
    *  - availableDate: Date - the date that the timeslot is being enabled for
    * Output: none
    */
-  async function deleteUnavailability(timeslotId: string, availableDate: Date) {
+  async function deleteUnavailability(
+    delTimeslotId: string,
+    availableDate: Date
+  ) {
     try {
-      const original = await DataStore.query(Timeslot, timeslotId);
+      const original = await DataStore.query(Timeslot, delTimeslotId);
       const convertedDate = convertToYMD(new Date(availableDate));
       if (
         original &&
@@ -304,11 +310,11 @@ export default function MobileTimeSlotConfirmation({
    * This function takes timeslot id and a date and creates a new booking for that user if they are
    * a volunteer or rider on that date and saves it to the DataStore
    * Input:
-   *  - timeslotID: string - the id of the timeslot that is becoming available
+   *  - addTimeslotId: string - the id of the timeslot that is becoming available
    *  - bookedDate: Date - the date that the timeslot is being booked on
    * Output: none
    */
-  async function addRVBooking(timeslotID: string, bookedDate: Date) {
+  async function addRVBooking(addTimeslotId: string, bookedDate: Date) {
     try {
       if (userType === "Volunteer" || userType === "Rider") {
         const tempDate = new Date(bookedDate);
@@ -318,7 +324,7 @@ export default function MobileTimeSlotConfirmation({
           title: `New Booking -- ${userType}`,
           date: formattedDate,
           description: descriptionStr,
-          timeslotID,
+          timeslotID: addTimeslotId,
           userID: id,
           userType,
         });
@@ -334,17 +340,17 @@ export default function MobileTimeSlotConfirmation({
   /**
    * This function takes a timeslot id and deletes the user's bookings on the currently selected date
    * Input:
-   *  - timeslotID: string - the id of the timeslot that is being unbooked
+   *  - delTimeslotID: string - the id of the timeslot that is being unbooked
    * Output: none
    */
   async function deleteRVBooking(
-    timeslotID: string // which time they want to cancel
+    delTimeslotId: string // which time they want to cancel
   ) {
     try {
       // Go through entire booking table, find the booking id that matches the timeslotid, and the date
       const bookings = await DataStore.query(Booking, (book) =>
         book.and((b) => [
-          b.timeslotID.eq(timeslotID),
+          b.timeslotID.eq(delTimeslotId),
           b.date.eq(convertToYMD(date)),
         ])
       );
@@ -370,9 +376,9 @@ export default function MobileTimeSlotConfirmation({
   const handleConfirmationAdmin = () => {
     handleClicked();
     if (!checked) {
-      deleteUnavailability(tId, date); // YYYY-MM-DD
+      deleteUnavailability(timeslotId, date); // YYYY-MM-DD
     } else {
-      addUnavailability(tId, date); // YYYY-MM-DD
+      addUnavailability(timeslotId, date); // YYYY-MM-DD
     }
     setRequery(true);
   };
@@ -387,7 +393,7 @@ export default function MobileTimeSlotConfirmation({
   const handleConfirmationRV = () => {
     handleClicked();
     if (checked) {
-      deleteRVBooking(tId);
+      deleteRVBooking(timeslotId);
     } else {
       if (
         userType === "Rider" &&
@@ -398,7 +404,7 @@ export default function MobileTimeSlotConfirmation({
       ) {
         return;
       }
-      addRVBooking(tId, date);
+      addRVBooking(timeslotId, date);
     }
     setRequery(true);
   };

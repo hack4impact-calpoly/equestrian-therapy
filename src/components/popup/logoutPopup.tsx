@@ -5,20 +5,27 @@ import { Auth } from "aws-amplify";
 import { User } from "../../models";
 import warning from "../../images/warning.svg";
 import {
-  // Wrapper,
   Box,
+  Button,
   Description,
   Header,
-  Button,
-  Row,
   PopupDiv,
-  // PopupBox,
+  Row,
 } from "../styledComponents";
 import UserContext from "../../userContext";
 
-const Warning = styled.img`
-  position: relative;
-  width: 80px;
+const CancelButton = styled(Button)`
+  width: 11rem;
+  height: 3rem;
+  background: white;
+  color: #1b4c5a;
+  margin-right: 1rem;
+`;
+
+const ConfirmButton = styled(Button)`
+  width: 11rem;
+  height: 3rem;
+  margin-left: 1rem;
 `;
 
 const SurroundingBox = styled(Box)`
@@ -32,18 +39,9 @@ const SurroundingBox = styled(Box)`
   padding-bottom: 10%;
 `;
 
-const ConfirmButton = styled(Button)`
-  width: 11rem;
-  height: 3rem;
-  margin-left: 1rem;
-`;
-
-const CancelButton = styled(Button)`
-  width: 11rem;
-  height: 3rem;
-  background: white;
-  color: #1b4c5a;
-  margin-right: 1rem;
+const Warning = styled.img`
+  position: relative;
+  width: 80px;
 `;
 
 type PopupProps = {
@@ -56,10 +54,20 @@ export default function LogoutPopup({ openProp, onClose }: PopupProps) {
   const { setUser } = useContext(UserContext);
   const navigate = useNavigate();
 
+  /**
+   * This useEffect is run when the openProp updated and will set the open useState variable to the
+   * new value of openProp, this ensures that any external changes to openProp are logged in the new
+   * open useState variable created here.
+   */
   useEffect(() => {
     setOpen(openProp);
   }, [openProp]);
 
+  /**
+   * This function is run when the user clicks the Logout button, it will call the Auth signOut
+   * function if that succeeds it will set the user useState variable to an empty object and
+   * navigate to the login page, if it fails then it will catch the error and console log it.
+   */
   const handleLogout = async () => {
     try {
       await Auth.signOut();

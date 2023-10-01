@@ -323,7 +323,7 @@ export default function MobileTimeslots({
         .map((timeslot, i) => (
           <MobileTimeslot // eslint-disable-next-line react/no-array-index-key
             key={i}
-            tId={timeslot.timeslotId}
+            timeslotId={timeslot.timeslotId}
             startTime={timeslot.startTime}
             endTime={timeslot.endTime}
             allBookings={bookings}

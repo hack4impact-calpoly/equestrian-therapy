@@ -76,7 +76,7 @@ function convertToYMD(date: Date) {
 }
 
 type TimeslotMobileContentProps = {
-  tId: string;
+  timeslotId: string;
   allBookings: Booking[];
   checked: boolean;
   date: Date;
@@ -90,7 +90,7 @@ type TimeslotMobileContentProps = {
 };
 
 export default function TimeslotMobileContent({
-  tId,
+  timeslotId,
   allBookings,
   checked,
   date,
@@ -157,7 +157,7 @@ export default function TimeslotMobileContent({
                   (booking) =>
                     booking.date === convertToYMD(date) &&
                     booking.userID === realUser.id &&
-                    booking.timeslotID !== tId
+                    booking.timeslotID !== timeslotId
                 )
               ) ? (
                 <TimeslotButton onClick={handleConfirmationShown}>
@@ -177,7 +177,7 @@ export default function TimeslotMobileContent({
         {confirmationShown && !successShown && (
           <WrapperMobile>
             <MobileTimeSlotConfirmation
-              tId={tId}
+              timeslotId={timeslotId}
               allBookings={allBookings}
               checked={checked}
               date={date}

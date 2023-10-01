@@ -49,7 +49,7 @@ const Text = styled.text`
 `;
 
 type TimeslotProps = {
-  tId: string;
+  timeslotId: string;
   startTime: string;
   endTime: string;
   allBookings: Booking[];
@@ -63,7 +63,7 @@ type TimeslotProps = {
 };
 
 export default function MobileTimeslot({
-  tId,
+  timeslotId,
   startTime,
   endTime,
   allBookings,
@@ -90,10 +90,10 @@ export default function MobileTimeslot({
     /**
      * This function is run when the status of the isDropdownOpen useState variable is changed. It
      * will update the selected useState variable to the results of a query of the datastore for a
-     * timeslot matching the current tId.
+     * timeslot matching the current timeslotId.
      */
     const getSelected = async () => {
-      setSelected(await DataStore.query(Timeslot, tId));
+      setSelected(await DataStore.query(Timeslot, timeslotId));
     };
     getSelected();
   }, [isDropdownOpen]);
@@ -171,7 +171,7 @@ export default function MobileTimeslot({
       <Dropdown>
         {isDropdownOpen && (
           <MobileTimeslotContent
-            tId={tId}
+            timeslotId={timeslotId}
             allBookings={allBookings}
             checked={checked}
             date={date}
