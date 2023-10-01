@@ -254,10 +254,10 @@ const months = [
   "December",
 ];
 
-interface CalendarProps {
+type CalendarProps = {
   timeslots: LazyTimeslot[];
   setTimeslots: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
-}
+};
 
 interface Timeslot {
   start: Date;
@@ -267,13 +267,6 @@ interface Timeslot {
   enabled: boolean;
   timeslotId: string;
 }
-
-// interface TsData {
-//   startTime: Date;
-//   endTime: Date;
-//   checked: boolean;
-//   id: string;
-// }
 
 function convertToYMD(date: Date) {
   const localString = date.toLocaleDateString();

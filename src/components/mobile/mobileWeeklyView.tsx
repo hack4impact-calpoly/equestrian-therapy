@@ -75,13 +75,13 @@ const Wrapper = styled.div`
 `;
 
 // setter props for setting the currently selected date to pass into mobile calendar + start date
-interface WeeklyViewMobileProps {
+type WeeklyViewMobileProps = {
   currentDate: Date;
   setCurrentDate: (val: Date) => void;
   setDayProp: (val: string) => void;
   setMonthProp: (val: string) => void;
   setWeekdayProp: (val: string) => void;
-}
+};
 
 export default function WeeklyViewMobile({
   currentDate,
@@ -149,6 +149,8 @@ export default function WeeklyViewMobile({
    * variable to the date in the days array at that index. Finally, it will set the dayProp,
    * weekdayProp, and monthProp useState variables to the strings of the new date so the current
    * date can be properly displayed to the user
+   * Input:
+   *  - i: number - the index of the selected date
    */
   function handleUpdating(i: number) {
     setSelected(i);

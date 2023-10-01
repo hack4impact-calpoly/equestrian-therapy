@@ -52,7 +52,7 @@ const TimeslotText = styled.p`
   white-space: nowrap;
 `;
 
-interface TimeslotProps {
+type TimeslotProps = {
   startTime: Date;
   endTime: Date;
   tsId: string;
@@ -70,7 +70,7 @@ interface TimeslotProps {
   setCheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
   setUncheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
   setOneSelected: React.Dispatch<React.SetStateAction<string>>;
-}
+};
 
 export default function Timeslot({
   startTime,

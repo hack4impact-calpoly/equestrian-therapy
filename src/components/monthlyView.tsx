@@ -123,10 +123,10 @@ const CalendarContainer = styled.div`
   }
 `;
 
-interface MonthlyViewProps {
+type MonthlyViewProps = {
   date: Date;
   setDate: React.Dispatch<React.SetStateAction<Date>>;
-}
+};
 
 export default function MonthlyView({ date, setDate }: MonthlyViewProps) {
   const [selected, setSelected] = useState(date);

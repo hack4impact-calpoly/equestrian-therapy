@@ -87,7 +87,7 @@ function convertToYMD(date: Date) {
   return retString;
 }
 
-interface MobileTimeSlotConfirmationProps {
+type MobileTimeSlotConfirmationProps = {
   tId: string;
   allBookings: Booking[];
   checked: boolean;
@@ -97,7 +97,7 @@ interface MobileTimeSlotConfirmationProps {
   handleCancelled: () => void;
   handleClicked: () => void;
   setRequery: (requery: boolean) => void;
-}
+};
 
 export default function MobileTimeSlotConfirmation({
   tId,

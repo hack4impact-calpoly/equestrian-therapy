@@ -46,10 +46,10 @@ const CancelButton = styled(Button)`
   margin-right: 1rem;
 `;
 
-interface PopupProps {
+type PopupProps = {
   openProp: boolean;
   onClose: () => void;
-}
+};
 
 export default function LogoutPopup({ openProp, onClose }: PopupProps) {
   const [open, setOpen] = useState<boolean>(openProp);

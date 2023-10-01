@@ -89,10 +89,10 @@ const StyledImage = styled.img`
   width: 100%;
 `;
 
-interface CalendarProps {
+type CalendarProps = {
   timeslots: LazyTimeslot[];
   setTimeslots: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
-}
+};
 
 export default function CalendarMobile({
   timeslots,

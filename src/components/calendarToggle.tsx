@@ -49,6 +49,7 @@ const ViewingDescription = styled.p`
   font-weight: 700;
   padding-left: 20px;
 `;
+
 type ToggleProps = {
   setToggleProp: (val: string) => void;
 };

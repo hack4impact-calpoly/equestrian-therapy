@@ -7,7 +7,7 @@ import { Timeslot, User, Booking } from "../../models";
 import warning from "../../images/warning.svg";
 import { CancelBtn, SaveBtn, Description, Header } from "../styledComponents";
 
-export type TimeslotConfirmProps = {
+type TimeslotConfirmProps = {
   handleClicked: () => void;
   handleCancelled: () => void;
   date: Date;

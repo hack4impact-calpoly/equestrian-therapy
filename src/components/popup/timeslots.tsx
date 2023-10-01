@@ -31,7 +31,7 @@ interface TsData {
   id: string;
 }
 
-interface TimeslotsProps {
+type TimeslotsProps = {
   bookable: TsData[];
   selectedDate: Date;
   bookedToday: number;
@@ -44,7 +44,7 @@ interface TimeslotsProps {
   setCheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
   setUncheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
   setBookedToday: React.Dispatch<React.SetStateAction<number>>;
-}
+};
 
 export default function Timeslots({
   bookable,

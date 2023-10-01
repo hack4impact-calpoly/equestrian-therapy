@@ -24,7 +24,7 @@ const Logo = styled.img`
   margin-right: auto;
 `;
 
-export type TimeslotSuccessProps = {
+type TimeslotSuccessProps = {
   handleCancelled: () => void;
 };
 

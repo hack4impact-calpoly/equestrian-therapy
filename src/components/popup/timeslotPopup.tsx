@@ -57,7 +57,7 @@ const DateHeader = styled.p`
   padding-bottom: 10px;
 `;
 
-interface PopupProps {
+type PopupProps = {
   popup: boolean;
   confirmPopup: boolean;
   handleConfirmOpen: () => void;
@@ -69,7 +69,7 @@ interface PopupProps {
   timeslots: LazyTimeslot[];
   setTimeslots: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
   toggleValue: string;
-}
+};
 
 interface TsData {
   startTime: Date;

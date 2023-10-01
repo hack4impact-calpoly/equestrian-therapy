@@ -48,7 +48,7 @@ const Text = styled.text`
   color: #000000;
 `;
 
-interface TimeslotProps {
+type TimeslotProps = {
   tId: string;
   startTime: string;
   endTime: string;
@@ -60,7 +60,7 @@ interface TimeslotProps {
   riderDisabled: boolean;
   toggleValue: string;
   setRequery: (requery: boolean) => void;
-}
+};
 
 export default function MobileTimeslot({
   tId,

@@ -50,12 +50,12 @@ function convertToYMD(date: Date) {
   return retString;
 }
 
-interface MobileTimeslotsProps {
+type MobileTimeslotsProps = {
   date: Date;
   toggleValue: string;
   timeslots: LazyTimeslot[];
   setTimeslots: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
-}
+};
 
 export default function MobileTimeslots({
   date,
