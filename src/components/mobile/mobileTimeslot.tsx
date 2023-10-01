@@ -50,13 +50,13 @@ const Text = styled.text`
 
 interface TimeslotProps {
   allBookings: Booking[];
-  startTime: string;
-  endTime: string;
-  date: Date;
   backgroundColor: string;
   checked: boolean;
+  date: Date;
   enabled: boolean;
+  endTime: string;
   riderDisabled: boolean;
+  startTime: string;
   tId: string;
   toggleValue: string;
   setRequery: (requery: boolean) => void;
@@ -64,13 +64,13 @@ interface TimeslotProps {
 
 export default function MobileTimeslot({
   allBookings,
-  startTime,
-  endTime,
-  date,
   backgroundColor,
   checked,
+  date,
   enabled,
+  endTime,
   riderDisabled,
+  startTime,
   tId,
   toggleValue,
   setRequery,
