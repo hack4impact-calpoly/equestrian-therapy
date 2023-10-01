@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { DataStore } from "aws-amplify";
 import UserContext from "../../userContext";
 import { User, Booking, Timeslot } from "../../models";
-import warning from "../../images/warningIcon.svg";
+import warning from "../../images/warning.svg";
 import {
   CancelBtn,
   SaveBtn,

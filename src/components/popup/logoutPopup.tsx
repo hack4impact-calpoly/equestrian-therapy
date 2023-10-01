@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Auth } from "aws-amplify";
 import { User } from "../../models";
-import warning from "../../images/warningIcon.svg";
+import warning from "../../images/warning.svg";
 import {
   // Wrapper,
   Box,

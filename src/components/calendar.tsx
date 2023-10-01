@@ -12,11 +12,11 @@ import interactionPlugin from "@fullcalendar/interaction";
 import UserContext from "../userContext";
 import { LazyTimeslot } from "../models";
 // import Monthly from "./monthlyView";
-import logo from "../images/petLogo.svg";
+import logo from "../images/petLogo2.svg";
 import Toggle from "./calendarToggle";
 import Popup from "./popup/timeslotPopup";
 // import FullCalendar from "@fullcalendar/react";
-import signout from "../images/signOutFull.png";
+import signout from "../images/signOut.png";
 import LogoutPopup from "./popup/logoutPopup";
 import { Booking } from "../models";
 

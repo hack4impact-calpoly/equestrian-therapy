@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState } from "react";
 import styled from "styled-components";
-import chevronLeft from "../../images/chevronLeftIcon.svg";
+import chevronLeft from "../../images/chevronLeft.svg";
 
 const Wrapper = styled.div`
   font-family: "Rubik", sans-serif;

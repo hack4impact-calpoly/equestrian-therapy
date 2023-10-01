@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Auth } from "aws-amplify";
 import { User } from "../../models";
-import warning from "../../images/warningIcon.svg";
+import warning from "../../images/warning.svg";
 import {
   Wrapper,
   BackArrow,
@@ -12,7 +12,7 @@ import {
   Button,
   Row,
 } from "../styledComponents";
-import backArrow from "../../images/backArrowIcon.png";
+import backArrow from "../../images/backArrow.png";
 import UserContext from "../../userContext";
 
 const Warning = styled.img`

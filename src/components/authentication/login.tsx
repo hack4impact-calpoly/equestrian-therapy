@@ -2,9 +2,9 @@ import React, { ChangeEvent, useContext, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { Auth, DataStore } from "aws-amplify";
-import logoPic from "../../images/petLogo1.jpg";
-import eyeSlash from "../../images/eyeSlashIcon.svg";
-import eye from "../../images/eyeIcon.svg";
+import logoPic from "../../images/petLogo.jpg";
+import eyeSlash from "../../images/eyeSlash.svg";
+import eye from "../../images/eye.svg";
 import UserContext from "../../userContext";
 
 import {
