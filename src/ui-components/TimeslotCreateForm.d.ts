@@ -9,56 +9,41 @@ import { EscapeHatchProps } from "@aws-amplify/ui-react/internal";
 import { GridProps, TextFieldProps } from "@aws-amplify/ui-react";
 
 export declare type ValidationResponse = {
-  hasError: boolean;
-  errorMessage?: string;
+    hasError: boolean;
+    errorMessage?: string;
 };
-export declare type ValidationFunction<T> = (
-  value: T,
-  validationResponse: ValidationResponse
-) => ValidationResponse | Promise<ValidationResponse>;
+export declare type ValidationFunction<T> = (value: T, validationResponse: ValidationResponse) => ValidationResponse | Promise<ValidationResponse>;
 export declare type TimeslotCreateFormInputValues = {
-  startTime?: string;
-  endTime?: string;
-  unavailableDates?: string[];
-  availableSundays?: string[];
-  riderUnavailableDates?: string[];
+    startTime?: string;
+    endTime?: string;
+    unavailableDates?: string[];
+    availableSundays?: string[];
+    riderUnavailableDates?: string[];
 };
 export declare type TimeslotCreateFormValidationValues = {
-  startTime?: ValidationFunction<string>;
-  endTime?: ValidationFunction<string>;
-  unavailableDates?: ValidationFunction<string>;
-  availableSundays?: ValidationFunction<string>;
-  riderUnavailableDates?: ValidationFunction<string>;
+    startTime?: ValidationFunction<string>;
+    endTime?: ValidationFunction<string>;
+    unavailableDates?: ValidationFunction<string>;
+    availableSundays?: ValidationFunction<string>;
+    riderUnavailableDates?: ValidationFunction<string>;
 };
-export declare type PrimitiveOverrideProps<T> = Partial<T> &
-  React.DOMAttributes<HTMLDivElement>;
+export declare type PrimitiveOverrideProps<T> = Partial<T> & React.DOMAttributes<HTMLDivElement>;
 export declare type TimeslotCreateFormOverridesProps = {
-  TimeslotCreateFormGrid?: PrimitiveOverrideProps<GridProps>;
-  startTime?: PrimitiveOverrideProps<TextFieldProps>;
-  endTime?: PrimitiveOverrideProps<TextFieldProps>;
-  unavailableDates?: PrimitiveOverrideProps<TextFieldProps>;
-  availableSundays?: PrimitiveOverrideProps<TextFieldProps>;
-  riderUnavailableDates?: PrimitiveOverrideProps<TextFieldProps>;
+    TimeslotCreateFormGrid?: PrimitiveOverrideProps<GridProps>;
+    startTime?: PrimitiveOverrideProps<TextFieldProps>;
+    endTime?: PrimitiveOverrideProps<TextFieldProps>;
+    unavailableDates?: PrimitiveOverrideProps<TextFieldProps>;
+    availableSundays?: PrimitiveOverrideProps<TextFieldProps>;
+    riderUnavailableDates?: PrimitiveOverrideProps<TextFieldProps>;
 } & EscapeHatchProps;
-export declare type TimeslotCreateFormProps = React.PropsWithChildren<
-  {
+export declare type TimeslotCreateFormProps = React.PropsWithChildren<{
     overrides?: TimeslotCreateFormOverridesProps | undefined | null;
-  } & {
+} & {
     clearOnSuccess?: boolean;
-    onSubmit?: (
-      fields: TimeslotCreateFormInputValues
-    ) => TimeslotCreateFormInputValues;
+    onSubmit?: (fields: TimeslotCreateFormInputValues) => TimeslotCreateFormInputValues;
     onSuccess?: (fields: TimeslotCreateFormInputValues) => void;
-    onError?: (
-      fields: TimeslotCreateFormInputValues,
-      errorMessage: string
-    ) => void;
-    onChange?: (
-      fields: TimeslotCreateFormInputValues
-    ) => TimeslotCreateFormInputValues;
+    onError?: (fields: TimeslotCreateFormInputValues, errorMessage: string) => void;
+    onChange?: (fields: TimeslotCreateFormInputValues) => TimeslotCreateFormInputValues;
     onValidate?: TimeslotCreateFormValidationValues;
-  } & React.CSSProperties
->;
-export default function TimeslotCreateForm(
-  props: TimeslotCreateFormProps
-): React.ReactElement;
+} & React.CSSProperties>;
+export default function TimeslotCreateForm(props: TimeslotCreateFormProps): React.ReactElement;
