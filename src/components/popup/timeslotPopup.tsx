@@ -67,7 +67,7 @@ interface PopupProps {
   date: Date;
   setDate: React.Dispatch<React.SetStateAction<Date>>;
   timeslots: LazyTimeslot[];
-  setTs: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
+  setTimeslots: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
   toggleValue: string;
 }
 
@@ -105,7 +105,7 @@ export default function Popup({
   date,
   setDate,
   timeslots,
-  setTs,
+  setTimeslots,
   toggleValue,
 }: PopupProps) {
   const currentUserFR = useContext(UserContext);
@@ -303,7 +303,7 @@ export default function Popup({
     const pullData = async () => {
       if (!popup) {
         const timeslotsArray = await DataStore.query(Timeslot);
-        setTs(timeslotsArray);
+        setTimeslots(timeslotsArray);
       }
       if (selected) {
         const bookingsArray = await selected.bookings.toArray();

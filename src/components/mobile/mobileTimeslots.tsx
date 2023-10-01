@@ -18,13 +18,6 @@ const Slots = styled.section`
   height: 400px;
 `;
 
-interface MobileTimeslotsProps {
-  timeslots: LazyTimeslot[];
-  date: Date;
-  toggleValue: string;
-  setTs: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
-}
-
 interface TempTimeslot {
   startTime: string;
   endTime: string;
@@ -51,11 +44,18 @@ function convertToYMD(date: Date) {
   return retString;
 }
 
+interface MobileTimeslotsProps {
+  date: Date;
+  toggleValue: string;
+  timeslots: LazyTimeslot[];
+  setTimeslots: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
+}
+
 export default function MobileTimeslots({
-  timeslots,
   date,
   toggleValue,
-  setTs,
+  timeslots,
+  setTimeslots,
 }: MobileTimeslotsProps) {
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
@@ -70,7 +70,7 @@ export default function MobileTimeslots({
         const bookingModels = await DataStore.query(Booking);
         const ts = await DataStore.query(Timeslot);
         setBookings(bookingModels);
-        setTs(ts);
+        setTimeslots(ts);
         setRequery(false);
       } catch (error) {
         console.error("Error fetching bookings:", error);

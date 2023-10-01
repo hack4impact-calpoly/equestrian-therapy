@@ -21,7 +21,7 @@ Amplify.configure(awsconfig);
 function App() {
   const [email, setEmailProp] = useState<string>();
   const [isMobile, setIsMobile] = useState<boolean>(false);
-  const [timeslots, setTs] = useState<LazyTimeslot[]>([]);
+  const [timeslots, setTimeslots] = useState<LazyTimeslot[]>([]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -29,7 +29,7 @@ function App() {
     };
     const pullData = async () => {
       const ts = await DataStore.query(Timeslot);
-      setTs(ts);
+      setTimeslots(ts);
     };
     window.addEventListener("resize", handleResize);
     handleResize();
@@ -55,9 +55,12 @@ function App() {
               path="/"
               element={
                 isMobile ? (
-                  <CalendarMobile timeslots={timeslots} setTs={setTs} />
+                  <CalendarMobile
+                    timeslots={timeslots}
+                    setTimeslots={setTimeslots}
+                  />
                 ) : (
-                  <Calendar timeslots={timeslots} setTs={setTs} />
+                  <Calendar timeslots={timeslots} setTimeslots={setTimeslots} />
                 )
               }
             />

@@ -91,10 +91,13 @@ const StyledImage = styled.img`
 
 interface CalendarProps {
   timeslots: LazyTimeslot[];
-  setTs: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
+  setTimeslots: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
 }
 
-export default function CalendarMobile({ timeslots, setTs }: CalendarProps) {
+export default function CalendarMobile({
+  timeslots,
+  setTimeslots,
+}: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [toggleValue, setToggleValue] = useState("");
   const [day, setDayProp] = useState<string>(String(currentDate.getDate()));
@@ -208,7 +211,7 @@ export default function CalendarMobile({ timeslots, setTs }: CalendarProps) {
           timeslots={timeslots}
           date={currentDate}
           toggleValue={toggleValue}
-          setTs={setTs}
+          setTimeslots={setTimeslots}
         />
       </Box>
     </Wrapper>
