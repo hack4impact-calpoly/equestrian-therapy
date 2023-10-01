@@ -88,11 +88,11 @@ function convertToYMD(date: Date) {
 }
 
 interface MobileTimeSlotConfirmationProps {
+  tId: string;
   allBookings: Booking[];
   checked: boolean;
   date: Date;
   riderDisabled: boolean;
-  tId: string;
   toggleValue: string;
   handleCancelled: () => void;
   handleClicked: () => void;
@@ -100,11 +100,11 @@ interface MobileTimeSlotConfirmationProps {
 }
 
 export default function MobileTimeSlotConfirmation({
+  tId,
   allBookings,
   checked,
   date,
   riderDisabled,
-  tId,
   toggleValue,
   handleCancelled,
   handleClicked,

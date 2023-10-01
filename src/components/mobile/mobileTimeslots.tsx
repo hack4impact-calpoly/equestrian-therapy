@@ -19,12 +19,12 @@ const Slots = styled.section`
 `;
 
 interface TempTimeslot {
+  timeslotId: string;
+  startTime: string;
+  endTime: string;
   backgroundColor: string;
   checked: boolean;
   enabled: boolean;
-  endTime: string;
-  startTime: string;
-  timeslotId: string;
 }
 
 /**
@@ -269,13 +269,13 @@ export default function MobileTimeslots({
     }
 
     return {
+      timeslotId: timeslot.id,
       startTime: String(timeslot.startTime),
       endTime: String(timeslot.endTime),
       backgroundColor,
       checked,
       enabled,
       riderDisabled,
-      timeslotId: timeslot.id,
     };
   }
 
@@ -323,15 +323,15 @@ export default function MobileTimeslots({
         .map((timeslot, i) => (
           <MobileTimeslot // eslint-disable-next-line react/no-array-index-key
             key={i}
+            tId={timeslot.timeslotId}
+            startTime={timeslot.startTime}
+            endTime={timeslot.endTime}
             allBookings={bookings}
             backgroundColor={timeslot.backgroundColor}
             checked={timeslot.checked}
             date={date}
             enabled={timeslot.enabled}
-            endTime={timeslot.endTime}
             riderDisabled={timeslot.riderDisabled}
-            startTime={timeslot.startTime}
-            tId={timeslot.timeslotId}
             toggleValue={toggleValue}
             setRequery={setRequery}
           />

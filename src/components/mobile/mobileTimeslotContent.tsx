@@ -76,13 +76,13 @@ function convertToYMD(date: Date) {
 }
 
 type TimeslotMobileContentProps = {
+  tId: string;
   allBookings: Booking[];
   checked: boolean;
   date: Date;
   enabled: boolean;
   riderBookings: LazyUser[];
   riderDisabled: boolean;
-  tId: string;
   toggleValue: string;
   volunteerBookings: LazyUser[];
   setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -90,13 +90,13 @@ type TimeslotMobileContentProps = {
 };
 
 export default function TimeslotMobileContent({
+  tId,
   allBookings,
   checked,
   date,
   enabled,
   riderBookings,
   riderDisabled,
-  tId,
   toggleValue,
   volunteerBookings,
   setIsDropdownOpen,
@@ -177,11 +177,11 @@ export default function TimeslotMobileContent({
         {confirmationShown && !successShown && (
           <WrapperMobile>
             <MobileTimeSlotConfirmation
+              tId={tId}
               allBookings={allBookings}
               checked={checked}
               date={date}
               riderDisabled={riderDisabled}
-              tId={tId}
               toggleValue={toggleValue}
               handleCancelled={handleCancelled}
               handleClicked={handleSuccessShown}

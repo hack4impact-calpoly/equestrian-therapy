@@ -49,29 +49,29 @@ const Text = styled.text`
 `;
 
 interface TimeslotProps {
+  tId: string;
+  startTime: string;
+  endTime: string;
   allBookings: Booking[];
   backgroundColor: string;
   checked: boolean;
   date: Date;
   enabled: boolean;
-  endTime: string;
   riderDisabled: boolean;
-  startTime: string;
-  tId: string;
   toggleValue: string;
   setRequery: (requery: boolean) => void;
 }
 
 export default function MobileTimeslot({
+  tId,
+  startTime,
+  endTime,
   allBookings,
   backgroundColor,
   checked,
   date,
   enabled,
-  endTime,
   riderDisabled,
-  startTime,
-  tId,
   toggleValue,
   setRequery,
 }: TimeslotProps) {
@@ -171,13 +171,13 @@ export default function MobileTimeslot({
       <Dropdown>
         {isDropdownOpen && (
           <MobileTimeslotContent
+            tId={tId}
             allBookings={allBookings}
             checked={checked}
             date={date}
             enabled={enabled}
             riderBookings={riderBookings}
             riderDisabled={riderDisabled}
-            tId={tId}
             toggleValue={toggleValue}
             volunteerBookings={volunteerBookings}
             setIsDropdownOpen={setIsDropdownOpen}
