@@ -63,7 +63,7 @@ type PopupProps = {
   handleConfirmOpen: () => void;
   successPopup: boolean;
   handleSuccessOpen: () => void;
-  onClose: () => void;
+  handlePopupClose: () => void;
   date: Date;
   setDate: React.Dispatch<React.SetStateAction<Date>>;
   timeslots: LazyTimeslot[];
@@ -101,7 +101,7 @@ export default function Popup({
   handleConfirmOpen,
   successPopup,
   handleSuccessOpen,
-  onClose,
+  handlePopupClose,
   date,
   setDate,
   timeslots,
@@ -325,12 +325,12 @@ export default function Popup({
     <div>
       <PopupDiv
         open={popup}
-        onClose={onClose}
+        onClose={handlePopupClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
         <PopupBox>
-          <X src={x} onClick={onClose} />
+          <X src={x} onClick={handlePopupClose} />
           {!confirmPopup && (
             <Wrapper>
               <LeftColumn>
@@ -358,7 +358,7 @@ export default function Popup({
                   setBookedToday={setBookedToday}
                 />
                 <BtnContainer>
-                  <CancelBtn onClick={onClose}>Cancel</CancelBtn>
+                  <CancelBtn onClick={handlePopupClose}>Cancel</CancelBtn>
                   <SaveBtn onClick={handleConfirmOpen}>Save</SaveBtn>
                 </BtnContainer>
               </RightColumn>
@@ -366,18 +366,18 @@ export default function Popup({
           )}
           {confirmPopup && !successPopup && (
             <TimeslotConfirmation
-              handleClicked={handleSuccessOpen}
-              handleCancelled={onClose}
-              date={date}
               checkedLst={checkedLst}
               uncheckedLst={uncheckedLst}
+              date={date}
+              toggleValue={toggleValue}
               riderDisabledLst={riderDisabledLst}
               setRiderDisabledLst={setRiderDisabledLst}
-              toggleValue={toggleValue}
+              handlePopupClose={handlePopupClose}
+              handleSuccessOpen={handleSuccessOpen}
             />
           )}
           {confirmPopup && successPopup && (
-            <TimeslotSuccess handleCancelled={onClose} />
+            <TimeslotSuccess handleCancelled={handlePopupClose} />
           )}
         </PopupBox>
       </PopupDiv>

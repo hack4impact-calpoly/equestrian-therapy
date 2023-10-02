@@ -572,7 +572,7 @@ export default function Calendar({ timeslots, setTimeslots }: CalendarProps) {
               handleConfirmOpen={handleConfirmOpen}
               successPopup={successPopup}
               handleSuccessOpen={handleSuccessOpen}
-              onClose={handlePopupClose}
+              handlePopupClose={handlePopupClose}
               date={popupDate}
               setDate={setPopupDate}
               timeslots={timeslots}

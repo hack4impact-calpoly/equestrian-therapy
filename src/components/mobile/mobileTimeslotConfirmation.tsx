@@ -310,7 +310,7 @@ export default function MobileTimeSlotConfirmation({
    * This function takes timeslot id and a date and creates a new booking for that user if they are
    * a volunteer or rider on that date and saves it to the DataStore
    * Input:
-   *  - addTimeslotId: string - the id of the timeslot that is becoming available
+   *  - addTimeslotId: string - the id of the timeslot that is being booked
    *  - bookedDate: Date - the date that the timeslot is being booked on
    * Output: none
    */
@@ -384,11 +384,11 @@ export default function MobileTimeSlotConfirmation({
   };
 
   /**
-   * This function is run when the user clicks the Confirm button and the user is an Admin. If the
-   * timeslot is booked already then call deleteRVBooking to unbook it. Otherwise, if the user is a
-   * rider and there's anotherbooking on that date then return without doing anything. If not then
-   * book the timeslot and set the requery useState variable to true to update the coloring on the
-   * timeslots
+   * This function is run when the user clicks the Confirm button and the user is a rider/volunteer.
+   * if the timeslot is booked already then call deleteRVBooking to unbook it. Otherwise, if the user
+   * is a rider and there's anotherbooking on that date then return without doing anything. If not
+   * then book the timeslot and set the requery useState variable to true to update the coloring on
+   * the timeslots
    */
   const handleConfirmationRV = () => {
     handleClicked();
