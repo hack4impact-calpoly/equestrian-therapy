@@ -64,7 +64,7 @@ export default function Timeslots({
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   const { userType } = realUser;
-  const [oneSelected, setOneSelected] = useState("");
+  const [oneUnselected, setOneUnselected] = useState("");
 
   function filterTimeSlots(ts: {
     startTime: Date;
@@ -91,7 +91,7 @@ export default function Timeslots({
               key={i}
               startTime={timeslot.startTime}
               endTime={timeslot.endTime}
-              tsId={timeslot.id}
+              timeslotId={timeslot.id}
               checked={timeslot.checked}
               riderDisabled={timeslot.riderDisabled}
               border={
@@ -109,8 +109,8 @@ export default function Timeslots({
               setBookedToday={setBookedToday}
               setCheckedLst={setCheckedLst}
               setUncheckedLst={setUncheckedLst}
-              oneSelected={oneSelected}
-              setOneSelected={setOneSelected}
+              oneUnselected={oneUnselected}
+              setOneUnselected={setOneUnselected}
             />
           ))}
       </Slots>
