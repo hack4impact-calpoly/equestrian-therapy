@@ -595,7 +595,7 @@ export default function Calendar({ timeslots, setTimeslots }: CalendarProps) {
               }}
             />
           </CalendarContainer>
-          <Toggle setToggleProp={setToggleValue} />
+          <Toggle setToggleValue={setToggleValue} />
           {userType === "Admin" && toggleValue !== "Both" ? (
             <Disclaimer>
               {toggleValue === "Riders" ? (
