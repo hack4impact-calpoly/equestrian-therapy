@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import styled from "styled-components";
 import UserContext from "../../userContext";
 import Timeslot from "./timeslot";
@@ -14,7 +13,6 @@ const Wrapper = styled.section`
 
 const Slots = styled.div`
   //justify content limits view of timeslots
-  /* display: flex; */
   flex-direction: column;
   border: none;
   box-shadow: none;
@@ -48,17 +46,17 @@ type TimeslotsProps = {
 
 export default function Timeslots({
   bookable,
-  selectedDate,
   bookedToday,
-  toggleValue,
+  selectedDate,
   checkedLst,
   uncheckedLst,
   previousTimeslots,
   riderDisabledLst,
-  setRiderDisabledLst,
-  setCheckedLst,
-  setUncheckedLst,
+  toggleValue,
   setBookedToday,
+  setCheckedLst,
+  setRiderDisabledLst,
+  setUncheckedLst,
 }: TimeslotsProps) {
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
@@ -66,25 +64,25 @@ export default function Timeslots({
   const { userType } = realUser;
   const [oneUnselected, setOneUnselected] = useState("");
 
-  function filterTimeSlots(ts: {
-    startTime: Date;
-    endTime: Date;
-    checked: boolean;
-  }) {
-    if (userType === "Volunteer") {
-      return ts.startTime.getHours() >= 9 && ts.startTime.getHours() < 17;
-    }
+  /**
+   * This function filters out timeslots that riders should not be able to book.
+   * Input:
+   * - ts: TsData - the timeslot
+   * Output:
+   * - Boolean, whether the timeslot is visible or not
+   */
+  function filterTimeslots(ts: TsData) {
     if (userType === "Rider" || toggleValue === "Riders") {
       return ts.startTime.getHours() >= 10 && ts.startTime.getHours() < 14;
     }
-    return ts;
+    return true;
   }
 
   return (
     <Wrapper>
       <Slots>
         {bookable
-          .filter((ts) => filterTimeSlots(ts))
+          .filter((ts) => filterTimeslots(ts))
           .sort((a, b) => (a.startTime < b.startTime ? -1 : 1))
           .map((timeslot, i) => (
             <Timeslot // eslint-disable-next-line react/no-array-index-key
