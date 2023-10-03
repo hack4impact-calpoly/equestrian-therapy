@@ -55,7 +55,7 @@ export default function LogoutPopup({ openProp, onClose }: PopupProps) {
   const navigate = useNavigate();
 
   /**
-   * This useEffect is run when the openProp updated and will set the open useState variable to the
+   * This useEffect is run when the openProp updates and will set the open useState variable to the
    * new value of openProp, this ensures that any external changes to openProp are logged in the new
    * open useState variable created here.
    */

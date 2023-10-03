@@ -10,15 +10,12 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import interactionPlugin from "@fullcalendar/interaction";
 import UserContext from "../userContext";
-import { LazyTimeslot } from "../models";
-// import Monthly from "./monthlyView";
+import { Booking, LazyTimeslot } from "../models";
 import logo from "../images/petLogo2.svg";
-import Toggle from "./calendarToggle";
-import Popup from "./popup/timeslotPopup";
-// import FullCalendar from "@fullcalendar/react";
 import signout from "../images/signOut.png";
 import LogoutPopup from "./popup/logoutPopup";
-import { Booking } from "../models";
+import Popup from "./popup/timeslotPopup";
+import Toggle from "./calendarToggle";
 
 const CalDiv = styled.div`
   font-family: "Rubik", sans-serif;
@@ -61,62 +58,6 @@ const CalDiv = styled.div`
   .fc-event {
     cursor: pointer;
   }
-`;
-
-const Disclaimer = styled.p`
-  font-family: "Rubik";
-  font-style: normal;
-  font-weight: 400;
-  font-size: 16px;
-  width: 350px;
-  max-width: 100%;
-  color: #000d26;
-  text-align: left;
-  margin: 0px;
-`;
-
-const Logo = styled.img`
-  position: absolute;
-  right: 2%;
-  margin: 2% 4% 0 0;
-`;
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-  padding-top: 60px;
-`;
-const LeftColumn = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding: 0 50px 0 50px;
-  gap: 20px;
-`;
-const RightColumn = styled.div`
-  padding-right: 50px;
-  width: 100%;
-`;
-
-const SignOutLogo = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const StyledButton = styled.button`
-  display: inline-block;
-  width: 100px;
-  height: 100px;
-  transform: scale(1.2);
-  padding-top: 20px;
-  background: none;
-  border: none;
-`;
-
-const StyledImage = styled.img`
-  width: 100%;
-  padding-top: 30%;
-  padding-left: 40%;
 `;
 
 const CalendarContainer = styled.div`
@@ -239,6 +180,64 @@ const CalendarContainer = styled.div`
   }
 `;
 
+const Disclaimer = styled.p`
+  font-family: "Rubik";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  width: 350px;
+  max-width: 100%;
+  color: #000d26;
+  text-align: left;
+  margin: 0px;
+`;
+
+const Logo = styled.img`
+  position: absolute;
+  right: 2%;
+  margin: 2% 4% 0 0;
+`;
+
+const LeftColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0 50px 0 50px;
+  gap: 20px;
+`;
+const RightColumn = styled.div`
+  padding-right: 50px;
+  width: 100%;
+`;
+
+const SignOutLogo = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const StyledButton = styled.button`
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+  transform: scale(1.2);
+  padding-top: 20px;
+  background: none;
+  border: none;
+`;
+
+const StyledImage = styled.img`
+  width: 100%;
+  padding-top: 30%;
+  padding-left: 40%;
+`;
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  padding-top: 60px;
+`;
+
 const months = [
   "January",
   "February",
@@ -259,15 +258,22 @@ type CalendarProps = {
   setTimeslots: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
 };
 
-interface Timeslot {
+type Timeslot = {
+  timeslotId: string;
   start: Date;
   end: Date;
   backgroundColor: string;
-  textColor: string;
   enabled: boolean;
-  timeslotId: string;
-}
+  textColor: string;
+};
 
+/**
+ * This function takes a javascript Date object and converts it to a string in YYYY-MM-DD format
+ * Input:
+ *  - date: Date - The date object to be converted to YYYY-MM-DD format
+ * Output:
+ *  - retString: string - the string version of the date in YYYY-MM-DD format
+ */
 function convertToYMD(date: Date) {
   const localString = date.toLocaleDateString();
   const splitDate = localString.split("/");
@@ -285,22 +291,25 @@ function convertToYMD(date: Date) {
 }
 
 export default function Calendar({ timeslots, setTimeslots }: CalendarProps) {
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [date, setDate] = useState(new Date());
-  const calRef = useRef<FullCalendarRef>(null);
-  const [toggleValue, setToggleValue] = useState<string>("");
-  const [popup, setPopup] = useState(false);
   const [confirmPopup, setConfirmPopup] = useState(false);
+  const [popup, setPopup] = useState(false);
   const [successPopup, setSuccessPopup] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
+  const [toggleValue, setToggleValue] = useState<string>("");
   const [popupDate, setPopupDate] = useState<Date>(new Date());
-  // const [bookable, setBookable] = useState<TsData[]>([]);
+  const calRef = useRef<FullCalendarRef>(null);
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { userType, id: currentUserId } = realUser;
-  const [bookings, setBookings] = useState<Booking[]>([]);
 
+  /**
+   * This useEffect is run when the popup useState variable updates and will fetch all of the
+   * bookings from the DataStore and will set the response to the bookings useState variable
+   */
   useEffect(() => {
     const fetchBookings = async () => {
       try {
@@ -313,6 +322,11 @@ export default function Calendar({ timeslots, setTimeslots }: CalendarProps) {
     fetchBookings();
   }, [popup]);
 
+  /**
+   * This function is run when the user selects a timeslot event on the weekly calendar.
+   * It will set the popups date to the selected timeslots start time date object, then wait
+   * briefly before opening the popup for the user.
+   */
   const handleEventClick = async (eventClickInfo: any) => {
     setPopupDate(eventClickInfo.event.start);
     // eslint-disable-next-line no-promise-executor-return
@@ -320,33 +334,72 @@ export default function Calendar({ timeslots, setTimeslots }: CalendarProps) {
     setPopup(true);
   };
 
-  const handlePopupClose = () => {
-    setPopup(false);
-    setConfirmPopup(false);
-    setSuccessPopup(false);
-    // setBookable([]);
-  };
-
+  /**
+   * This function is run when the user clicks the Save button in the timeslotPopup, it will
+   * open the timeslotConfirmation component in place of the timeslots.
+   */
   const handleConfirmOpen = () => {
     setConfirmPopup(true);
   };
 
-  const handleSuccessOpen = () => {
-    setSuccessPopup(true);
-  };
-
+  /**
+   * This function is run when the user clicks the Cancel button in the logoutPopup, it will
+   * close the logoutPopup.
+   */
   const handleLogoutClose = () => {
     setLogoutPopup(false);
   };
 
+  /**
+   * This function is run when the user clicks the X button in the timeslotPopup, it will
+   * close the timeslotPopup as well as the confirmPopup and successPopup if they're open
+   */
+  const handlePopupClose = () => {
+    setPopup(false);
+    setConfirmPopup(false);
+    setSuccessPopup(false);
+  };
+
+  /**
+   * This function is run when the user clicks the Confirm button in the timeslotConfirmation
+   * component, it will open the timeslotSuccess component in place of the confirmation page
+   */
+  const handleSuccessOpen = () => {
+    setSuccessPopup(true);
+  };
+
   let slots: Timeslot[] = [];
 
+  /**
+   * This for loop is run for everyday of the week of the currently selected week. For each day
+   * it will loop through all the time timeslots on that day and transform them into the
+   * information needed for that timeslot object
+   */
   for (let dateoffset = 0; dateoffset < 7; dateoffset++) {
     const dateCopy = new Date(date.getTime());
     const dateTest = new Date(
       dateCopy.setDate(dateCopy.getDate() + dateoffset)
     );
 
+    /**
+     * This map function takes a timeslot as input and transforms it into all of the information
+     * needed to render the timeslot in the WeekCalendar to the user, it pushes it to slots afterwards
+     * Input:
+     *  - timeslot: LazyTimeslot - a timeslot fetched from the dataStore
+     * Output:
+     *  - A Temp timeslot with the following fields:
+     *      timeslotId: string - the id of the timeslot, from the DataStore
+     *      startTime: string - the startTime of the timeslot, from the DataStore
+     *      endTime: string - the endTime of the timeslot, from the Datastore
+     *      backgroundColor: string - the hexcode of the background color of the rendered
+     *                       MobileTimeslot, will be blue by default, light blue/grey if booked,
+     *                       dark blue if rider disabled and the user is an admin, or dark grey
+     *                       if the slot is disabled and the user is an admin.
+     *      enabled: boolean - whether or not the timeslot is enabled, timeslots are enabled by
+     *               default except for on sundays, at which point they need to be enabled by being
+     *               added to the availableSundays array
+     *      riderDisabled: boolean - whether or not the timeslot is riderDisabled, from the DataStore
+     */
     const tempSlots = timeslots.map((timeslot: LazyTimeslot) => {
       let backgroundColor = "#90BFCC";
       let enabled = true;
@@ -364,7 +417,7 @@ export default function Calendar({ timeslots, setTimeslots }: CalendarProps) {
           timeslot.endTime
         }:00`
       );
-      // If date is a Sunday, check the availableSundays (Sundays disabled on default)
+      // If date is a Sunday, disabled the slot by default, if admin set background color to dark grey
       if (dateTest.getDay() === 0) {
         if (userType === "Admin") {
           backgroundColor = "#C1C1C1";
@@ -380,8 +433,10 @@ export default function Calendar({ timeslots, setTimeslots }: CalendarProps) {
           } else if (userType === "Volunteer") {
             enabled = true;
           }
-        } // Non-Sunday dates check unavailableDates
-      } else if (
+        }
+      }
+      // Non-Sunday dates check unavailableDates, then set enabled to false (or dark grey for admins)
+      else if (
         timeslot.unavailableDates &&
         timeslot.unavailableDates.includes(convertToYMD(dateTest))
       ) {
@@ -391,7 +446,8 @@ export default function Calendar({ timeslots, setTimeslots }: CalendarProps) {
           enabled = false;
         }
       }
-      // console.log("YOYOYO", timeslot.riderUnavailableDates, dateTest);
+      // If the timeslot is rider disabled then disable it for riders,
+      // set the color to dark blue & uncheck it for admin, enable for volunteer
       if (
         timeslot.riderUnavailableDates &&
         timeslot.riderUnavailableDates.includes(convertToYMD(dateTest))
@@ -404,6 +460,17 @@ export default function Calendar({ timeslots, setTimeslots }: CalendarProps) {
           enabled = true;
         }
       }
+      /**
+       * The following gross if statement is to determine if the timeslot has a booking or not on
+       * this date. If there is a booking for this slot then change the backround color to light grey.
+       * The conditions for when you would want to color a timeslot are as follows:
+       *  - If the user is a Rider or the user is an Admin with the Riders toggle selected and the
+       *    timeslot has a booking from a Rider (doesn't have to be the current user)
+       *  - If the user is an Admin with the Both toggle selected or the user is a Volunteer and there
+       *    is a booking from any other user
+       *  - If the user is an Admin with the Volunteers toggle selected and there is a booking from any
+       *    Volunteer
+       */
       if (
         ((userType === "Rider" || toggleValue === "Riders") &&
           bookings.some(
@@ -461,25 +528,28 @@ export default function Calendar({ timeslots, setTimeslots }: CalendarProps) {
       }
 
       return {
+        timeslotId: timeslot.id,
         start: startingTime,
         end: endingTime,
         backgroundColor,
-        textColor: "black",
-        timeslotId: timeslot.id,
         enabled,
+        textColor: "black",
       };
     });
     slots = slots.concat(tempSlots);
   }
 
+  // Filter out any disabled slots
   slots = slots.filter((timeslot) => timeslot.enabled);
 
+  // If the user is a Rider or the Riders toggle is on, only show slots between 10am and 2pm
   if (toggleValue === "Riders" || userType === "Rider") {
     slots = slots.filter(
       (timeslot) =>
         timeslot.start.getHours() >= 10 && timeslot.start.getHours() < 14
     );
   }
+  // If the My Slots toggle is selected then only show slots that the current user has booked
   if (toggleValue === "slots") {
     slots = slots.filter((timeslot) =>
       bookings.some(

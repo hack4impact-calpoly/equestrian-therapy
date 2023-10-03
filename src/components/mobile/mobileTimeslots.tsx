@@ -101,6 +101,9 @@ export default function MobileTimeslots({
    *  - timeslot: LazyTimeslot - a timeslot fetched from the dataStore
    * Output:
    *  - A Temp timeslot with the following fields:
+   *      timeslotId: string - the id of the timeslot, from the DataStore
+   *      startTime: string - the startTime of the timeslot, from the DataStore
+   *      endTime: string - the endTime of the timeslot, from the Datastore
    *      backgroundColor: string - the hexcode of the background color of the rendered
    *                       MobileTimeslot, will be blue by default, light blue/grey if booked,
    *                       dark blue if rider disabled and the user is an admin, or dark grey
@@ -112,10 +115,7 @@ export default function MobileTimeslots({
    *      enabled: boolean - whether or not the timeslot is enabled, timeslots are enabled by
    *               default except for on sundays, at which point they need to be enabled by being
    *               added to the availableSundays array
-   *      endTime: string - the endTime of the timeslot, from the Datastore
    *      riderDisabled: boolean - whether or not the timeslot is riderDisabled, from the DataStore
-   *      startTime: string - the startTime of the timeslot, from the DataStore
-   *      timeslotId: string - the id of the timeslot, from the DataStore
    */
   function mapTimeslotColors(timeslot: LazyTimeslot) {
     let backgroundColor = "#90BFCC";
