@@ -21,48 +21,48 @@ const Slots = styled.div`
   font-family: "Rubik", sans-serif;
 `;
 
-interface TsData {
+type TsData = {
+  id: string;
   startTime: Date;
   endTime: Date;
   checked: boolean;
   riderDisabled: boolean;
-  id: string;
-}
+};
 
 type TimeslotsProps = {
   bookable: TsData[];
+  previousTimeslots: string[];
   selectedDate: Date;
-  bookedToday: number;
   toggleValue: string;
+  bookedToday: number;
   checkedLst: string[];
   uncheckedLst: string[];
-  previousTimeslots: string[];
   riderDisabledLst: string[];
-  setRiderDisabledLst: React.Dispatch<React.SetStateAction<string[]>>;
+  setBookedToday: React.Dispatch<React.SetStateAction<number>>;
   setCheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
   setUncheckedLst: React.Dispatch<React.SetStateAction<string[]>>;
-  setBookedToday: React.Dispatch<React.SetStateAction<number>>;
+  setRiderDisabledLst: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
 export default function Timeslots({
   bookable,
-  bookedToday,
+  previousTimeslots,
   selectedDate,
+  toggleValue,
+  bookedToday,
   checkedLst,
   uncheckedLst,
-  previousTimeslots,
   riderDisabledLst,
-  toggleValue,
   setBookedToday,
   setCheckedLst,
-  setRiderDisabledLst,
   setUncheckedLst,
+  setRiderDisabledLst,
 }: TimeslotsProps) {
+  const [oneUnselected, setOneUnselected] = useState("");
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   const { userType } = realUser;
-  const [oneUnselected, setOneUnselected] = useState("");
 
   /**
    * This function filters out timeslots that riders should not be able to book.
@@ -87,28 +87,28 @@ export default function Timeslots({
           .map((timeslot, i) => (
             <Timeslot // eslint-disable-next-line react/no-array-index-key
               key={i}
+              timeslotId={timeslot.id}
               startTime={timeslot.startTime}
               endTime={timeslot.endTime}
-              timeslotId={timeslot.id}
-              checked={timeslot.checked}
-              riderDisabled={timeslot.riderDisabled}
               border={
                 timeslot.startTime.getHours() === selectedDate.getHours() &&
                 timeslot.startTime.getMinutes() === selectedDate.getMinutes()
                   ? "2px solid #000000"
                   : "1px solid #c4c4c4"
               }
+              checked={timeslot.checked}
+              previousTimeslots={previousTimeslots}
+              riderDisabled={timeslot.riderDisabled}
               bookedToday={bookedToday}
               checkedLst={checkedLst}
               uncheckedLst={uncheckedLst}
-              previousTimeslots={previousTimeslots}
+              oneUnselected={oneUnselected}
               riderDisabledLst={riderDisabledLst}
-              setRiderDisabledLst={setRiderDisabledLst}
               setBookedToday={setBookedToday}
               setCheckedLst={setCheckedLst}
               setUncheckedLst={setUncheckedLst}
-              oneUnselected={oneUnselected}
               setOneUnselected={setOneUnselected}
+              setRiderDisabledLst={setRiderDisabledLst}
             />
           ))}
       </Slots>

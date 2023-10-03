@@ -567,17 +567,17 @@ export default function Calendar({ timeslots, setTimeslots }: CalendarProps) {
               eventClick={handleEventClick}
             />
             <Popup
-              popup={popup}
               confirmPopup={confirmPopup}
-              handleConfirmOpen={handleConfirmOpen}
+              popup={popup}
               successPopup={successPopup}
-              handleSuccessOpen={handleSuccessOpen}
-              handlePopupClose={handlePopupClose}
-              date={popupDate}
-              setDate={setPopupDate}
-              timeslots={timeslots}
-              setTimeslots={setTimeslots}
               toggleValue={toggleValue}
+              date={popupDate}
+              timeslots={timeslots}
+              setDate={setPopupDate}
+              setTimeslots={setTimeslots}
+              handleConfirmOpen={handleConfirmOpen}
+              handlePopupClose={handlePopupClose}
+              handleSuccessOpen={handleSuccessOpen}
             />
           </CalDiv>
         </RightColumn>

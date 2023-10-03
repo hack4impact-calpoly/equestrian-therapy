@@ -17,28 +17,6 @@ import TimeslotConfirmation from "./timeslotConfirmation";
 import TimeslotSuccess from "./timeslotSuccess";
 import UserContext from "../../userContext";
 
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-  padding-bottom: 90px;
-`;
-
-const LeftColumn = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding: 0 50px 0 50px;
-  // gap: 20px;
-  width: 400px;
-`;
-
-const RightColumn = styled.div`
-  padding-right: 10px;
-  width: 500px;
-  // flex: 1;
-`;
-
 const BtnContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -57,13 +35,35 @@ const DateHeader = styled.p`
   padding-bottom: 10px;
 `;
 
+const LeftColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0 50px 0 50px;
+  // gap: 20px;
+  width: 400px;
+`;
+
+const RightColumn = styled.div`
+  padding-right: 10px;
+  width: 500px;
+  // flex: 1;
+`;
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  padding-bottom: 90px;
+`;
+
 type PopupProps = {
   confirmPopup: boolean;
-  date: Date;
   popup: boolean;
   successPopup: boolean;
-  timeslots: LazyTimeslot[];
   toggleValue: string;
+  date: Date;
+  timeslots: LazyTimeslot[];
   setDate: React.Dispatch<React.SetStateAction<Date>>;
   setTimeslots: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
   handleConfirmOpen: () => void;
@@ -73,9 +73,9 @@ type PopupProps = {
 
 type TsData = {
   id: string;
-  checked: boolean;
   startTime: Date;
   endTime: Date;
+  checked: boolean;
   riderDisabled: boolean;
 };
 
@@ -104,11 +104,11 @@ function convertToYMD(date: Date) {
 
 export default function Popup({
   confirmPopup,
-  date,
   popup,
   successPopup,
-  timeslots,
   toggleValue,
+  date,
+  timeslots,
   setDate,
   setTimeslots,
   handleConfirmOpen,
@@ -120,13 +120,13 @@ export default function Popup({
   const [realUser] = currentUser;
   const { userType, id } = realUser;
   const [bookable, setBookable] = useState<TsData[]>([]);
-  const [volunteerBookings, setVolBookings] = useState<LazyUser[]>([]);
-  const [riderBookings, setRidBookings] = useState<LazyUser[]>([]);
-  const [checkedLst, setCheckedLst] = useState<string[]>([]);
-  const [uncheckedLst, setUncheckedLst] = useState<string[]>([]);
   const [bookedToday, setBookedToday] = useState(1);
   const [previousTimeslots, setPreviousTimeslots] = useState<string[]>([]);
   const [riderDisabledLst, setRiderDisabledLst] = useState<string[]>([]);
+  const [riderBookings, setRidBookings] = useState<LazyUser[]>([]);
+  const [volunteerBookings, setVolBookings] = useState<LazyUser[]>([]);
+  const [checkedLst, setCheckedLst] = useState<string[]>([]);
+  const [uncheckedLst, setUncheckedLst] = useState<string[]>([]);
 
   const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
@@ -398,17 +398,17 @@ export default function Popup({
                 <DateHeader>{formattedDate}</DateHeader>
                 <Timeslots
                   bookable={bookable}
+                  previousTimeslots={previousTimeslots}
                   selectedDate={date}
-                  bookedToday={bookedToday}
                   toggleValue={toggleValue}
+                  bookedToday={bookedToday}
                   checkedLst={checkedLst}
                   uncheckedLst={uncheckedLst}
-                  previousTimeslots={previousTimeslots}
                   riderDisabledLst={riderDisabledLst}
-                  setRiderDisabledLst={setRiderDisabledLst}
+                  setBookedToday={setBookedToday}
                   setCheckedLst={setCheckedLst}
                   setUncheckedLst={setUncheckedLst}
-                  setBookedToday={setBookedToday}
+                  setRiderDisabledLst={setRiderDisabledLst}
                 />
                 <BtnContainer>
                   <CancelBtn onClick={handlePopupClose}>Cancel</CancelBtn>
