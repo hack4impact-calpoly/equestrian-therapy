@@ -79,6 +79,13 @@ type TsData = {
   riderDisabled: boolean;
 };
 
+/**
+ * This function takes a javascript Date object and converts it to a string in YYYY-MM-DD format
+ * Input:
+ *  - date: Date - The date object to be converted to YYYY-MM-DD format
+ * Output:
+ *  - retString: string - the string version of the date in YYYY-MM-DD format
+ */
 function convertToYMD(date: Date) {
   const localString = date.toLocaleDateString();
   const splitDate = localString.split("/");
