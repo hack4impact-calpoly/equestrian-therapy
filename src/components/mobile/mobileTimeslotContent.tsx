@@ -145,10 +145,10 @@ export default function TimeslotMobileContent({
         {!confirmationShown && (
           <BoxMobileContent>
             <AppointmentInfo
-              booked={checked}
               riderBookings={riderBookings}
-              toggleValue={toggleValue}
               volunteerBookings={volunteerBookings}
+              booked={checked}
+              toggleValue={toggleValue}
             />
             {userType !== "Admin" ? (
               !(
