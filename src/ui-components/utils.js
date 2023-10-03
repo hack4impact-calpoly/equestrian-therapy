@@ -1,8 +1,8 @@
-/** *************************************************************************
+/***************************************************************************
  * The contents of this file were generated with Amplify Studio.           *
  * Please refrain from making any modifications to this file.              *
  * Any changes to this file will be overwritten when running amplify pull. *
- ************************************************************************* */
+ **************************************************************************/
 
 /* eslint-disable */
 export const validateField = (value, validations) => {
@@ -182,18 +182,18 @@ const checkValidation = (value, validation) => {
   }
 };
 const monthToShortMon = {
-  1: "Jan",
-  2: "Feb",
-  3: "Mar",
-  4: "Apr",
-  5: "May",
-  6: "Jun",
-  7: "Jul",
-  8: "Aug",
-  9: "Sep",
-  10: "Oct",
-  11: "Nov",
-  12: "Dec",
+  "1": "Jan",
+  "2": "Feb",
+  "3": "Mar",
+  "4": "Apr",
+  "5": "May",
+  "6": "Jun",
+  "7": "Jul",
+  "8": "Aug",
+  "9": "Sep",
+  "10": "Oct",
+  "11": "Nov",
+  "12": "Dec",
 };
 const invalidDateStr = "Invalid Date";
 export function formatDate(date, dateFormat) {

@@ -58,26 +58,26 @@ const DateHeader = styled.p`
 `;
 
 type PopupProps = {
-  popup: boolean;
   confirmPopup: boolean;
-  handleConfirmOpen: () => void;
-  successPopup: boolean;
-  handleSuccessOpen: () => void;
-  handlePopupClose: () => void;
   date: Date;
-  setDate: React.Dispatch<React.SetStateAction<Date>>;
+  popup: boolean;
+  successPopup: boolean;
   timeslots: LazyTimeslot[];
-  setTimeslots: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
   toggleValue: string;
+  setDate: React.Dispatch<React.SetStateAction<Date>>;
+  setTimeslots: React.Dispatch<React.SetStateAction<LazyTimeslot[]>>;
+  handleConfirmOpen: () => void;
+  handlePopupClose: () => void;
+  handleSuccessOpen: () => void;
 };
 
-interface TsData {
+type TsData = {
+  id: string;
+  checked: boolean;
   startTime: Date;
   endTime: Date;
-  checked: boolean;
   riderDisabled: boolean;
-  id: string;
-}
+};
 
 function convertToYMD(date: Date) {
   const localString = date.toLocaleDateString();
@@ -96,17 +96,17 @@ function convertToYMD(date: Date) {
 }
 
 export default function Popup({
-  popup,
   confirmPopup,
-  handleConfirmOpen,
-  successPopup,
-  handleSuccessOpen,
-  handlePopupClose,
   date,
-  setDate,
+  popup,
+  successPopup,
   timeslots,
-  setTimeslots,
   toggleValue,
+  setDate,
+  setTimeslots,
+  handleConfirmOpen,
+  handlePopupClose,
+  handleSuccessOpen,
 }: PopupProps) {
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
@@ -127,6 +127,12 @@ export default function Popup({
     day: "numeric",
   };
   const formattedDate = date.toLocaleDateString("en-US", options);
+
+  /**
+   * This function gets the timeslot the user clicks on in the calendar.
+   * Input: none
+   * Output: none
+   */
   const getSelected = () => {
     if (popup) {
       return timeslots.find((timeslot) => {
@@ -147,9 +153,19 @@ export default function Popup({
   useEffect(() => {
     const ts: TsData[] = [...bookable];
     let countBookedToday = 0;
+
+    /**
+     * This function pushes a timeslot to the list of timeslots if it is bookable
+     * for riders and volunteers. A bookable timeslot is one that is unbooked and
+     * is not in the unavailable dates set by the admin, or one that is booked by the
+     * current user. Riders can only book one timeslot in a single day, but volunteers
+     * can book multiple.
+     * Input:
+     * - timeslot: LazyTimeslot - The timeslot to find available bookings of
+     * Output:
+     *  - countBookings : integer - The number of available bookings for the timeslot
+     */
     const fetchBookableRV = async (timeslot: LazyTimeslot) => {
-      // available bookings are unbooked bookings, bookings booked by current user, and
-      // bookings that are not in the unavailable dates set by admin
       let countBookings = 0;
       const bookings = await timeslot.bookings.toArray();
       let checked = false;
@@ -173,6 +189,7 @@ export default function Popup({
       }
 
       if (available) {
+        // Some days are disabled for riders but not for volunteers
         if (
           timeslot.riderUnavailableDates &&
           timeslot.riderUnavailableDates.includes(convertToYMD(date)) &&
@@ -185,6 +202,7 @@ export default function Popup({
             riderDisabled: false,
             id: timeslot.id,
           });
+          // Sundays are disabled by default, unlike other days which are enabled by default.
         } else if (date.getDay() === 0) {
           if (
             timeslot.availableSundays &&
@@ -214,6 +232,13 @@ export default function Popup({
       return countBookings;
     };
 
+    /**
+     * This function pushes a timeslot to the list of timeslots with its
+     * checked/unchecked status for admins.
+     * Input:
+     * - timeslot: LazyTimeslot - The timeslot to find available bookings of
+     * Output: none
+     */
     const fetchBookableAdmin = async (timeslot: LazyTimeslot) => {
       let checked = true;
       let riderDisabled = false;
@@ -248,6 +273,11 @@ export default function Popup({
       });
     };
 
+    /**
+     * This function pushes all bookable timeslots to the list of timeslots.
+     * Input: none
+     * Output: none
+     */
     const fetchBookable = async () => {
       const selectedTimeslots = [];
       while (ts.length > 0) {
@@ -274,6 +304,15 @@ export default function Popup({
       setBookable(ts);
       setBookedToday(countBookedToday);
     };
+
+    /**
+     * This function gets the lists of users that have booked the given bookings.
+     * Input:
+     * - bookings: LazyBooking[] - the list of bookings to get users from
+     * Output:
+     * - volUsers: User[] - the list of volunteer users
+     * - ridUsers: User[] - the list of rider users
+     */
     const getUsers = async (bookings: LazyBooking[]) => {
       const volUsers: User[] = [];
       const ridUsers: User[] = []; // eslint-disable-next-line no-restricted-syntax
@@ -300,6 +339,13 @@ export default function Popup({
       }
       return { volUsers, ridUsers };
     };
+
+    /**
+     * This function is run when the user selects a timeslot in the calendar. It pulls
+     * the initial timeslots and bookings.
+     * Input: none
+     * Output: none
+     */
     const pullData = async () => {
       if (!popup) {
         const timeslotsArray = await DataStore.query(Timeslot);
