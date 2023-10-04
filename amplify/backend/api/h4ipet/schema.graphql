@@ -1,4 +1,4 @@
-type Timeslot @model @auth(rules: [{ allow: public }]) {
+type Timeslot @model @auth(rules: [{allow: public}]) {
   id: ID!
   startTime: AWSTime
   endTime: AWSTime
@@ -8,7 +8,7 @@ type Timeslot @model @auth(rules: [{ allow: public }]) {
   riderUnavailableDates: [AWSDate]
 }
 
-type Booking @model @auth(rules: [{ allow: public }]) {
+type Booking @model @auth(rules: [{allow: public}]) {
   id: ID!
   title: String
   date: AWSDate
@@ -18,7 +18,7 @@ type Booking @model @auth(rules: [{ allow: public }]) {
   userType: String
 }
 
-type User @model @auth(rules: [{ allow: public }]) {
+type User @model @auth(rules: [{allow: public}]) {
   id: ID!
   userName: AWSEmail
   firstName: String
@@ -26,3 +26,4 @@ type User @model @auth(rules: [{ allow: public }]) {
   userType: String
   bookings: [Booking] @hasMany(indexName: "byUser", fields: ["id"])
 }
+ 

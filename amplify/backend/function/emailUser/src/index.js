@@ -10,20 +10,18 @@ Amplify Params - DO NOT EDIT */
 
 const aws = require("aws-sdk");
 const ses = new aws.SES();
-const docClient = new aws.DynamoDB.DocumentClient();
 
+/**
+ * AWS Lambda function. Sends an email to the admin and user every time a
+ * booking is confirmed.
+ */
 exports.handler = async (event) => {
   for (const record of event.Records) {
     if (record.eventName === "INSERT") {
-      const userId = record.dynamodb.NewImage.userID.S;
-      const params = {
-        TableName: "User",
-        Key: {
-          id: userId,
-        },
-      };
+      const userEmail = record.dynamodb.NewImage.title.S;
+      const description = record.dynamodb.NewImage.description.S;
+
       try {
-        const user = await docClient.get(params).promise();
         await ses
           .sendEmail({
             Destination: {
@@ -31,10 +29,12 @@ exports.handler = async (event) => {
             },
             Source: process.env.SES_EMAIL,
             Message: {
-              Subject: { Data: "Booking Confirmation" },
+              Subject: {
+                Data: "Partners in Equestrian Therapy - Booking Confirmation",
+              },
               Body: {
                 Text: {
-                  Data: `Test booking: You have confirmed a booking for ${userId}.`,
+                  Data: `${description}`,
                 },
               },
             },

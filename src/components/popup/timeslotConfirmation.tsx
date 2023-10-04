@@ -75,7 +75,7 @@ export default function TimeSlotConfirmation({
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
-  const { userType, id } = realUser;
+  const { userType, id, userName, firstName, lastName } = realUser;
 
   /**
    * This function checks whether the user is an admin and if so whether the action the admin is
@@ -292,12 +292,22 @@ export default function TimeSlotConfirmation({
       if (userType === "Volunteer") {
         const tempDate = new Date(bookedDate);
         const formattedDate = convertToYMD(tempDate);
-        const descriptionStr: string = `User: ${id} Booked Time: ${formattedDate}`;
         addTimeslotIds.forEach(async (addTimeslotId) => {
+          const timeslot = await DataStore.query(Timeslot, addTimeslotId);
           const booking = new Booking({
-            title: "New Booking -- Volunteer",
+            title: `${userName}`,
             date: formattedDate,
-            description: descriptionStr,
+            description: `**Booking confirmed for ${firstName} ${lastName}.**\n\nBooked day: ${tempDate.toLocaleDateString(
+              "en-us",
+              {
+                weekday: "long",
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              }
+            )}\nBooked time: ${timeslot?.startTime} - ${
+              timeslot?.endTime
+            } \n\nThank you,\nThe PET Team`,
             timeslotID: addTimeslotId,
             userID: id,
             userType,
@@ -308,11 +318,21 @@ export default function TimeSlotConfirmation({
         if (addTimeslotIds.length === 1) {
           const tempDate = new Date(bookedDate);
           const formattedDate = convertToYMD(tempDate);
-          const descriptionStr: string = `User: ${id} Booked Time: ${formattedDate}`;
+          const timeslot = await DataStore.query(Timeslot, addTimeslotIds[0]);
           const booking = new Booking({
-            title: "New Booking -- Rider",
+            title: `${userName}`,
             date: formattedDate,
-            description: descriptionStr,
+            description: `**Booking confirmed for ${firstName} ${lastName}.**\n\nBooked day: ${tempDate.toLocaleDateString(
+              "en-us",
+              {
+                weekday: "long",
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              }
+            )}\nBooked time: ${timeslot?.startTime} - ${
+              timeslot?.endTime
+            }\n\nThank you,\nThe PET Team`,
             timeslotID: addTimeslotIds[0],
             userID: id,
             userType,

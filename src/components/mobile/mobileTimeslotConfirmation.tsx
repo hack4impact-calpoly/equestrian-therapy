@@ -113,7 +113,7 @@ export default function MobileTimeSlotConfirmation({
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
-  const { userType, id } = realUser;
+  const { userType, id, userName, firstName, lastName } = realUser;
 
   /**
    * This function checks whether the user is an admin and if so whether the action the admin is
@@ -319,11 +319,21 @@ export default function MobileTimeSlotConfirmation({
       if (userType === "Volunteer" || userType === "Rider") {
         const tempDate = new Date(bookedDate);
         const formattedDate = convertToYMD(tempDate);
-        const descriptionStr: string = `User: ${id} Booked Time: ${formattedDate}`;
+        const timeslot = await DataStore.query(Timeslot, addTimeslotId);
         const booking = new Booking({
-          title: `New Booking -- ${userType}`,
+          title: `${userName}`,
           date: formattedDate,
-          description: descriptionStr,
+          description: `**Booking confirmed for ${firstName} ${lastName}.**\n\nBooked day: ${tempDate.toLocaleDateString(
+            "en-us",
+            {
+              weekday: "long",
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            }
+          )}\nBooked time: ${timeslot?.startTime} - ${
+            timeslot?.endTime
+          }\n\nThank you,\nThe PET Team`,
           timeslotID: addTimeslotId,
           userID: id,
           userType,
