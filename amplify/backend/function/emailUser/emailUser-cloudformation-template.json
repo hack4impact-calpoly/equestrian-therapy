@@ -16,9 +16,6 @@
     "s3Key": {
       "Type": "String"
     },
-    "sesEmail": {
-      "Type": "String"
-    },
     "apih4ipetGraphQLAPIIdOutput": {
       "Type": "String",
       "Default": "apih4ipetGraphQLAPIIdOutput"
@@ -26,6 +23,9 @@
     "apih4ipetGraphQLAPIEndpointOutput": {
       "Type": "String",
       "Default": "apih4ipetGraphQLAPIEndpointOutput"
+    },
+    "sesEmail": {
+      "Type": "String"
     }
   },
   "Conditions": {
@@ -180,7 +180,7 @@
                 "ses:SendEmail"
               ],
               "Effect": "Allow",
-              "Resource": "arn:aws:ses:us-west-2:008277987672:identity/chocobora1@gmail.com"
+              "Resource": "arn:aws:ses:us-west-2:008277987672:identity/petslo@gmail.com"
             }
           ]
         }

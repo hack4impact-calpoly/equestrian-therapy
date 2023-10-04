@@ -20,9 +20,9 @@
       },
       "function": {
         "emailUser": {
-          "sesEmail": "chocobora1@gmail.com",
           "deploymentBucketName": "amplify-h4ipet-main-193144-deployment",
-          "s3Key": "amplify-builds/emailUser-6c414644537835317855-build.zip"
+          "s3Key": "amplify-builds/emailUser-6c414644537835317855-build.zip",
+          "sesEmail": "petslo@gmail.com"
         }
       }
     }
