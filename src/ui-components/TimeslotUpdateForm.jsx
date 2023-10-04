@@ -1,14 +1,11 @@
-/** *************************************************************************
+/***************************************************************************
  * The contents of this file were generated with Amplify Studio.           *
  * Please refrain from making any modifications to this file.              *
  * Any changes to this file will be overwritten when running amplify pull. *
- ************************************************************************* */
+ **************************************************************************/
 
 /* eslint-disable */
 import * as React from "react";
-import { fetchByPath, validateField } from "./utils";
-import { Timeslot } from "../models";
-import { getOverrideProps } from "@aws-amplify/ui-react/internal";
 import {
   Badge,
   Button,
@@ -21,6 +18,9 @@ import {
   TextField,
   useTheme,
 } from "@aws-amplify/ui-react";
+import { getOverrideProps } from "@aws-amplify/ui-react/internal";
+import { Timeslot } from "../models";
+import { fetchByPath, validateField } from "./utils";
 import { DataStore } from "aws-amplify";
 function ArrayField({
   items = [],
@@ -37,7 +37,14 @@ function ArrayField({
   runValidationTasks,
   errorMessage,
 }) {
-  const { tokens } = useTheme();
+  const labelElement = <Text>{label}</Text>;
+  const {
+    tokens: {
+      components: {
+        fieldmessages: { error: errorStyles },
+      },
+    },
+  } = useTheme();
   const [selectedBadgeIndex, setSelectedBadgeIndex] = React.useState();
   const [isEditing, setIsEditing] = React.useState();
   React.useEffect(() => {
@@ -53,9 +60,9 @@ function ArrayField({
   const addItem = async () => {
     const { hasError } = runValidationTasks();
     if (
-      (currentFieldValue !== undefined ||
-        currentFieldValue !== null ||
-        currentFieldValue !== "") &&
+      currentFieldValue !== undefined &&
+      currentFieldValue !== null &&
+      currentFieldValue !== "" &&
       !hasError
     ) {
       const newItems = [...items];
@@ -69,45 +76,8 @@ function ArrayField({
       setIsEditing(false);
     }
   };
-  return (
+  const arraySection = (
     <React.Fragment>
-      {isEditing && children}
-      {!isEditing ? (
-        <>
-          <Text>{label}</Text>
-          <Button
-            onClick={() => {
-              setIsEditing(true);
-            }}
-          >
-            Add item
-          </Button>
-        </>
-      ) : (
-        <Flex justifyContent="flex-end">
-          {(currentFieldValue || isEditing) && (
-            <Button
-              children="Cancel"
-              type="button"
-              size="small"
-              onClick={() => {
-                setFieldValue(defaultFieldValue);
-                setIsEditing(false);
-                setSelectedBadgeIndex(undefined);
-              }}
-            ></Button>
-          )}
-          <Button
-            size="small"
-            variation="link"
-            color={tokens.colors.brand.primary[80]}
-            isDisabled={hasError}
-            onClick={addItem}
-          >
-            {selectedBadgeIndex !== undefined ? "Save" : "Add"}
-          </Button>
-        </Flex>
-      )}
       {!!items?.length && (
         <ScrollView height="inherit" width="inherit" maxHeight={"7rem"}>
           {items.map((value, index) => {
@@ -128,7 +98,7 @@ function ArrayField({
                   setIsEditing(true);
                 }}
               >
-                {value.toString()}
+                {getBadgeText ? getBadgeText(value) : value.toString()}
                 <Icon
                   style={{
                     cursor: "pointer",
@@ -214,15 +184,14 @@ export default function TimeslotUpdateForm(props) {
     onSuccess,
     onError,
     onSubmit,
-    onCancel,
     onValidate,
     onChange,
     overrides,
     ...rest
   } = props;
   const initialValues = {
-    startTime: undefined,
-    endTime: undefined,
+    startTime: "",
+    endTime: "",
     unavailableDates: [],
     availableSundays: [],
     riderUnavailableDates: [],
@@ -240,7 +209,9 @@ export default function TimeslotUpdateForm(props) {
   );
   const [errors, setErrors] = React.useState({});
   const resetStateValues = () => {
-    const cleanValues = { ...initialValues, ...timeslotRecord };
+    const cleanValues = timeslotRecord
+      ? { ...initialValues, ...timeslotRecord }
+      : initialValues;
     setStartTime(cleanValues.startTime);
     setEndTime(cleanValues.endTime);
     setUnavailableDates(cleanValues.unavailableDates ?? []);
@@ -263,7 +234,7 @@ export default function TimeslotUpdateForm(props) {
   }, [idProp, timeslotModelProp]);
   React.useEffect(resetStateValues, [timeslotRecord]);
   const [currentUnavailableDatesValue, setCurrentUnavailableDatesValue] =
-    React.useState(undefined);
+    React.useState("");
   const unavailableDatesRef = React.createRef();
   const [currentAvailableSundaysValue, setCurrentAvailableSundaysValue] =
     React.useState("");
@@ -280,7 +251,15 @@ export default function TimeslotUpdateForm(props) {
     availableSundays: [],
     riderUnavailableDates: [],
   };
-  const runValidationTasks = async (fieldName, value) => {
+  const runValidationTasks = async (
+    fieldName,
+    currentValue,
+    getDisplayValue
+  ) => {
+    const value =
+      currentValue && getDisplayValue
+        ? getDisplayValue(currentValue)
+        : currentValue;
     let validationResponse = validateField(value, validations[fieldName]);
     const customValidator = fetchByPath(onValidate, fieldName);
     if (customValidator) {
@@ -346,8 +325,8 @@ export default function TimeslotUpdateForm(props) {
           }
         }
       }}
-      {...rest}
       {...getOverrideProps(overrides, "TimeslotUpdateForm")}
+      {...rest}
     >
       <TextField
         label="Start time"
@@ -422,7 +401,7 @@ export default function TimeslotUpdateForm(props) {
             values = result?.unavailableDates ?? values;
           }
           setUnavailableDates(values);
-          setCurrentUnavailableDatesValue(undefined);
+          setCurrentUnavailableDatesValue("");
         }}
         currentFieldValue={currentUnavailableDatesValue}
         label={"Unavailable dates"}
@@ -437,7 +416,7 @@ export default function TimeslotUpdateForm(props) {
         errorMessage={errors?.unavailableDates?.errorMessage}
         setFieldValue={setCurrentUnavailableDatesValue}
         inputFieldRef={unavailableDatesRef}
-        defaultFieldValue={undefined}
+        defaultFieldValue={""}
       >
         <TextField
           label="Unavailable dates"
@@ -458,6 +437,7 @@ export default function TimeslotUpdateForm(props) {
           errorMessage={errors.unavailableDates?.errorMessage}
           hasError={errors.unavailableDates?.hasError}
           ref={unavailableDatesRef}
+          labelHidden={true}
           {...getOverrideProps(overrides, "unavailableDates")}
         ></TextField>
       </ArrayField>
@@ -592,14 +572,6 @@ export default function TimeslotUpdateForm(props) {
           gap="15px"
           {...getOverrideProps(overrides, "RightAlignCTASubFlex")}
         >
-          <Button
-            children="Cancel"
-            type="button"
-            onClick={() => {
-              onCancel && onCancel();
-            }}
-            {...getOverrideProps(overrides, "CancelButton")}
-          ></Button>
           <Button
             children="Submit"
             type="submit"
