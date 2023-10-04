@@ -6,67 +6,75 @@ import logoPic from "../../images/petLogo.jpg";
 import eyeSlash from "../../images/eyeSlash.svg";
 import eye from "../../images/eye.svg";
 import UserContext from "../../userContext";
-
+import { User } from "../../models";
 import {
-  Wrapper,
   Box,
   Button,
+  ErrorMessage,
+  EyeSlash,
   Input,
   Label,
   PasswordContainer,
-  EyeSlash,
   Question,
   TextLink,
-  ErrorMessage,
+  Wrapper,
 } from "../styledComponents";
-import { User } from "../../models";
 
 const Logo = styled.img`
   display: flex;
   margin: auto;
-  /* PET_FINAL logo 1 */
   width: 150px;
 `;
 
 export default function Login() {
-  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { setUser } = useContext(UserContext);
-  // Initialize a boolean state
   const [passwordShown, setPasswordShown] = useState(false);
+  const { setUser } = useContext(UserContext);
+  const navigate = useNavigate();
+
   // Password toggle handler
   const togglePassword = () => {
-    // When the handler is invoked
-    // inverse the boolean state of passwordShown
+    // When the handler is invoked inverse the boolean state of passwordShown
     setPasswordShown(!passwordShown);
   };
 
+  /**
+   * This function is run when the user clicks the Log In button and they both input fields are filled. It will
+   * run the Auth.signIn function with the user's email and password then query for the user's corresponding
+   * object in the Datastore and set that to our user useState variable. It will then navigate to the home page
+   * of our app. If any step in this process fails it will display an error message
+   */
   async function signIn() {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { user } = await Auth.signIn({
+      await Auth.signIn({
         username: email,
         password,
       });
 
-      const posts = await DataStore.query(User, (c) => c.userName.eq(email));
-      setUser(posts as User[]);
+      const users = await DataStore.query(User, (c) => c.userName.eq(email));
+      setUser(users as User[]);
 
       navigate("/");
-    } catch (errore) {
-      if (errore instanceof Error) {
-        setError(errore.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
       } else {
-        setError(String(errore));
+        setError(String(err));
       }
     }
   }
 
+  /**
+   * This function is run when the user clicks the Log In button, it will first validate that the user has
+   * typed both a username and password then it will call the signIn function described above. If the user has
+   * not submitted both an email and password it will display an error.
+   */
   const handleSubmit = () => {
     setError("");
 
+    // If the user hasn't submitted both an email and password then set an error message.
     if (!email || !password) {
       setError("All Fields Required");
       return;
@@ -84,7 +92,7 @@ export default function Login() {
         <Input
           placeholder=""
           type="text"
-          value={email} // add newEmail as the input's value
+          value={email}
           onChange={(e: ChangeEvent<HTMLInputElement>) => {
             setEmail(e.target.value);
           }}

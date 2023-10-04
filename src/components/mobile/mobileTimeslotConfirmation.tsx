@@ -3,22 +3,14 @@ import { useContext } from "react";
 import styled from "styled-components";
 import { DataStore } from "aws-amplify";
 import UserContext from "../../userContext";
-import { User, Booking, Timeslot } from "../../models";
+import { Booking, Timeslot } from "../../models";
 import warning from "../../images/warning.svg";
 import {
   CancelBtn,
-  SaveBtn,
   CenteredDescription,
   CenteredHeader,
+  SaveBtn,
 } from "../styledComponents";
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 6%;
-`;
 
 const Box = styled.div`
   border: solid 0.5px #c4c4c4;
@@ -37,17 +29,9 @@ const Box = styled.div`
     border: none;
     box-shadow: none;
     display: flex;
-    // margin-top: 30%;
     padding: 0;
     width: 100%;
   }
-`;
-
-const Warning = styled.img`
-  //   position: center;
-  width: 80px;
-  margin-left: auto;
-  margin-right: auto;
 `;
 
 const BtnContainer = styled.div`
@@ -66,6 +50,27 @@ const MobileSaveBtn = styled(SaveBtn)`
   width: 50%;
 `;
 
+const Warning = styled.img`
+  width: 80px;
+  margin-left: auto;
+  margin-right: auto;
+`;
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6%;
+`;
+
+/**
+ * This function takes a javascript Date object and converts it to a string in YYYY-MM-DD format
+ * Input:
+ *  - date: Date - The date object to be converted to YYYY-MM-DD format
+ * Output:
+ *  - retString: string - the string version of the date in YYYY-MM-DD format
+ */
 function convertToYMD(date: Date) {
   const localString = date.toLocaleDateString();
   const splitDate = localString.split("/");
@@ -82,49 +87,78 @@ function convertToYMD(date: Date) {
   return retString;
 }
 
-interface MobileTimeSlotConfirmationProps {
-  handleClicked: () => void;
-  handleCancelled: () => void;
-  booked: boolean;
-  // enabled: boolean;
+type MobileTimeSlotConfirmationProps = {
+  timeslotId: string;
+  allBookings: Booking[];
+  checked: boolean;
   date: Date;
-  tId: string;
   riderDisabled: boolean;
   toggleValue: string;
-  allBookings: Booking[];
+  handleCancelled: () => void;
+  handleClicked: () => void;
   setRequery: (requery: boolean) => void;
-}
+};
 
 export default function MobileTimeSlotConfirmation({
-  handleClicked,
-  handleCancelled,
-  booked,
+  timeslotId,
+  allBookings,
+  checked,
   date,
-  tId,
   riderDisabled,
   toggleValue,
-  allBookings,
+  handleCancelled,
+  handleClicked,
   setRequery,
 }: MobileTimeSlotConfirmationProps) {
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
-  const { userType, id } = realUser;
+  const { userType, id, userName, firstName, lastName } = realUser;
 
+  /**
+   * This function checks whether the user is an admin and if so whether the action the admin is
+   * initiating on this timeslot (enabling or disabling it) will cause it to be rider disabled. If
+   * the slot is already enabled and the toggleValue = Riders or if its disabled and the toggleValue
+   * = Volunteers then this will cause the slot to become rider disabled so the function returns
+   * true, otherwise it returns the riderDisabled flag that is passed into this component, which
+   * will be true if the slot was previously rider disabled at this time.
+   * Input: none
+   * Output:
+   *  - Boolean, true if the interaction with this slot has something to do with rider disabling
+   *    false if not.
+   */
   function checkRiderDisabling() {
     if (
       userType === "Admin" &&
-      ((booked && toggleValue === "Riders") ||
-        (!booked && toggleValue === "Volunteers"))
+      ((checked && toggleValue === "Riders") ||
+        (!checked && toggleValue === "Volunteers"))
     ) {
       return true;
     }
     return riderDisabled;
   }
 
-  async function addUnavailability(timeslotId: string, unavailableDate: Date) {
+  /**
+   * This function takes timeslot id and a date and queries the Datastore to fetch that timeslot
+   * It will then set that timeslot as disabled with a few considerations:
+   *  - If the current date is a sunday then the slot is disabled by default, so it will check
+   *    if the slot has been added to the arrays availableSundays array, at which point it will
+   *    filter it out of this array and send the updated timeslot back to the Datastore
+   *  - If the toggleValue = Riders then the timeslot will only be disabled for riders, meaning
+   *    the current date will be added to the riderUnavailableDates object
+   *  - Otherwise, the date will be added to the users unavailableDates array, disabling it for
+   *    both riders and volunteers.
+   * Input:
+   *  - timeslotId: string - the id of the timeslot that is becoming unavailable
+   *  - unavailableDate: Date - the date that the timeslot is being disabled for
+   * Output: none
+   */
+  async function addUnavailability(
+    addTimeslotId: string,
+    unavailableDate: Date
+  ) {
     try {
-      const original = await DataStore.query(Timeslot, timeslotId);
+      const original = await DataStore.query(Timeslot, addTimeslotId);
       if (
         original &&
         Array.isArray(original.unavailableDates) &&
@@ -132,6 +166,8 @@ export default function MobileTimeSlotConfirmation({
         Array.isArray(original.riderUnavailableDates)
       ) {
         const ymdDate = convertToYMD(new Date(unavailableDate));
+        // If the date is Sunday then the slot is only enabled if it's in the availableSundays
+        // array so remove the date from that
         if (
           unavailableDate.getDay() === 0 &&
           original.availableSundays.includes(ymdDate)
@@ -144,7 +180,9 @@ export default function MobileTimeSlotConfirmation({
               updated.availableSundays = updatedList; // eslint-disable-line no-param-reassign
             })
           );
-        } else if (toggleValue === "Riders") {
+        }
+        // If the toggleValue is set to Riders then disable the slot for riders only
+        else if (toggleValue === "Riders") {
           const updatedList = new Set(original.riderUnavailableDates);
           if (!updatedList.has(ymdDate)) {
             updatedList.add(ymdDate);
@@ -155,19 +193,9 @@ export default function MobileTimeSlotConfirmation({
               })
             );
           }
-        } else if (
-          original.riderUnavailableDates &&
-          original.riderUnavailableDates.includes(ymdDate)
-        ) {
-          const updatedList = original.riderUnavailableDates.filter(
-            (dateString) => ymdDate !== dateString
-          );
-          await DataStore.save(
-            Timeslot.copyOf(original, (updated) => {
-              updated.riderUnavailableDates = updatedList; // eslint-disable-line no-param-reassign
-            })
-          );
-        } else {
+        }
+        // If none of the other conditions were met then disable the slot normally
+        else {
           const updatedList = new Set(original.unavailableDates);
           if (!updatedList.has(ymdDate)) {
             updatedList.add(ymdDate);
@@ -187,9 +215,28 @@ export default function MobileTimeSlotConfirmation({
     }
   }
 
-  async function deleteUnavailability(timeslotId: string, availableDate: Date) {
+  /**
+   * This function takes timeslot id and a date and queries the Datastore to fetch that timeslot
+   * It will then set that timeslot as enabled with a few considerations:
+   *  - If the timeslot is disabled and the admin tries to enable it with the Volunteers toggle
+   *    selected then we only enable it for volunteers (disable it for riders)
+   *  - If the timeslot is currently rider disabled then remove the date from the timeslot's
+   *    riderUnavailableDates array and send update timeslot to datastore
+   *  - If the current date is a sunday then the slot is disabled by default, so it will add the
+   *    slot to the availableSundays array and send the updated timeslot back to the Datastore
+   *  - Otherwise, the date will be removed from the users unavailableDates array, enabling it for
+   *    both riders and volunteers.
+   * Input:
+   *  - timeslotId: string - the id of the timeslot that is becoming available
+   *  - availableDate: Date - the date that the timeslot is being enabled for
+   * Output: none
+   */
+  async function deleteUnavailability(
+    delTimeslotId: string,
+    availableDate: Date
+  ) {
     try {
-      const original = await DataStore.query(Timeslot, timeslotId);
+      const original = await DataStore.query(Timeslot, delTimeslotId);
       const convertedDate = convertToYMD(new Date(availableDate));
       if (
         original &&
@@ -197,27 +244,34 @@ export default function MobileTimeSlotConfirmation({
         Array.isArray(original.availableSundays) &&
         Array.isArray(original.riderUnavailableDates)
       ) {
-        if (toggleValue === "Volunteers") {
-          const updatedRiderList = new Set(original.riderUnavailableDates);
-          if (!updatedRiderList.has(convertedDate)) {
-            updatedRiderList.add(convertedDate);
-            await DataStore.save(
-              Timeslot.copyOf(original, (updated) => {
-                // eslint-disable-next-line no-param-reassign
-                updated.riderUnavailableDates = Array.from(updatedRiderList);
-              })
-            );
-          } else if (updatedRiderList.has(convertedDate)) {
-            const updatedList = original.riderUnavailableDates.filter(
-              (dateString) => convertedDate !== dateString
-            );
-            await DataStore.save(
-              Timeslot.copyOf(original, (updated) => {
-                updated.riderUnavailableDates = updatedList; // eslint-disable-line no-param-reassign
-              })
-            );
-          }
-        } else if (
+        const updatedRiderList = new Set(original.riderUnavailableDates);
+        // If the slot is not riderDisabled (meaning its disabled for everyone) and toggleValue =
+        // Volunteers then only enable it for volunteers (rider disable the date).
+        if (
+          !updatedRiderList.has(convertedDate) &&
+          toggleValue === "Volunteers"
+        ) {
+          updatedRiderList.add(convertedDate);
+          await DataStore.save(
+            Timeslot.copyOf(original, (updated) => {
+              // eslint-disable-next-line no-param-reassign
+              updated.riderUnavailableDates = Array.from(updatedRiderList);
+            })
+          );
+        }
+        // If the date is in the timeslot's riderUnavailableDates array then remove it
+        else if (updatedRiderList.has(convertedDate)) {
+          const updatedList = original.riderUnavailableDates.filter(
+            (dateString) => convertedDate !== dateString
+          );
+          await DataStore.save(
+            Timeslot.copyOf(original, (updated) => {
+              updated.riderUnavailableDates = updatedList; // eslint-disable-line no-param-reassign
+            })
+          );
+        }
+        // If it's a sunday then add the date to the availableSundays array to enable it
+        else if (
           availableDate.getDay() === 0 &&
           (!Array.isArray(original.riderUnavailableDates) ||
             !original.riderUnavailableDates.includes(convertedDate))
@@ -232,7 +286,9 @@ export default function MobileTimeSlotConfirmation({
               })
             );
           }
-        } else {
+        }
+        // If none of the other conditions are met then remove the date from the unavailableDates array
+        else {
           const updatedList = original.unavailableDates.filter(
             (dateString) => convertedDate !== dateString
           );
@@ -249,26 +305,37 @@ export default function MobileTimeSlotConfirmation({
       }
     }
   }
-  async function addRVBooking(
-    TimeslotID: string,
-    userID: string,
-    bookedDate: Date
-  ) {
+
+  /**
+   * This function takes timeslot id and a date and creates a new booking for that user if they are
+   * a volunteer or rider on that date and saves it to the DataStore
+   * Input:
+   *  - addTimeslotId: string - the id of the timeslot that is being booked
+   *  - bookedDate: Date - the date that the timeslot is being booked on
+   * Output: none
+   */
+  async function addRVBooking(addTimeslotId: string, bookedDate: Date) {
     try {
-      const original = await DataStore.query(User, userID);
-      if (
-        original &&
-        (original.userType === "Volunteer" || original.userType === "Rider")
-      ) {
+      if (userType === "Volunteer" || userType === "Rider") {
         const tempDate = new Date(bookedDate);
         const formattedDate = convertToYMD(tempDate);
-        const descriptionStr: string = `User: ${userID} Booked Time: ${formattedDate}`;
+        const timeslot = await DataStore.query(Timeslot, addTimeslotId);
         const booking = new Booking({
-          title: `New Booking -- ${original.userType}`,
+          title: `${userName}`,
           date: formattedDate,
-          description: descriptionStr,
-          timeslotID: TimeslotID,
-          userID,
+          description: `**Booking confirmed for ${firstName} ${lastName}.**\n\nBooked day: ${tempDate.toLocaleDateString(
+            "en-us",
+            {
+              weekday: "long",
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            }
+          )}\nBooked time: ${timeslot?.startTime} - ${
+            timeslot?.endTime
+          }\n\nThank you,\nThe PET Team`,
+          timeslotID: addTimeslotId,
+          userID: id,
           userType,
         });
         await DataStore.save(booking);
@@ -280,20 +347,24 @@ export default function MobileTimeSlotConfirmation({
     }
   }
 
+  /**
+   * This function takes a timeslot id and deletes the user's bookings on the currently selected date
+   * Input:
+   *  - delTimeslotID: string - the id of the timeslot that is being unbooked
+   * Output: none
+   */
   async function deleteRVBooking(
-    TimeslotID: string // which time they want to cancel
+    delTimeslotId: string // which time they want to cancel
   ) {
-    /*
-    go through entire booking table, find the booking id that matches
-    the timeslotid, and the date
-     */
     try {
+      // Go through entire booking table, find the booking id that matches the timeslotid, and the date
       const bookings = await DataStore.query(Booking, (book) =>
         book.and((b) => [
-          b.timeslotID.eq(TimeslotID),
+          b.timeslotID.eq(delTimeslotId),
           b.date.eq(convertToYMD(date)),
         ])
       );
+      // For every booking found at the timeslot & date, delete it from the DataStore
       bookings.forEach((booking) => {
         if (booking.userID === id) {
           DataStore.delete(booking);
@@ -306,20 +377,33 @@ export default function MobileTimeSlotConfirmation({
     }
   }
 
+  /**
+   * This function is run when the user clicks the Confirm button and the user is an Admin. If the
+   * slot is booked then call addUnavailability to disable it, if its currently disabled then call
+   * deleteUnavailability to enable it. Then set the requery useState variable to true to update
+   * the coloring on the timeslots
+   */
   const handleConfirmationAdmin = () => {
     handleClicked();
-    if (!booked) {
-      deleteUnavailability(tId, date); // YYYY-MM-DD
+    if (!checked) {
+      deleteUnavailability(timeslotId, date); // YYYY-MM-DD
     } else {
-      addUnavailability(tId, date); // YYYY-MM-DD
+      addUnavailability(timeslotId, date); // YYYY-MM-DD
     }
     setRequery(true);
   };
 
+  /**
+   * This function is run when the user clicks the Confirm button and the user is a rider/volunteer.
+   * if the timeslot is booked already then call deleteRVBooking to unbook it. Otherwise, if the user
+   * is a rider and there's anotherbooking on that date then return without doing anything. If not
+   * then book the timeslot and set the requery useState variable to true to update the coloring on
+   * the timeslots
+   */
   const handleConfirmationRV = () => {
     handleClicked();
-    if (booked) {
-      deleteRVBooking(tId);
+    if (checked) {
+      deleteRVBooking(timeslotId);
     } else {
       if (
         userType === "Rider" &&
@@ -330,13 +414,9 @@ export default function MobileTimeSlotConfirmation({
       ) {
         return;
       }
-      addRVBooking(tId, id, date);
+      addRVBooking(timeslotId, date);
     }
     setRequery(true);
-  };
-
-  const handleCancel = () => {
-    handleCancelled();
   };
 
   return (
@@ -359,7 +439,9 @@ export default function MobileTimeSlotConfirmation({
               </p>
             </CenteredDescription>
             <BtnContainer>
-              <MobileCancelBtn onClick={handleCancel}>Cancel</MobileCancelBtn>
+              <MobileCancelBtn onClick={handleCancelled}>
+                Cancel
+              </MobileCancelBtn>
               <MobileSaveBtn onClick={handleConfirmationAdmin}>
                 Confirm
               </MobileSaveBtn>
@@ -371,15 +453,17 @@ export default function MobileTimeSlotConfirmation({
           <Box>
             <Warning src={warning} />
             <CenteredHeader>
-              {`Confirm ${booked ? "cancellation" : "booking"}?`}
+              {`Confirm ${checked ? "cancellation" : "booking"}?`}
             </CenteredHeader>
             <CenteredDescription>
               {`You are choosing to ${
-                booked ? "cancel" : "book"
+                checked ? "cancel" : "book"
               } a time slot. Are you sure you want to do this?`}
             </CenteredDescription>
             <BtnContainer>
-              <MobileCancelBtn onClick={handleCancel}>Cancel</MobileCancelBtn>
+              <MobileCancelBtn onClick={handleCancelled}>
+                Cancel
+              </MobileCancelBtn>
               <MobileSaveBtn onClick={handleConfirmationRV}>
                 Confirm
               </MobileSaveBtn>

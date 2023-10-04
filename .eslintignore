@@ -10,3 +10,4 @@ amplify-codegen-temp\models
 amplify/backend
 
 .eslintcache
+src/models/models

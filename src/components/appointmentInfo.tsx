@@ -7,14 +7,26 @@ import { LazyUser } from "../models";
 import UserContext from "../userContext";
 import "@fontsource/roboto";
 
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
+const AptHeader = styled.h1`
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 125%;
+  line-height: 200%;
+  background: white;
+  color: #1b4c5a;
 `;
 
 const Logo = styled.img`
   width: 2.5em;
   padding-right: 10px;
+`;
+
+const RiderContent = styled.p`
+  width: 100%;
+  margin-left: 10px;
+  font-size: 16px;
+  font-weight: 700;
 `;
 
 const RiderInfo = styled.div`
@@ -31,28 +43,17 @@ const RiderInfo = styled.div`
   margin-left: 2%;
   width: 100%;
 `;
-const RiderContent = styled.p`
-  width: 100%;
-  margin-left: 10px;
-  font-size: 16px;
-  font-weight: 700;
-`;
 
-const AptHeader = styled.h1`
-  font-family: "Roboto";
-  font-style: normal;
-  font-weight: 700;
-  font-size: 125%;
-  line-height: 200%;
-  background: white;
-  color: #1b4c5a;
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
 
 type PopupProps = {
   riderBookings: LazyUser[];
   volunteerBookings: LazyUser[];
-  toggleValue: string;
   booked?: boolean;
+  toggleValue: string;
 };
 
 export default function AppointmentInfo({

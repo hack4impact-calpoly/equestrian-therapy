@@ -22,7 +22,7 @@
         "emailUser": {
           "sesEmail": "chocobora1@gmail.com",
           "deploymentBucketName": "amplify-h4ipet-main-193144-deployment",
-          "s3Key": "amplify-builds/emailUser-66746d4f593931593770-build.zip"
+          "s3Key": "amplify-builds/emailUser-6c414644537835317855-build.zip"
         }
       }
     }

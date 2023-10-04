@@ -5,20 +5,21 @@ import { Auth } from "aws-amplify";
 import { User } from "../../models";
 import warning from "../../images/warning.svg";
 import {
-  Wrapper,
   BackArrow,
   Box,
-  Header,
   Button,
+  Header,
   Row,
+  Wrapper,
 } from "../styledComponents";
 import backArrow from "../../images/backArrow.png";
 import UserContext from "../../userContext";
 
-const Warning = styled.img`
+const ConfirmButton = styled(Button)`
   @media (max-width: 500px) {
-    position: relative;
-    width: 80px;
+    width: 11rem;
+    height: 3rem;
+    margin-left: 1rem;
   }
 `;
 
@@ -45,11 +46,10 @@ const SurroundingBox = styled(Box)`
   }
 `;
 
-const ConfirmButton = styled(Button)`
+const Warning = styled.img`
   @media (max-width: 500px) {
-    width: 11rem;
-    height: 3rem;
-    margin-left: 1rem;
+    position: relative;
+    width: 80px;
   }
 `;
 
@@ -57,6 +57,11 @@ export default function MobileLogout() {
   const { setUser } = useContext(UserContext);
   const navigate = useNavigate();
 
+  /**
+   * This function is run when the user clicks the Logout button, it will call the Auth signOut function
+   * If that succeeds it will set the user useState variable to an empty object and navigate to the login
+   * page, if it fails then it will catch the error and console log it.
+   */
   const handleLogout = async () => {
     try {
       await Auth.signOut();
@@ -72,7 +77,7 @@ export default function MobileLogout() {
     <Wrapper>
       <BackArrow
         src={backArrow}
-        alt="didn't work"
+        alt="back arrow"
         onClick={() => {
           navigate("/");
         }}

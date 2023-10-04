@@ -5,103 +5,96 @@ import { Auth } from "aws-amplify";
 import eyeSlash from "../../images/eyeSlash.svg";
 import eye from "../../images/eye.svg";
 import backArrow from "../../images/backArrow.png";
-
 import {
-  Wrapper,
-  Box,
   BackArrow,
+  Box,
   Button,
+  Description,
+  ErrorMessage,
+  EyeSlash,
   Header,
   Input,
-  Description,
   Label,
   PasswordContainer,
-  EyeSlash,
-  ErrorMessage,
+  Wrapper,
 } from "../styledComponents";
 
-// email prop that is set in forgot password page
+// email prop that is set in forgot-password page
 type EmailProps = {
   email: string;
 };
 
 export default function ResetPassword({ email }: EmailProps) {
-  const navigate = useNavigate();
-  const [input, setInput] = useState({
-    password: "",
-    confirmPassword: "",
-    code: "",
-  });
   const [passwordShown, setPasswordShown] = useState(true);
-  // Password toggle handler
+  const [confirmPasswordShown, setConfirmPasswordShown] = useState(true);
+  const [errorReal, setErrorReal] = useState("");
+  const [code, setCode] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const navigate = useNavigate();
+
+  // passwordShown toggle handler
   const togglePassword = () => {
-    // When the handler is invoked
-    // inverse the boolean state of passwordShown
+    // When the handler is invoked inverse the boolean state of passwordShown
     setPasswordShown(!passwordShown);
   };
-  const [passwordShown1, setPasswordShown1] = useState(true);
-  // Password toggle handler
-  const togglePassword1 = () => {
-    // When the handler is invoked
-    // inverse the boolean state of passwordShown
-    setPasswordShown1(!passwordShown1);
+
+  // confirmPasswordShown toggle handler
+  const toggleConfirmPassword = () => {
+    // When the handler is invoked inverse the boolean state of passwordShown
+    setConfirmPasswordShown(!confirmPasswordShown);
   };
 
-  // helper function for validating the input
-  const [errorReal, setErrorReal] = useState("");
-
-  const onInputChange = (e: { target: any }) => {
-    const { name, value } = e.target;
-    setInput((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // changes windows to different pages
-  const handleClick = async () => {
+  /**
+   * This function is run ewhen the user clicks the Submit button, if will check that the user has submitted two
+   * valid and matching passwords as well as the code sent to their emails. Once all these checks pass it will
+   * run the Auth request to reset the users password. Any errors along the way will be caught and displayed.
+   */
+  const handleSubmit = async () => {
     setErrorReal("");
+
+    // Uses a password regex that checks it is at least 8 characters long, has one uppercase, lowercase, number,
+    // and special character
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    // checking if password reaches requirements when user hits submit
-    if (!passwordRegex.test(input.password)) {
+    if (!passwordRegex.test(password)) {
       setErrorReal(
         "Password needs at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character"
       );
       return;
     }
-    // checking if the passwords match
-    if (input.confirmPassword !== input.password) {
+
+    // if the passwords don't match then set an error message
+    if (confirmPassword !== password) {
       setErrorReal("Passwords do not match");
+      return;
     }
-    // checking if password matches and code is filled out
-    if (input.confirmPassword === input.password && input.code.length > 0) {
-      // Collect confirmation code and new password, then
-      // try to send request and catch any errors or if no errors nav to success page
+
+    // If the user has entered a code then send the Auth Request to reset their password the navigate to the
+    // success page, if something goes wrong then print error message.
+    if (code.length > 0) {
       try {
-        await Auth.forgotPasswordSubmit(email, input.code, input.password)
-          // eslint-disable-next-line no-console
-          .then((data) => console.log(data));
+        await Auth.forgotPasswordSubmit(email, code, password);
         navigate("/success/reset", { replace: true });
-      } catch (errore) {
+      } catch (err) {
         // eslint-disable-next-line no-console
-        console.log("error signing up:", errore);
-        // setting the error message to be displayed on frontend if there is an error message
-        if (errore instanceof Error) {
-          setErrorReal(errore.message);
+        console.log("error signing up:", err);
+        if (err instanceof Error) {
+          setErrorReal(err.message);
         } else {
-          setErrorReal(String(errore));
+          setErrorReal(String(err));
           navigate("/success/reset", { replace: true });
         }
       }
     }
   };
+
+  // Navigates the user back to the login page if they click the back arrow
   const handleBackClick = () => {
     navigate("/login");
   };
 
   return (
-    // wrapper centers everything it wraps
     <Wrapper>
       <BackArrow src={backArrow} alt="didn't work" onClick={handleBackClick} />
       <Box>
@@ -116,24 +109,21 @@ export default function ResetPassword({ email }: EmailProps) {
           type="text"
           name="code"
           placeholder="Enter Code"
-          value={input.code}
-          onChange={(e) =>
-            setInput((prev) => ({ ...prev, code: e.target.value }))
-          }
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
           required
         />
-        {/* if show password is true then change type to text */}
         <Label>New Password</Label>
         <PasswordContainer>
+          {/* if passwordShown is true then change type to text */}
           <Input
             type={passwordShown ? "text" : "password"}
             name="password"
             placeholder="Enter Password"
-            value={input.password}
-            onChange={onInputChange}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
           />
-          {/* changes the truth value of show password */}
           {passwordShown ? (
             <EyeSlash onClick={togglePassword} src={eye} />
           ) : (
@@ -143,20 +133,20 @@ export default function ResetPassword({ email }: EmailProps) {
         <Label>Confirm New Password</Label>
         <PasswordContainer>
           <Input
-            type={passwordShown1 ? "text" : "password"}
+            type={confirmPasswordShown ? "text" : "password"}
             name="confirmPassword"
             placeholder="Confirm Password"
-            value={input.confirmPassword}
-            onChange={onInputChange}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
             required
           />
-          {passwordShown1 ? (
-            <EyeSlash onClick={togglePassword1} src={eye} />
+          {confirmPasswordShown ? (
+            <EyeSlash onClick={toggleConfirmPassword} src={eye} />
           ) : (
-            <EyeSlash onClick={togglePassword1} src={eyeSlash} />
+            <EyeSlash onClick={toggleConfirmPassword} src={eyeSlash} />
           )}
         </PasswordContainer>
-        <Button onClick={handleClick}>Submit</Button>
+        <Button onClick={handleSubmit}>Submit</Button>
       </Box>
     </Wrapper>
   );

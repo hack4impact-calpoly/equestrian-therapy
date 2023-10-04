@@ -3,6 +3,14 @@ import styled from "styled-components";
 import "@fontsource/roboto";
 import UserContext from "../userContext";
 
+const Check = styled.div`
+  border-radius: 4px;
+  border: solid 0.5px #c4c4c4;
+  background-color: #1b4c5a;
+  height: 21px;
+  width: 21px;
+`;
+
 const CheckBox = styled.div`
   border-radius: 4px;
   display: flex;
@@ -12,13 +20,6 @@ const CheckBox = styled.div`
   width: 43px;
   height: 43px;
   cursor: pointer;
-`;
-const Check = styled.div`
-  border-radius: 4px;
-  border: solid 0.5px #c4c4c4;
-  background-color: #1b4c5a;
-  height: 21px;
-  width: 21px;
 `;
 
 const NotCheck = styled.div`
@@ -36,73 +37,111 @@ const Row = styled.div`
   padding-bottom: 10px;
 `;
 
-const ViewingText = styled.p`
-  font-size: 20px;
-  font-family: "Roboto";
-  font-weight: 700;
-  // padding-bottom: 10px;
-`;
-
 const ViewingDescription = styled.p`
   font-family: "Roboto";
   font-size: 16px;
   font-weight: 700;
   padding-left: 20px;
 `;
+
+const ViewingText = styled.p`
+  font-size: 20px;
+  font-family: "Roboto";
+  font-weight: 700;
+`;
+
 type ToggleProps = {
-  setToggleProp: (val: string) => void;
+  setToggleValue: (val: string) => void;
 };
 
-export default function CalendarToggle({ setToggleProp }: ToggleProps) {
+export default function CalendarToggle({ setToggleValue }: ToggleProps) {
+  const [showAvailability, setShowAvailability] = useState(true);
+  const [showRiders, setShowRiders] = useState(false);
+  const [showVolunteers, setShowVolunteers] = useState(false);
+  const [showBoth, setShowBoth] = useState(true);
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   const { userType } = realUser;
-  const [showVolunteers, setShowVolunteers] = useState(false);
-  const [showRiders, setShowRiders] = useState(false);
-  const [showBoth, setShowBoth] = useState(true);
-  const [showAvailability, setShowAvailability] = useState(true);
 
-  // Password toggle handler
-  const toggleVolunteer = () => {
-    // When the handler is invoked
-    // inverse the boolean state of passwordShown
-    setShowVolunteers(!showVolunteers);
-    setShowRiders(false);
-    setShowBoth(false);
-  };
-  const toggleRider = () => {
-    // When the handler is invoked
-    // inverse the boolean state of passwordShown
-    setShowRiders(!showRiders);
-    setShowVolunteers(false);
-    setShowBoth(false);
-  };
+  /**
+   * This function is run when the user clicks the Both toggle it will switch the toggleValue
+   * to Both if it wasn't previously selected
+   */
   const toggleBoth = () => {
-    // When the handler is invoked
-    // inverse the boolean state of passwordShown
-    setShowBoth(!showBoth);
+    // If the toggleValue is already Both then keep it like that
+    if (showBoth) {
+      return;
+    }
+    // Otherwise turn Both on
+    setShowBoth(true);
     setShowRiders(false);
     setShowVolunteers(false);
   };
+
+  /**
+   * This function is run when the user clicks the Riders toggle it will switch the toggleValue
+   * to Riders if it wasn't previously selected, or Both if it was
+   */
+  const toggleRider = () => {
+    // If Riders was already selected then switch to Both
+    if (showRiders) {
+      setShowRiders(false);
+      setShowVolunteers(false);
+      setShowBoth(true);
+    }
+    // Otherwise turn Riders on
+    else {
+      setShowRiders(true);
+      setShowVolunteers(false);
+      setShowBoth(false);
+    }
+  };
+
+  /**
+   * This function is run when the user clicks the Volunteers toggle it will switch the toggleValue
+   * to Volunteers if it wasn't previously selected, or Both if it was
+   */
+  const toggleVolunteer = () => {
+    // If Volunteers was already selected then switch to Both
+    if (showVolunteers) {
+      setShowVolunteers(false);
+      setShowRiders(false);
+      setShowBoth(true);
+    }
+    // Otherwise turn Volunteers on
+    else {
+      setShowVolunteers(true);
+      setShowRiders(false);
+      setShowBoth(false);
+    }
+  };
+
+  /**
+   * This function is run when the user clicks the Volunteers toggle it will switch the toggleValue
+   * to Volunteers if it wasn't previously selected, or Both if it was
+   */
   const toggleNonAdminView = () => {
-    // When the handler is invoked
-    // inverse the boolean state of passwordShown
     setShowAvailability(!showAvailability);
   };
+
+  /**
+   * This useEffect is run whenever one of the toggle buttons is clicked, it will update the overall
+   * toggleValue which is used in the logic in the other components of the app.
+   */
   useEffect(() => {
     if (showBoth && userType === "Admin") {
-      setToggleProp("Both");
+      setToggleValue("Both");
     } else if (showAvailability && userType !== "Admin") {
-      setToggleProp("availability");
+      setToggleValue("availability");
     } else if (!showAvailability && userType !== "Admin") {
-      setToggleProp("slots");
+      setToggleValue("slots");
     } else if (showRiders) {
-      setToggleProp("Riders");
+      setToggleValue("Riders");
     } else if (showVolunteers) {
-      setToggleProp("Volunteers");
+      setToggleValue("Volunteers");
     } else {
-      setToggleProp("none");
+      setToggleValue("none");
     }
   }, [showBoth, showRiders, showVolunteers, showAvailability]);
 

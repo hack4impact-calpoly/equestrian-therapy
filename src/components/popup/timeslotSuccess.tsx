@@ -7,6 +7,13 @@ import {
   CenteredHeader,
 } from "../styledComponents";
 
+const Logo = styled.img`
+  width: 2.5em;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+`;
+
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -17,14 +24,7 @@ const Wrapper = styled.div`
   padding-bottom: 10%;
 `;
 
-const Logo = styled.img`
-  width: 2.5em;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-`;
-
-export type TimeslotSuccessProps = {
+type TimeslotSuccessProps = {
   handleCancelled: () => void;
 };
 

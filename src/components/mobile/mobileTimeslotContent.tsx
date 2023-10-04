@@ -9,7 +9,7 @@ import MobileTimeSlotConfirmation from "./mobileTimeslotConfirmation";
 import TimeslotSuccess from "../popup/timeslotSuccess";
 import AppointmentInfo from "../appointmentInfo";
 import { Booking, LazyUser } from "../../models";
-// height 380px so that it stays that height (right now height changes based on rendering of components)
+
 const BoxMobile = styled.div`
   border: solid 0.5px #c4c4c4;
   display: flex;
@@ -19,18 +19,18 @@ const BoxMobile = styled.div`
   margin-left: -12%;
 `;
 
-const WrapperMobile = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-`;
-
 const BoxMobileContent = styled.div`
   display: flex;
   flex-direction: column;
   margin: 4%;
   width: 300px;
+`;
+
+const OnOffSlide = styled.img`
+  margin-bottom: 5%;
+  width: 20%;
+  margin-left: 75%;
+  margin-top: 20%;
 `;
 
 const TimeslotButton = styled.button`
@@ -44,27 +44,21 @@ const TimeslotButton = styled.button`
   margin-bottom: 5%;
   cursor: pointer;
 `;
-const OnOffSlide = styled.img`
-  margin-bottom: 5%;
-  width: 20%;
-  margin-left: 75%;
-  margin-top: 20%;
+
+const WrapperMobile = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 `;
 
-type TimeslotMobileContentProps = {
-  date: Date;
-  tId: string;
-  riderBookings: LazyUser[];
-  volunteerBookings: LazyUser[];
-  booked: boolean;
-  enabled: boolean;
-  riderDisabled: boolean;
-  toggleValue: string;
-  setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  allBookings: Booking[];
-  setRequery: (requery: boolean) => void;
-};
-
+/**
+ * This function takes a javascript Date object and converts it to a string in YYYY-MM-DD format
+ * Input:
+ *  - date: Date - The date object to be converted to YYYY-MM-DD format
+ * Output:
+ *  - retString: string - the string version of the date in YYYY-MM-DD format
+ */
 function convertToYMD(date: Date) {
   const localString = date.toLocaleDateString();
   const splitDate = localString.split("/");
@@ -81,36 +75,64 @@ function convertToYMD(date: Date) {
   return retString;
 }
 
+type TimeslotMobileContentProps = {
+  timeslotId: string;
+  allBookings: Booking[];
+  checked: boolean;
+  date: Date;
+  enabled: boolean;
+  riderBookings: LazyUser[];
+  riderDisabled: boolean;
+  toggleValue: string;
+  volunteerBookings: LazyUser[];
+  setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setRequery: (requery: boolean) => void;
+};
+
 export default function TimeslotMobileContent({
+  timeslotId,
+  allBookings,
+  checked,
   date,
-  tId,
-  riderBookings,
-  volunteerBookings,
-  booked,
   enabled,
+  riderBookings,
   riderDisabled,
   toggleValue,
+  volunteerBookings,
   setIsDropdownOpen,
-  allBookings,
   setRequery,
 }: TimeslotMobileContentProps) {
+  const [onOff, setOnOff] = useState(checked);
+  const [confirmationShown, setConfirmationShown] = useState(false);
+  const [successShown, setSuccessShown] = useState(false);
+
   const currentUserFR = useContext(UserContext);
   const { currentUser } = currentUserFR;
   const [realUser] = currentUser;
   const { userType } = realUser;
-  const [onOff, setOnOff] = useState(booked);
-  const [confirmationShown, setConfirmationShown] = useState(false);
-  const [successShown, setSuccessShown] = useState(false);
 
+  /**
+   * This function is run when the user clicks the book/unbook button or the on/off slider
+   * and will prompt the confirmation screen as well as inverse the onOff useState variable
+   */
   const handleConfirmationShown = () => {
     setConfirmationShown(true);
     setOnOff(!enabled);
   };
 
+  /**
+   * This function is run when the user clicks the confirm button inside MobileTimeSlotConfirmation
+   * and will cause the success component to be shown by setting successShown to true
+   */
   const handleSuccessShown = () => {
     setSuccessShown(true);
   };
 
+  /**
+   * This function is run when the user clicks the cancel button inside MobileTimeSlotConfirmation
+   * and will set successShown and confirmationShown to false as well as closing the dropdown by
+   * setting isDropdownOpen to false.
+   */
   const handleCancelled = () => {
     setSuccessShown(false);
     setConfirmationShown(false);
@@ -125,7 +147,7 @@ export default function TimeslotMobileContent({
             <AppointmentInfo
               riderBookings={riderBookings}
               volunteerBookings={volunteerBookings}
-              booked={booked}
+              booked={checked}
               toggleValue={toggleValue}
             />
             {userType !== "Admin" ? (
@@ -135,7 +157,7 @@ export default function TimeslotMobileContent({
                   (booking) =>
                     booking.date === convertToYMD(date) &&
                     booking.userID === realUser.id &&
-                    booking.timeslotID !== tId
+                    booking.timeslotID !== timeslotId
                 )
               ) ? (
                 <TimeslotButton onClick={handleConfirmationShown}>
@@ -147,7 +169,7 @@ export default function TimeslotMobileContent({
             ) : (
               <OnOffSlide
                 onClick={handleConfirmationShown}
-                src={booked ? OnSlide : OffSlide}
+                src={checked ? OnSlide : OffSlide}
               />
             )}
           </BoxMobileContent>
@@ -155,15 +177,14 @@ export default function TimeslotMobileContent({
         {confirmationShown && !successShown && (
           <WrapperMobile>
             <MobileTimeSlotConfirmation
-              handleClicked={handleSuccessShown}
-              handleCancelled={handleCancelled}
-              booked={booked}
-              // enabled={onOff}
+              timeslotId={timeslotId}
+              allBookings={allBookings}
+              checked={checked}
               date={date}
-              tId={tId}
               riderDisabled={riderDisabled}
               toggleValue={toggleValue}
-              allBookings={allBookings}
+              handleCancelled={handleCancelled}
+              handleClicked={handleSuccessShown}
               setRequery={setRequery}
             />
           </WrapperMobile>
