@@ -228,12 +228,21 @@ export default function TimeSlotConfirmation({
       if (original && original.userType === "Volunteer") {
         const tempDate = new Date(bookedDate);
         const formattedDate = convertToYMD(tempDate);
-        const descriptionStr: string = `User: ${userID} Booked Time: ${formattedDate}`;
         TimeslotIDs.forEach(async (TimeslotID) => {
+          const timeslot = await DataStore.query(Timeslot, TimeslotID);
           const booking = new Booking({
-            title: "New Booking -- Volunteer",
+            title: `${original.userName}`,
             date: formattedDate,
-            description: descriptionStr,
+            description: `**Booking confirmed for ${original.firstName} ${
+              original.lastName
+            }.**\n\nBooked day: ${tempDate.toLocaleDateString("en-us", {
+              weekday: "long",
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            })}\nBooked time: ${
+              timeslot?.startTime
+            }\n\nThank you,\nThe PET Team`,
             timeslotID: TimeslotID,
             userID,
             userType,
@@ -244,11 +253,20 @@ export default function TimeSlotConfirmation({
         if (TimeslotIDs.length === 1) {
           const tempDate = new Date(bookedDate);
           const formattedDate = convertToYMD(tempDate);
-          const descriptionStr: string = `User: ${userID} Booked Time: ${formattedDate}`;
+          const timeslot = await DataStore.query(Timeslot, TimeslotIDs[0]);
           const booking = new Booking({
-            title: "New Booking -- Rider",
+            title: `${original.userName}`,
             date: formattedDate,
-            description: descriptionStr,
+            description: `**Booking confirmed for ${original.firstName} ${
+              original.lastName
+            }.**\n\nBooked day: ${tempDate.toLocaleDateString("en-us", {
+              weekday: "long",
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            })}\nBooked time: ${
+              timeslot?.startTime
+            }\n\nThank you,\nThe PET Team`,
             timeslotID: TimeslotIDs[0],
             userID,
             userType,

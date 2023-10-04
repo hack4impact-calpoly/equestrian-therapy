@@ -262,11 +262,18 @@ export default function MobileTimeSlotConfirmation({
       ) {
         const tempDate = new Date(bookedDate);
         const formattedDate = convertToYMD(tempDate);
-        const descriptionStr: string = `User: ${userID} Booked Time: ${formattedDate}`;
+        const timeslot = await DataStore.query(Timeslot, TimeslotID);
         const booking = new Booking({
-          title: `New Booking -- ${original.userType}`,
+          title: `${original.userName}`,
           date: formattedDate,
-          description: descriptionStr,
+          description: `**Booking confirmed for ${original.firstName} ${
+            original.lastName
+          }.**\n\nBooked day: ${tempDate.toLocaleDateString("en-us", {
+            weekday: "long",
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}\nBooked time: ${timeslot?.startTime}\n\nThank you,\nThe PET Team`,
           timeslotID: TimeslotID,
           userID,
           userType,
