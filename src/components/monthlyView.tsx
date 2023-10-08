@@ -130,10 +130,24 @@ type MonthlyViewProps = {
 
 export default function MonthlyView({ date, setDate }: MonthlyViewProps) {
   const [selected, setSelected] = useState(date);
-  const onChange = (sel: Date) => {
-    setDate(sel);
-    setSelected(sel);
+
+  /**
+   * This function is run when the user selects a date on the monthly calendar, it will set the
+   * date and selected useState variables to that selectedDate.
+   * Input:
+   *  - selectedDate: Date - the date selected on the monthly calendar
+   * Output: none
+   */
+  const onChange = (selectedDate: Date) => {
+    setDate(selectedDate);
+    setSelected(selectedDate);
   };
+
+  /**
+   * This function is a filter run on every tile of the monthly calendar, if a date is earlier
+   * than the current date then it will appear more greyed out, as if it is disbaled (it can
+   * still be selected, however)
+   */
   const tileDisabled = (thedate: any) => thedate < new Date();
 
   return (

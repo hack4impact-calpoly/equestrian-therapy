@@ -25,10 +25,10 @@ type EmailProps = {
 };
 
 export default function ResetPassword({ email }: EmailProps) {
+  const [code, setCode] = useState("");
+  const [errorReal, setErrorReal] = useState("");
   const [passwordShown, setPasswordShown] = useState(true);
   const [confirmPasswordShown, setConfirmPasswordShown] = useState(true);
-  const [errorReal, setErrorReal] = useState("");
-  const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
