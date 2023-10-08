@@ -9,7 +9,7 @@ import Calendar from "./components/calendar";
 import CalendarMobile from "./components/mobile/mobileCalendar";
 import UserContext from "./userContext";
 import ForgotPassword from "./components/authentication/forgotPassword";
-import ResetPassword from "./components/resetPassword";
+import ResetPassword from "./components/authentication/resetPassword";
 import Login from "./components/authentication/login";
 import CreateAccount from "./components/authentication/createAccount";
 import EnterCode from "./components/authentication/enterCode";
@@ -23,26 +23,36 @@ function App() {
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [timeslots, setTimeslots] = useState<LazyTimeslot[]>([]);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.outerWidth <= 500);
-    };
-    const pullData = async () => {
-      const ts = await DataStore.query(Timeslot);
-      setTimeslots(ts);
-    };
-    window.addEventListener("resize", handleResize);
-    handleResize();
-    pullData();
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   // setting up context
   const [currentUser, setUser] = useState({} as UserModel[]);
   const userContextFields = useMemo(
     () => ({ currentUser, setUser }),
     [currentUser]
   );
+
+  /**
+   * This useEffect is run when the app component opens and will check the screen size to
+   * determine whether it's a mobile device or not then pull the timeslot data to pass throughout
+   * the app.
+   */
+  useEffect(() => {
+    // If the screen size is less than 501 pixels then set it to mobile view
+    const handleResize = () => {
+      setIsMobile(window.outerWidth <= 500);
+    };
+
+    // Pull the timeslots from the database and store them in the timeslots useState variable
+    const pullData = async () => {
+      const ts = await DataStore.query(Timeslot);
+      setTimeslots(ts);
+    };
+
+    // Add the eventListened to the window so it will check for the mobile switch on resize
+    window.addEventListener("resize", handleResize);
+    handleResize();
+    pullData();
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <UserContext.Provider value={userContextFields}>
